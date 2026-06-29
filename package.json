@@ -1,0 +1,21 @@
+{
+  "name": "angryang-dev",
+  "private": true,
+  "type": "module",
+  "description": "Personal portfolio + homelab showcase (monorepo root).",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "bun run --filter web dev",
+    "build": "bun run --filter web build",
+    "preview": "bun run --filter web preview",
+    "stack:up": "docker compose -f infra/docker-compose.yml up -d",
+    "stack:down": "docker compose -f infra/docker-compose.yml down",
+    "stack:dev": "docker compose -f infra/docker-compose.yml -f infra/docker-compose.dev.yml up"
+  },
+  "engines": {
+    "bun": ">=1.1.0"
+  }
+}

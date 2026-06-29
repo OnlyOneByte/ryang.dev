@@ -1,0 +1,36 @@
+---
+/**
+ * Recruiter unlock form. Posts the passphrase to /api/unlock (TODO endpoint),
+ * which argon2-verifies against RECRUITER_HASH and sets the signed session
+ * cookie. This page is intentionally pinned to a legible look.
+ * Scaffold stub — wiring lands in the recruiter-gate task.
+ */
+import Base from '@/layouts/Base.astro';
+---
+
+<Base title="Recruiter access — Richard Yang">
+  <main class="mx-auto max-w-md px-6 py-24 font-mono">
+    <h1 class="text-2xl font-bold" style="color:var(--text-strong)">🔒 Recruiter mode</h1>
+    <p class="mt-2 text-sm" style="color:var(--muted)">
+      Enter the passphrase I gave you to view my CV, references, and availability.
+    </p>
+    <form method="POST" action="/api/unlock" class="mt-6 flex flex-col gap-3">
+      <input
+        type="password"
+        name="passphrase"
+        required
+        autocomplete="off"
+        placeholder="passphrase"
+        class="rounded-theme border px-3 py-2 text-sm"
+        style="background:var(--bg);border-color:var(--border);color:var(--text)"
+      />
+      <button
+        type="submit"
+        class="rounded-theme px-4 py-2 text-sm font-semibold"
+        style="background:var(--accent);color:var(--accent-ink)">Unlock</button>
+    </form>
+    <p class="mt-4 text-xs" style="color:var(--muted)">
+      Don't have one? <a href="/cal" style="color:var(--accent)">Book a call</a> and I'll share it.
+    </p>
+  </main>
+</Base>

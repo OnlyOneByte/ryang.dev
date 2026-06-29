@@ -1,0 +1,149 @@
+# angryang.dev — self-hosted stack (9 services).
+# TLS terminates at the EXTERNAL router Caddy; these services bind plain HTTP on
+# the LAN. Ports are published on the host so the router can reach them; bind to
+# a specific LAN interface in production if you want to restrict exposure.
+#
+#   docker compose -f infra/docker-compose.yml up -d
+#
+# Build context for the web image is the repo root (..), so the Bun workspace
+# install resolves correctly.
+
+name: angryang-dev
+
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: docker/web.Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PB_URL: http://pocketbase:8090
+      NTFY_URL: http://ntfy:80
+      GOTENBERG_URL: http://gotenberg:3000
+    ports:
+      - "4321:4321"
+    depends_on:
+      - pocketbase
+    networks: [web, internal]
+
+  pocketbase:
+    image: ghcr.io/muchobien/pocketbase:latest
+    restart: unless-stopped
+    # Volume-mount hooks for fast iteration (edit → restart, no rebuild).
+    # For a baked image instead, build docker/pocketbase.Dockerfile.
+    volumes:
+      - ../services/pocketbase/pb_hooks:/pb/pb_hooks
+      - ../services/pocketbase/pb_migrations:/pb/pb_migrations
+      - pb_data:/pb/pb_data
+    environment:
+      NTFY_URL: http://ntfy:80
+      NTFY_TOPIC: ${NTFY_TOPIC}
+    ports:
+      - "8090:8090"
+    networks: [web, internal]
+
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${UMAMI_DB_USER}:${UMAMI_DB_PASSWORD}@umami-db:5432/${UMAMI_DB_NAME}
+      DATABASE_TYPE: postgresql
+      APP_SECRET: ${UMAMI_APP_SECRET}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - umami-db
+    networks: [web, internal]
+
+  umami-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${UMAMI_DB_USER}
+      POSTGRES_PASSWORD: ${UMAMI_DB_PASSWORD}
+      POSTGRES_DB: ${UMAMI_DB_NAME}
+    volumes:
+      - umami_db_data:/var/lib/postgresql/data
+    networks: [internal]
+
+  wakapi:
+    image: ghcr.io/muety/wakapi:latest
+    restart: unless-stopped
+    environment:
+      WAKAPI_PASSWORD_SALT: ${WAKAPI_SALT}
+      WAKAPI_DB_TYPE: sqlite3
+    volumes:
+      - wakapi_data:/data
+    ports:
+      - "3001:3000"
+    networks: [web, internal]
+
+  cal:
+    image: calcom/cal.com:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${CAL_DB_USER}:${CAL_DB_PASSWORD}@cal-db:5432/${CAL_DB_NAME}
+      NEXTAUTH_SECRET: ${CAL_NEXTAUTH_SECRET}
+      CALENDSO_ENCRYPTION_KEY: ${CAL_ENCRYPTION_KEY}
+      NEXT_PUBLIC_WEBAPP_URL: https://cal.ryang.dev
+    ports:
+      - "3002:3000"
+    depends_on:
+      - cal-db
+    networks: [web, internal]
+
+  cal-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${CAL_DB_USER}
+      POSTGRES_PASSWORD: ${CAL_DB_PASSWORD}
+      POSTGRES_DB: ${CAL_DB_NAME}
+    volumes:
+      - cal_db_data:/var/lib/postgresql/data
+    networks: [internal]
+
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    restart: unless-stopped
+    command: serve
+    environment:
+      NTFY_BASE_URL: https://ntfy.ryang.dev
+    volumes:
+      - ntfy_data:/var/lib/ntfy
+    # internal only — web + pocketbase POST to it over the compose network
+    networks: [internal]
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    restart: unless-stopped
+    volumes:
+      - kuma_data:/app/data
+    ports:
+      - "3010:3001"
+    networks: [web, internal]
+
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    restart: unless-stopped
+    command:
+      - "gotenberg"
+      - "--api-timeout=30s"
+    # internal only — web POSTs HTML and gets back a PDF
+    networks: [internal]
+
+networks:
+  web:
+    driver: bridge
+  internal:
+    driver: bridge
+
+volumes:
+  pb_data:
+  umami_db_data:
+  wakapi_data:
+  cal_db_data:
+  ntfy_data:
+  kuma_data:

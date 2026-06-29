@@ -1,0 +1,151 @@
+[
+  {
+    "name": "projects",
+    "type": "base",
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "schema": [
+      { "name": "title", "type": "text", "required": true },
+      { "name": "slug", "type": "text", "required": true, "unique": true },
+      { "name": "summary", "type": "text", "required": false },
+      { "name": "description", "type": "editor", "required": false },
+      { "name": "tech", "type": "json", "required": false },
+      { "name": "repoUrl", "type": "url", "required": false },
+      { "name": "liveUrl", "type": "url", "required": false },
+      { "name": "coverImage", "type": "file", "required": false, "options": { "maxSelect": 1, "mimeTypes": ["image/png", "image/jpeg", "image/webp", "image/avif", "image/svg+xml"] } },
+      { "name": "featured", "type": "bool", "required": false },
+      { "name": "order", "type": "number", "required": false },
+      { "name": "status", "type": "select", "required": false, "options": { "maxSelect": 1, "values": ["active", "wip", "archived"] } }
+    ],
+    "indexes": ["CREATE INDEX idx_projects_featured_order ON projects (featured, `order`)"]
+  },
+  {
+    "name": "uses_items",
+    "type": "base",
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "schema": [
+      { "name": "category", "type": "select", "required": true, "options": { "maxSelect": 1, "values": ["hardware", "software", "dev-tools", "desk"] } },
+      { "name": "name", "type": "text", "required": true },
+      { "name": "description", "type": "text", "required": false },
+      { "name": "url", "type": "url", "required": false },
+      { "name": "order", "type": "number", "required": false }
+    ]
+  },
+  {
+    "name": "now",
+    "type": "base",
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "schema": [
+      { "name": "focus", "type": "text", "required": true },
+      { "name": "note", "type": "editor", "required": false }
+    ]
+  },
+  {
+    "name": "guestbook",
+    "type": "base",
+    "listRule": "approved = true",
+    "viewRule": "approved = true",
+    "createRule": "",
+    "updateRule": null,
+    "deleteRule": null,
+    "schema": [
+      { "name": "name", "type": "text", "required": true, "options": { "max": 60 } },
+      { "name": "message", "type": "text", "required": true, "options": { "max": 500 } },
+      { "name": "website", "type": "url", "required": false },
+      { "name": "approved", "type": "bool", "required": false },
+      { "name": "ipHash", "type": "text", "required": false, "system": false }
+    ]
+  },
+  {
+    "name": "comments",
+    "type": "base",
+    "listRule": "approved = true",
+    "viewRule": "approved = true",
+    "createRule": "",
+    "updateRule": null,
+    "deleteRule": null,
+    "schema": [
+      { "name": "postSlug", "type": "text", "required": true },
+      { "name": "author", "type": "text", "required": true, "options": { "max": 60 } },
+      { "name": "body", "type": "text", "required": true, "options": { "max": 1000 } },
+      { "name": "parent", "type": "relation", "required": false, "options": { "maxSelect": 1, "collectionId": "comments", "cascadeDelete": true } },
+      { "name": "approved", "type": "bool", "required": false },
+      { "name": "ipHash", "type": "text", "required": false }
+    ],
+    "indexes": ["CREATE INDEX idx_comments_postslug ON comments (postSlug)"]
+  },
+  {
+    "name": "reactions",
+    "type": "base",
+    "listRule": "",
+    "viewRule": "",
+    "createRule": "",
+    "updateRule": null,
+    "deleteRule": null,
+    "schema": [
+      { "name": "targetType", "type": "select", "required": true, "options": { "maxSelect": 1, "values": ["post", "project"] } },
+      { "name": "targetId", "type": "text", "required": true },
+      { "name": "emoji", "type": "select", "required": true, "options": { "maxSelect": 1, "values": ["thumbsup", "fire", "heart"] } },
+      { "name": "sessionHash", "type": "text", "required": true }
+    ],
+    "indexes": ["CREATE UNIQUE INDEX idx_reactions_dedup ON reactions (sessionHash, targetId, emoji)"]
+  },
+  {
+    "name": "contact_messages",
+    "type": "base",
+    "listRule": null,
+    "viewRule": null,
+    "createRule": "",
+    "updateRule": null,
+    "deleteRule": null,
+    "schema": [
+      { "name": "name", "type": "text", "required": true },
+      { "name": "email", "type": "email", "required": true },
+      { "name": "subject", "type": "text", "required": false },
+      { "name": "body", "type": "text", "required": true, "options": { "max": 5000 } },
+      { "name": "read", "type": "bool", "required": false },
+      { "name": "ipHash", "type": "text", "required": false }
+    ]
+  },
+  {
+    "name": "recruiter_content",
+    "type": "base",
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "schema": [
+      { "name": "section", "type": "select", "required": true, "options": { "maxSelect": 1, "values": ["cv", "salary", "references", "availability"] } },
+      { "name": "title", "type": "text", "required": true },
+      { "name": "body", "type": "editor", "required": false },
+      { "name": "order", "type": "number", "required": false },
+      { "name": "visible", "type": "bool", "required": false }
+    ]
+  },
+  {
+    "name": "recruiter_unlocks",
+    "type": "base",
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "schema": [
+      { "name": "ipHash", "type": "text", "required": false },
+      { "name": "userAgent", "type": "text", "required": false },
+      { "name": "unlockedAt", "type": "date", "required": false }
+    ]
+  }
+]

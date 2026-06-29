@@ -1,0 +1,34 @@
+---
+/**
+ * Base layout. Renders the correct data-theme SERVER-SIDE from the `theme`
+ * cookie, plus a no-flash inline script that reconciles before first paint.
+ */
+import '@/styles/global.css';
+import { themeFromCookie } from '@/lib/theme/store';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title = 'Richard Yang', description = 'Software engineer & self-hoster.' } = Astro.props;
+const theme = themeFromCookie(Astro.request.headers.get('cookie'));
+---
+
+<!doctype html>
+<html lang="en" data-theme={theme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {/* No-flash: set data-theme before any CSS paints (reconciles SSR value). */}
+    <script is:inline>
+      document.documentElement.dataset.theme =
+        (document.cookie.match(/(?:^|;\s*)theme=([\w-]+)/)?.[1]) || 'cyberpunk';
+    </script>
+  </head>
+  <body class="scanline-overlay">
+    <slot />
+  </body>
+</html>

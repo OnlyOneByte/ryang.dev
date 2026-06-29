@@ -1,0 +1,25 @@
+# Dev override: hot-reload the web app from a bind mount instead of a baked
+# image, and expose internal-only services on localhost for inspection.
+#
+#   docker compose -f infra/docker-compose.yml -f infra/docker-compose.dev.yml up
+#
+# (or: bun run stack:dev from the repo root)
+
+services:
+  web:
+    build: null
+    image: oven/bun:1
+    working_dir: /repo/apps/web
+    command: sh -c "cd /repo && bun install && cd apps/web && bun run dev --host"
+    volumes:
+      - ..:/repo
+    environment:
+      NODE_ENV: development
+
+  ntfy:
+    ports:
+      - "8085:80"
+
+  gotenberg:
+    ports:
+      - "3020:3000"

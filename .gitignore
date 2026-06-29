@@ -1,0 +1,44 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# bun
+bun.lockb
+.bun/
+
+# build output
+dist/
+.astro/
+build/
+*.tsbuildinfo
+
+# env / secrets — NEVER commit
+.env
+.env.*
+!.env.example
+*.local
+
+# pocketbase runtime data (mounted volume; never commit the DB)
+services/pocketbase/pb_data/
+pb_data/
+
+# docker volumes (if bind-mounted locally)
+infra/volumes/
+
+# logs
+*.log
+npm-debug.log*
+build.log
+
+# editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*~
+
+# test / coverage
+coverage/
+.nyc_output/

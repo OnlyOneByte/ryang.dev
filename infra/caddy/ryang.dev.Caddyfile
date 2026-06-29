@@ -1,0 +1,46 @@
+# Router Caddy snippets for angryang.dev.
+# These live on your ROUTER (the external Caddy that terminates TLS), NOT on the
+# Docker box. Replace BOX_LAN_IP with the Docker box's LAN address, then reload
+# Caddy. Caddy auto-provisions Let's Encrypt certs for each hostname.
+#
+# The box serves plain HTTP; Caddy adds TLS and forwards the standard
+# X-Forwarded-* headers the app trusts for the Secure cookie + real client IP.
+
+{
+	# email for ACME / Let's Encrypt
+	email you@ryang.dev
+}
+
+ryang.dev, www.ryang.dev {
+	encode zstd gzip
+	reverse_proxy BOX_LAN_IP:4321
+}
+
+pb.ryang.dev {
+	encode zstd gzip
+	reverse_proxy BOX_LAN_IP:8090
+}
+
+stats.ryang.dev {
+	encode zstd gzip
+	reverse_proxy BOX_LAN_IP:3000
+}
+
+wakapi.ryang.dev {
+	encode zstd gzip
+	reverse_proxy BOX_LAN_IP:3001
+}
+
+cal.ryang.dev {
+	encode zstd gzip
+	reverse_proxy BOX_LAN_IP:3002
+}
+
+status.ryang.dev {
+	encode zstd gzip
+	reverse_proxy BOX_LAN_IP:3010
+}
+
+# ntfy + gotenberg are intentionally NOT exposed — they're internal-only on the
+# compose network. Add an ntfy.ryang.dev block here only if you want push
+# subscriptions from your phone over the internet.
