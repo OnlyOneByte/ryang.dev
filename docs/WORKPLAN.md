@@ -160,13 +160,18 @@ Session = HMAC-SHA256-signed token (SESSION_SECRET), constant-time verify,
 build ✓ + check 41 files/0 errors; 404 + transitions + terminal verified.
 
 
-## M10 — Deploy & launch
+## M10 — Deploy & launch  (in-repo done; box/DNS = [you])
 
-- [ ] Point `ryang.dev` (+ `pb. stats. wakapi. cal. status.`) DNS at the router
-- [ ] Apply router Caddyfile; verify TLS + forwarded headers
-- [ ] Backups: PB `pb_data` schedule (+ off-box copy); pg_dump crons
-- [ ] Lighthouse CI budget (perf/a11y/SEO) in the pipeline
-- [ ] Final eyes-on across themes + mobile; launch 🚀
+- [x] Launch runbook (docs/LAUNCH.md): provision → PB bootstrap → public env →
+      DNS + router Caddy → backups → post-launch verification checklist
+- [x] Lighthouse CI step + budgets (apps/web/lighthouserc.json; a11y blocking,
+      perf/seo advisory). Wired into the GitHub Actions workflow.
+- [x] Final consistency sweep: build ✓, check 41/0, contrast 15/15, 19 routes,
+      no committed secrets, no leftover placeholders
+- [ ] **[you]** Point DNS at the router + apply Caddyfile (needs the domain/box)
+- [ ] **[you]** Bring the stack up on Arcane + fill secrets (M2 step)
+- [ ] **[you]** Run the post-launch checklist in LAUNCH.md §6 → launch 🚀
+
 
 ---
 

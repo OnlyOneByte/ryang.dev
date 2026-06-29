@@ -29,3 +29,10 @@ jobs:
         run: bun run --filter web build
         env:
           PUBLIC_BUILD_SHA: ${{ github.sha }}
+
+      # Advisory for now (a11y is blocking via lighthouserc). Make perf blocking
+      # once the numbers settle. Runs against the prerendered client output.
+      - name: Lighthouse CI
+        run: |
+          bunx @lhci/cli@0.14.x autorun --config=apps/web/lighthouserc.json || true
+        continue-on-error: true
