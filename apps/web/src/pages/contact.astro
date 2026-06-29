@@ -1,0 +1,43 @@
+---
+import Base from '@/layouts/Base.astro';
+const status = Astro.url.searchParams.get('sent') ? 'sent'
+  : Astro.url.searchParams.get('e');
+---
+
+<Base title="Contact — Angelo Yang" description="Get in touch.">
+  <main class="mx-auto max-w-xl px-6 py-16 font-mono">
+    <p class="text-sm" style="color:var(--accent)">$ mail angelo</p>
+    <h1 class="mt-2 text-3xl font-extrabold" style="color:var(--text-strong)">Contact</h1>
+
+    {status === 'sent' && (
+      <p class="mt-4 rounded-theme border px-3 py-2 text-sm" style="border-color:var(--ok);color:var(--ok)">
+        Sent — I'll get a push notification and reply soon. Thanks!
+      </p>
+    )}
+    {status === 'rate' && (
+      <p class="mt-4 rounded-theme border px-3 py-2 text-sm" style="border-color:var(--warn);color:var(--warn)">
+        Too many messages just now — try again in a bit.
+      </p>
+    )}
+    {(status === '1' || status === 'down') && (
+      <p class="mt-4 rounded-theme border px-3 py-2 text-sm" style="border-color:var(--danger);color:var(--danger)">
+        Couldn't send that — please check the fields and retry.
+      </p>
+    )}
+
+    {status !== 'sent' && (
+      <form method="POST" action="/api/contact" class="mt-6 flex flex-col gap-2">
+        <input name="name" placeholder="your name" maxlength="120" required
+               class="rounded-theme border px-3 py-2 text-sm" style="background:var(--bg);border-color:var(--border);color:var(--text)" />
+        <input name="email" type="email" placeholder="email" maxlength="200" required
+               class="rounded-theme border px-3 py-2 text-sm" style="background:var(--bg);border-color:var(--border);color:var(--text)" />
+        <textarea name="body" placeholder="message…" maxlength="5000" rows="5" required
+                  class="rounded-theme border px-3 py-2 text-sm" style="background:var(--bg);border-color:var(--border);color:var(--text)"></textarea>
+        <input name="company" tabindex="-1" autocomplete="off" aria-hidden="true"
+               style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+        <button type="submit" class="self-start rounded-theme px-4 py-2 text-sm font-semibold"
+                style="background:var(--accent);color:var(--accent-ink)">send →</button>
+      </form>
+    )}
+  </main>
+</Base>

@@ -2,6 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Comments from '@/lib/comments/Comments.svelte';
+import Reactions from '@/lib/interactions/Reactions.svelte';
 
 // Prerender posts at build (content is git-backed MDX). Comments hydrate
 // client-side, so a static shell is correct + fast.
@@ -45,6 +46,10 @@ const mins = Math.max(1, Math.round(words / 200));
     <article class="post mt-8 leading-relaxed" style="color:var(--text)">
       <Content />
     </article>
+
+    <div class="mt-10">
+      <Reactions targetType="post" targetId={post.slug} client:visible />
+    </div>
 
     <hr class="my-12" style="border-color:var(--border)" />
     <Comments postSlug={post.slug} client:visible />

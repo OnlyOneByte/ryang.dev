@@ -1,0 +1,10 @@
+---
+import Base from '@/layouts/Base.astro';
+import Guestbook from '@/lib/interactions/Guestbook.svelte';
+---
+
+<Base title="Guestbook — Angelo Yang" description="Leave a note.">
+  <main class="mx-auto max-w-2xl px-6 py-16">
+    <Guestbook client:load />
+  </main>
+</Base>

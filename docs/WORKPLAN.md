@@ -118,12 +118,17 @@ Session = HMAC-SHA256-signed token (SESSION_SECRET), constant-time verify,
 - [x] Short server-side TTL cache (lib/widgets/cache.ts) keeps tokens server-side.
 
 
-## M7 — Interactions (Pocketbase-backed)
+## M7 — Interactions (Pocketbase-backed)  ✅
 
-- [ ] Guestbook (moderated append + admin approve)
-- [ ] Reactions (👍🔥❤️ — **static counts** for v1; realtime deferred)
-- [ ] Contact form → `contact_messages` + ntfy ping
-- [ ] Honeypot / basic rate-limit on public writes
+- [x] Guestbook (/guestbook): moderated append (server hook forces approved=
+      false) + honeypot; lists approved entries; fail-soft if PB down
+- [x] Reactions (👍🔥❤️ STATIC counts) island on blog posts; optimistic bump,
+      server-side unique-index dedup + local "already reacted"; realtime deferred
+- [x] Contact form (/contact + POST /api/contact) → contact_messages (ntfy hook)
+      + honeypot + rate-limit; verified honeypot POST is silently dropped
+- [x] Nav updated (guestbook, contact). build ✓ + check 36 files/0 errors;
+      all pages 200, 0 errors, honeypot verified.
+
 
 ## M8 — Companion services wired into the site
 
