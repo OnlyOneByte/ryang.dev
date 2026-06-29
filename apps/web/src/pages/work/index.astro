@@ -1,0 +1,84 @@
+---
+import Base from '@/layouts/Base.astro';
+import { publicClient } from '@/lib/pb/client';
+
+type Project = { title: string; summary: string; tech: string[]; slug: string; status?: string };
+
+let projects: Project[] = [];
+try {
+  const pb = publicClient();
+  const rows = await pb.collection('projects').getFullList({ sort: 'order' });
+  projects = rows.map((r: any) => ({
+    title: r.title, summary: r.summary, tech: r.tech ?? [], slug: r.slug, status: r.status,
+  }));
+} catch {
+  projects = [
+    { title: 'Homelab Mesh', summary: 'Self-hosted orchestration across 3 nodes.', tech: ['Go', 'Docker'], slug: 'homelab-mesh', status: 'active' },
+    { title: 'VROOM', summary: 'Vehicle cost tracker. 1700+ tests, offline-first sync.', tech: ['Svelte', 'TS'], slug: 'vroom', status: 'active' },
+    { title: 'angryang.dev', summary: 'This site. Astro + Pocketbase, 15-theme engine.', tech: ['Astro', 'Bun'], slug: 'angryang-dev', status: 'wip' },
+  ];
+}
+
+// all tech tags for the filter row
+const tags = [...new Set(projects.flatMap((p) => p.tech))].sort();
+---
+
+<Base title="Work — Richard Yang">
+  <main class="mx-auto max-w-3xl px-6 py-16 font-mono">
+    <p class="text-sm" style="color:var(--accent)">$ ls ~/work</p>
+    <h1 class="mt-2 text-3xl font-extrabold" style="color:var(--text-strong)">Work</h1>
+
+    {tags.length > 0 && (
+      <div class="mt-4 flex flex-wrap gap-2 text-xs" data-filter-row>
+        <button data-tag="*" class="rounded-theme border px-2 py-0.5"
+                style="border-color:var(--accent);color:var(--accent)">all</button>
+        {tags.map((t) => (
+          <button data-tag={t} class="rounded-theme border px-2 py-0.5"
+                  style="border-color:var(--border);color:var(--muted)">{t}</button>
+        ))}
+      </div>
+    )}
+
+    <div class="mt-6 grid gap-4 sm:grid-cols-2" data-project-grid>
+      {projects.map((p) => (
+        <a href={`/work/${p.slug}`} data-tech={p.tech.join(',')}
+           class="block rounded-theme border p-4 transition hover:opacity-90"
+           style="background:var(--panel);border-color:var(--border)">
+          <div class="flex items-center justify-between">
+            <span class="font-bold" style="color:var(--text-strong)">{p.title}</span>
+            {p.status && p.status !== 'active' && (
+              <span class="text-xs" style="color:var(--warn)">{p.status}</span>
+            )}
+          </div>
+          <div class="mt-1.5 text-sm" style="color:var(--muted)">{p.summary}</div>
+          <div class="mt-3 flex gap-2 text-xs">
+            {p.tech.map((t) => (
+              <span class="rounded-theme border px-2 py-0.5"
+                    style="border-color:var(--border);color:var(--accent)">{t}</span>
+            ))}
+          </div>
+        </a>
+      ))}
+    </div>
+  </main>
+
+  <script is:inline>
+    // Lightweight client-side tag filter (no framework needed).
+    const row = document.querySelector('[data-filter-row]');
+    const cards = [...document.querySelectorAll('[data-project-grid] [data-tech]')];
+    row?.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-tag]');
+      if (!btn) return;
+      const tag = btn.getAttribute('data-tag');
+      row.querySelectorAll('[data-tag]').forEach((b) => {
+        const on = b === btn;
+        b.style.borderColor = on ? 'var(--accent)' : 'var(--border)';
+        b.style.color = on ? 'var(--accent)' : 'var(--muted)';
+      });
+      cards.forEach((c) => {
+        const techs = (c.getAttribute('data-tech') || '').split(',');
+        c.style.display = tag === '*' || techs.includes(tag) ? '' : 'none';
+      });
+    });
+  </script>
+</Base>

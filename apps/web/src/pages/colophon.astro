@@ -1,0 +1,71 @@
+---
+import Base from '@/layouts/Base.astro';
+
+/**
+ * Colophon — an interactive architecture diagram of THIS site's own stack.
+ * Click a node to read what it does. Pure SVG + a tiny inline script (no deps),
+ * styled entirely through theme tokens so it re-skins with the active theme.
+ */
+const NODES = [
+  { id: 'router', label: 'Router Caddy', x: 40, y: 30, role: 'TLS termination + reverse proxy (external box). The only public entry point.' },
+  { id: 'web', label: 'web (Astro)', x: 250, y: 30, role: 'Astro SSR on Bun. Zero-JS-by-default; islands hydrate only where needed.' },
+  { id: 'pb', label: 'Pocketbase', x: 250, y: 130, role: 'Auth, SQLite, file storage, realtime, admin UI. Backs projects, guestbook, comments, recruiter content.' },
+  { id: 'umami', label: 'Umami', x: 460, y: 30, role: 'Cookieless, privacy-first analytics (+ its own Postgres).' },
+  { id: 'wakapi', label: 'Wakapi', x: 460, y: 95, role: 'Self-hosted WakaTime; feeds the "Currently" coding-stats block.' },
+  { id: 'gotenberg', label: 'Gotenberg', x: 460, y: 160, role: 'HTML → PDF; renders the résumé on demand from live data.' },
+  { id: 'ntfy', label: 'Ntfy', x: 460, y: 225, role: 'Phone push on contact-form submit + recruiter unlock.' },
+];
+const EDGES = [
+  ['router', 'web'], ['web', 'pb'], ['web', 'umami'],
+  ['web', 'wakapi'], ['web', 'gotenberg'], ['pb', 'ntfy'],
+];
+const pos = (id: string) => NODES.find((n) => n.id === id)!;
+---
+
+<Base title="Colophon — Richard Yang">
+  <main class="mx-auto max-w-3xl px-6 py-16 font-mono">
+    <p class="text-sm" style="color:var(--accent)">$ cat ~/.colophon</p>
+    <h1 class="mt-2 text-3xl font-extrabold" style="color:var(--text-strong)">How this site is built</h1>
+    <p class="mt-2 text-sm" style="color:var(--muted)">
+      Self-hosted, Bun-built, theme-token-driven. Click a node to see what it does.
+    </p>
+
+    <svg viewBox="0 0 620 270" class="mt-8 w-full" role="img" aria-label="Architecture diagram">
+      {EDGES.map(([a, b]) => {
+        const pa = pos(a), pb2 = pos(b);
+        return (
+          <line x1={pa.x + 70} y1={pa.y + 16} x2={pb2.x} y2={pb2.y + 16}
+                stroke="var(--border)" stroke-width="1.5" />
+        );
+      })}
+      {NODES.map((n) => (
+        <g class="node" data-role={n.role} style="cursor:pointer">
+          <rect x={n.x} y={n.y} width="140" height="32" rx="4"
+                fill="var(--panel)" stroke="var(--accent)" stroke-width="1.5" />
+          <text x={n.x + 70} y={n.y + 21} text-anchor="middle"
+                font-size="12" font-family="var(--font-mono)" fill="var(--text)">{n.label}</text>
+        </g>
+      ))}
+    </svg>
+
+    <div id="node-detail" class="mt-4 rounded-theme border p-4 text-sm"
+         style="background:var(--panel);border-color:var(--border);color:var(--muted)">
+      Click a node above to read its role.
+    </div>
+
+    <p class="mt-8 text-xs" style="color:var(--muted)">
+      Source: <a href="https://github.com/OnlyOneByte/angryang.dev" style="color:var(--accent)">OnlyOneByte/angryang.dev</a>
+      · built with Astro, Pocketbase, Bun · 15-theme engine
+    </p>
+  </main>
+
+  <script is:inline>
+    const detail = document.getElementById('node-detail');
+    document.querySelectorAll('.node').forEach((g) => {
+      g.addEventListener('click', () => {
+        detail.textContent = g.getAttribute('data-role');
+        detail.style.color = 'var(--text)';
+      });
+    });
+  </script>
+</Base>

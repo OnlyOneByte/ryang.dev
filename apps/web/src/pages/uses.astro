@@ -1,0 +1,53 @@
+---
+import Base from '@/layouts/Base.astro';
+import { publicClient } from '@/lib/pb/client';
+
+type Item = { category: string; name: string; description?: string; url?: string };
+const CATS = ['hardware', 'software', 'dev-tools', 'desk'] as const;
+
+let items: Item[] = [];
+try {
+  const pb = publicClient();
+  const rows = await pb.collection('uses_items').getFullList({ sort: 'order' });
+  items = rows.map((r: any) => ({ category: r.category, name: r.name, description: r.description, url: r.url }));
+} catch {
+  items = [
+    { category: 'hardware', name: 'Homelab box', description: 'Docker host running the whole self-hosted stack' },
+    { category: 'hardware', name: 'Router w/ Caddy', description: 'TLS termination + reverse proxy' },
+    { category: 'software', name: 'Pocketbase', description: 'Auth, SQLite, file storage, realtime' },
+    { category: 'software', name: 'Umami', description: 'Cookieless analytics' },
+    { category: 'dev-tools', name: 'Bun', description: 'Runtime, package manager, bundler, test runner' },
+    { category: 'dev-tools', name: 'Astro', description: 'Zero-JS-by-default SSR framework' },
+    { category: 'desk', name: 'Mechanical keyboard', description: 'Where the 4h12m/day happens' },
+  ];
+}
+
+const grouped = CATS.map((c) => ({ cat: c, list: items.filter((i) => i.category === c) }))
+  .filter((g) => g.list.length > 0);
+---
+
+<Base title="Uses — Richard Yang">
+  <main class="mx-auto max-w-3xl px-6 py-16 font-mono">
+    <p class="text-sm" style="color:var(--accent)">$ cat ~/.uses</p>
+    <h1 class="mt-2 text-3xl font-extrabold" style="color:var(--text-strong)">Uses</h1>
+    <p class="mt-2 text-sm" style="color:var(--muted)">Hardware, software, and tools I actually use.</p>
+
+    {grouped.map((g) => (
+      <section class="mt-8">
+        <h2 class="text-sm uppercase tracking-wider" style="color:var(--accent)">{g.cat}</h2>
+        <ul class="mt-3 divide-y" style="border-color:var(--border)">
+          {g.list.map((i) => (
+            <li class="flex items-baseline justify-between gap-4 py-2">
+              <div>
+                <span class="font-bold" style="color:var(--text-strong)">
+                  {i.url ? <a href={i.url} style="color:var(--accent)">{i.name} ↗</a> : i.name}
+                </span>
+                {i.description && <span class="ml-2 text-sm" style="color:var(--muted)">— {i.description}</span>}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </main>
+</Base>

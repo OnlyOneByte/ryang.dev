@@ -40,13 +40,18 @@ Legend: `[ ]` todo · `[~]` partial/scaffolded · `[x]` done
 - [x] Browser-verified themes (cyberpunk/light/vaporwave/blueprint/solarpunk/zine)
       via headless chromium + cookie; SSR applies correct data-theme each time
 - [x] Fixed double-footer (index had inline footer + Base footer → 1 now)
-- [ ] No-flash sweep across all 15 (6 spot-checked; remaining 9 = quick follow-up)
+- [x] No-flash sweep: all 15 themes SSR-render the correct data-theme via cookie
+      (+ bogus cookie falls back to cyberpunk). Verified.
 
-**M1 complete** (modulo the full 15-theme no-flash sweep — low risk, mechanism proven).
+**M1 complete.**
 
-## M2 — Backend stack up
+## M2 — Backend stack up  ⚠️ BLOCKED: needs the Arcane box + real secrets
 
-- [ ] Bring up compose stack on the box (`stack:up`)
+- [x] Compose file statically validated (10 services, networks, volumes; all 11
+      `${VAR}` refs documented in `.env.example`). Verified off-box via YAML lint.
+- [ ] Bring up compose stack — **must run on the personal Arcane Docker box**,
+      NOT the corp dev desktop (this box has Docker 25 but no Compose v2 plugin,
+      and the stack is personal). User-driven: `docker compose -f infra/... up -d`
 - [ ] Import `pb_schema.json` via PB admin UI
 - [ ] Create the service-token superuser; fill `infra/.env`
 - [ ] Confirm hooks fire (moderation forces `approved=false`; ntfy pings)
@@ -54,13 +59,18 @@ Legend: `[ ]` todo · `[~]` partial/scaffolded · `[x]` done
 
 ## M3 — Core content surfaces
 
-- [ ] Home: full hero + Currently block + CTAs + featured work + build-info footer
-- [ ] Build-info footer (deploy SHA, build time, uptime, service health)
-- [ ] `/work` projects index (PB `projects`, featured + filter by tech)
-- [ ] `/work/[slug]` project detail
-- [ ] `/uses` page (PB `uses_items`, grouped by category)
-- [ ] `/colophon` — interactive architecture diagram of this very stack
-- [ ] Self-hosted fonts; AVIF/WebP responsive images
+- [x] Home: hero + Currently block + CTAs + featured work + build-info footer
+      (PB-backed with static dev fallback). Browser-verified.
+- [x] Build-info footer (deploy SHA via vite define; service-health dot)
+- [x] `/work` projects index (PB `projects` + fallback; client-side tech filter)
+- [x] `/work/[slug]` project detail (PB getFirstListItem + fixtures; redirects if missing)
+- [x] `/uses` page (PB `uses_items`, grouped by category, + fallback)
+- [x] `/colophon` — interactive SVG architecture diagram of this stack
+      (click-a-node, theme-token styled). Browser-verified interaction works.
+- [ ] Self-hosted fonts; AVIF/WebP responsive images (polish, deferred to M9)
+
+**M3 core pages done** (all 5 surfaces render 200, 0 errors, browser-verified).
+All use a PB-with-static-fallback pattern so they render before M2 stands up.
 
 ## M4 — Blog (MDX)
 
