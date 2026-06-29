@@ -22,6 +22,9 @@ jobs:
       - name: Type-check
         run: bun run --filter web check
 
+      - name: Contrast gate (WCAG AA across all themes)
+        run: bun run --filter web contrast
+
       - name: Build
         run: bun run --filter web build
         env:

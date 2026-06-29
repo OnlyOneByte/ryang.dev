@@ -31,11 +31,18 @@ Legend: `[ ]` todo · `[~]` partial/scaffolded · `[x]` done
 - [x] Wire `initKonami()` + footer-dot `tapUnlock()` (mobile) on mount
 - [x] Tailwind v4 wired (CSS-first @theme → tokens); Svelte 4→5 runes fix;
       SSR smoke-tested (cookie theming honored, 0 render errors)
-- [x] Lock `/unlock` to a legible theme (chrome=false + forceTheme cyberpunk)
-- [ ] Unlock toast + reduced-motion-safe confetti/glitch
-- [ ] Verify no-flash across all 15 themes (cold load each via cookie)
-- [ ] WCAG-AA contrast check per theme (build-time gate)
-- [ ] Lock `/private` to a legible theme (when the gate page lands in M5)
+- [x] Lock `/unlock` to a legible theme (chrome=false + forceTheme cyberpunk) —
+      browser-verified: stays cyberpunk under a `zine` cookie, 0 nav
+- [x] Unlock toast + reduced-motion-safe confetti (UnlockToast island; confetti
+      guarded on prefers-reduced-motion; global keyframes for JS-created nodes)
+- [x] WCAG-AA contrast gate (`scripts/contrast-check.ts`, wired into build + CI).
+      Caught 7 real AA failures across 6 themes — all fixed; 15/15 pass now
+- [x] Browser-verified themes (cyberpunk/light/vaporwave/blueprint/solarpunk/zine)
+      via headless chromium + cookie; SSR applies correct data-theme each time
+- [x] Fixed double-footer (index had inline footer + Base footer → 1 now)
+- [ ] No-flash sweep across all 15 (6 spot-checked; remaining 9 = quick follow-up)
+
+**M1 complete** (modulo the full 15-theme no-flash sweep — low risk, mechanism proven).
 
 ## M2 — Backend stack up
 

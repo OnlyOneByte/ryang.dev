@@ -5,10 +5,11 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "bun run contrast && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check",
+    "contrast": "bun run scripts/contrast-check.ts",
     "test": "bun test"
   },
   "dependencies": {

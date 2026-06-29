@@ -9,6 +9,7 @@ import { themeFromCookie } from '@/lib/theme/store';
 import Nav from '@/components/Nav.astro';
 import Footer from '@/components/Footer.svelte';
 import CommandPalette from '@/lib/cmdk/CommandPalette.svelte';
+import UnlockToast from '@/lib/theme/UnlockToast.svelte';
 
 interface Props {
   title?: string;
@@ -48,7 +49,8 @@ const theme = forceTheme ?? themeFromCookie(Astro.request.headers.get('cookie'))
       <slot />
     </div>
     {chrome && <Footer client:load />}
-    {/* ⌘K palette — global, loads on idle so it never blocks first paint */}
+    {/* ⌘K palette + unlock toast — global, idle-loaded so they never block paint */}
     <CommandPalette client:idle />
+    <UnlockToast client:idle />
   </body>
 </html>
