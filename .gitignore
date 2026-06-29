@@ -3,7 +3,8 @@ node_modules/
 .pnp
 .pnp.js
 
-# bun
+# bun — commit the text lockfile (bun.lock) for reproducible installs;
+# ignore only the legacy binary lockfile and bun's cache dir.
 bun.lockb
 .bun/
 
@@ -42,3 +43,6 @@ build.log
 # test / coverage
 coverage/
 .nyc_output/
+
+# astro-generated
+apps/web/src/env.d.ts
