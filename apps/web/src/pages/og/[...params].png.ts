@@ -13,7 +13,7 @@ export const GET: APIRoute = async ({ params, url }) => {
   // [...params] captures the path after /og/ (we use it as the title slugword);
   // prefer explicit ?title= when present for full control.
   const raw = params.params ?? '';
-  const title = url.searchParams.get('title') || decodeURIComponent(raw).replace(/\.png$/, '') || 'Richard Yang';
+  const title = url.searchParams.get('title') || decodeURIComponent(raw).replace(/\.png$/, '') || 'Angelo Yang';
   const subtitle = url.searchParams.get('subtitle') || undefined;
   const kicker = url.searchParams.get('kicker') || undefined;
 

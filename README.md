@@ -1,6 +1,6 @@
 # angryang.dev
 
-Personal portfolio + homelab showcase for **Richard Yang** — a self-hosted,
+Personal portfolio + homelab showcase for **Angelo Yang** — a self-hosted,
 blazing-fast Astro site backed by Pocketbase, with a 15-theme switching engine
 (Cyberpunk default, Konami-unlockable skins).
 
