@@ -22,17 +22,20 @@ Legend: `[ ]` todo · `[~]` partial/scaffolded · `[x]` done
 - [x] 6 design docs + this work plan
 - [x] **`bun install` builds clean** — Bun 1.3.14; public-registry `bunfig.toml`;
       `astro build` ✓ + `astro check` 0/0/0. (sitemap removed → returns in M4)
-- [ ] Add a minimal CI (GitHub Actions: `bun install` + `astro build` + `astro check`)
+- [x] Minimal CI (GitHub Actions: Bun install + `astro check` + build, SHA-stamped)
 
 ## M1 — Theme engine (finish the interactive layer)
 
-- [ ] `ThemeSwitcher` island (nav dropdown; reads `visibleThemes(unlocked)`)
-- [ ] `⌘K` command palette with "Theme: <name>" actions + nav links
-- [ ] Wire `initKonami()` + footer-dot `tapUnlock()` (mobile) on mount
+- [x] `ThemeSwitcher` island (nav dropdown; reads `visibleThemes(unlocked)`)
+- [x] `⌘K` command palette with "Theme: <name>" actions + nav links
+- [x] Wire `initKonami()` + footer-dot `tapUnlock()` (mobile) on mount
+- [x] Tailwind v4 wired (CSS-first @theme → tokens); Svelte 4→5 runes fix;
+      SSR smoke-tested (cookie theming honored, 0 render errors)
+- [x] Lock `/unlock` to a legible theme (chrome=false + forceTheme cyberpunk)
 - [ ] Unlock toast + reduced-motion-safe confetti/glitch
 - [ ] Verify no-flash across all 15 themes (cold load each via cookie)
 - [ ] WCAG-AA contrast check per theme (build-time gate)
-- [ ] Lock `/unlock` + `/private` to a legible theme
+- [ ] Lock `/private` to a legible theme (when the gate page lands in M5)
 
 ## M2 — Backend stack up
 

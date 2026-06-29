@@ -2,16 +2,27 @@
 /**
  * Base layout. Renders the correct data-theme SERVER-SIDE from the `theme`
  * cookie, plus a no-flash inline script that reconciles before first paint.
+ * Mounts the command palette (⌘K) globally; Nav/Footer optional via props.
  */
 import '@/styles/global.css';
 import { themeFromCookie } from '@/lib/theme/store';
+import Nav from '@/components/Nav.astro';
+import Footer from '@/components/Footer.svelte';
+import CommandPalette from '@/lib/cmdk/CommandPalette.svelte';
 
 interface Props {
   title?: string;
   description?: string;
+  chrome?: boolean; // show Nav + Footer (default true); false for /unlock, /private
+  forceTheme?: string; // pin a legible theme (gate pages) regardless of cookie
 }
-const { title = 'Richard Yang', description = 'Software engineer & self-hoster.' } = Astro.props;
-const theme = themeFromCookie(Astro.request.headers.get('cookie'));
+const {
+  title = 'Richard Yang',
+  description = 'Software engineer & self-hoster.',
+  chrome = true,
+  forceTheme,
+} = Astro.props;
+const theme = forceTheme ?? themeFromCookie(Astro.request.headers.get('cookie'));
 ---
 
 <!doctype html>
@@ -22,13 +33,22 @@ const theme = themeFromCookie(Astro.request.headers.get('cookie'));
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    {/* No-flash: set data-theme before any CSS paints (reconciles SSR value). */}
-    <script is:inline>
-      document.documentElement.dataset.theme =
-        (document.cookie.match(/(?:^|;\s*)theme=([\w-]+)/)?.[1]) || 'cyberpunk';
-    </script>
+    {/* No-flash: reconcile data-theme before any CSS paints. Skipped when the
+        page pins a theme (gate pages) so the cookie can't override it. */}
+    {!forceTheme && (
+      <script is:inline>
+        document.documentElement.dataset.theme =
+          (document.cookie.match(/(?:^|;\s*)theme=([\w-]+)/)?.[1]) || 'cyberpunk';
+      </script>
+    )}
   </head>
-  <body class="scanline-overlay">
-    <slot />
+  <body class="scanline-overlay flex min-h-screen flex-col">
+    {chrome && <Nav />}
+    <div class="flex-1">
+      <slot />
+    </div>
+    {chrome && <Footer client:load />}
+    {/* ⌘K palette — global, loads on idle so it never blocks first paint */}
+    <CommandPalette client:idle />
   </body>
 </html>
