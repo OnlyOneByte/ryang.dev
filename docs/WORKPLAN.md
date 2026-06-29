@@ -223,3 +223,21 @@ interactions layer on; polish and launch last.
 - **[LOW] serverClient stale token after PB restart** — FIX: `withServerClient()`
   retries once on 401/403; both gated readers use it.
 - Unit tests wired into build + CI (`bun test`).
+
+## Security review #3 (supply-chain + Docker) — fixes applied
+
+- **[MED] Unpinned `:latest` images** — pocketbase/umami/wakapi/cal/ntfy were
+  `:latest` (non-reproducible; compromised tag auto-deploys on pull). FIX: all
+  10 images via `*_TAG` vars (pinned defaults; pin to @sha256 in .env for full
+  reproducibility). 0 bare `:latest` remain.
+- **[MED] No container hardening** — FIX: `no-new-privileges:true` on every
+  service (YAML anchor); gotenberg `cap_drop: [ALL]` + only `SYS_ADMIN`
+  (Chromium sandbox); web Dockerfile runtime now runs as non-root `bun` user.
+- **[LOW] Host ports bound to 0.0.0.0** — documented + made configurable via
+  `BIND_ADDR` (kept all-interfaces default: the router is a SEPARATE box that
+  must reach these over the LAN; 127.0.0.1 would break it).
+- **[LOW] Dead dep** `@astrojs/sitemap` (removed M4) dropped; `@types/bun`
+  un-pinned 'latest' → '^1.1.0'.
+- **[LOW] No dep audit** — added advisory `bun audit` CI step.
+- Verified: DBs internal-only (no host port), ntfy/gotenberg internal-only,
+  web secrets via env_file (not baked). build/check/test green.

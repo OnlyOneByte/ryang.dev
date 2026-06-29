@@ -1,35 +1,44 @@
 # angryang.dev — self-hosted stack (9 services).
 # TLS terminates at the EXTERNAL router Caddy; these services bind plain HTTP on
-# the LAN. Ports are published on the host so the router can reach them; bind to
-# a specific LAN interface in production if you want to restrict exposure.
+# the LAN. The router lives on a DIFFERENT machine, so host ports must be
+# reachable over the LAN (bind addr defaults to all interfaces). Override
+# BIND_ADDR in .env to restrict (e.g. to the LAN IP) — do NOT use 127.0.0.1
+# unless the router proxies from this same host.
 #
 #   docker compose -f infra/docker-compose.yml up -d
 #
-# Build context for the web image is the repo root (..), so the Bun workspace
-# install resolves correctly.
+# Image tags are pinned via *_TAG vars in .env (default to a sensible tag). For
+# real supply-chain safety, pin to a DIGEST in .env:
+#   POCKETBASE_TAG=sha256:<digest>   (see docs/CHEATSHEET.md "pin images").
+# Build context for the web image is the repo root (..) for the Bun workspace.
 
 name: angryang-dev
 
+x-hardening: &hardening
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+
 services:
   web:
+    <<: *hardening
     build:
       context: ..
       dockerfile: docker/web.Dockerfile
-    restart: unless-stopped
     env_file: .env
     environment:
       PB_URL: http://pocketbase:8090
       NTFY_URL: http://ntfy:80
       GOTENBERG_URL: http://gotenberg:3000
     ports:
-      - "4321:4321"
+      - "${BIND_ADDR:-0.0.0.0}:4321:4321"
     depends_on:
       - pocketbase
     networks: [web, internal]
 
   pocketbase:
-    image: ghcr.io/muchobien/pocketbase:latest
-    restart: unless-stopped
+    <<: *hardening
+    image: ghcr.io/muchobien/pocketbase:${POCKETBASE_TAG:-0.22.21}
     # Volume-mount hooks for fast iteration (edit → restart, no rebuild).
     # For a baked image instead, build docker/pocketbase.Dockerfile.
     volumes:
@@ -40,25 +49,25 @@ services:
       NTFY_URL: http://ntfy:80
       NTFY_TOPIC: ${NTFY_TOPIC}
     ports:
-      - "8090:8090"
+      - "${BIND_ADDR:-0.0.0.0}:8090:8090"
     networks: [web, internal]
 
   umami:
-    image: ghcr.io/umami-software/umami:postgresql-latest
-    restart: unless-stopped
+    <<: *hardening
+    image: ghcr.io/umami-software/umami:${UMAMI_TAG:-postgresql-latest}
     environment:
       DATABASE_URL: postgresql://${UMAMI_DB_USER}:${UMAMI_DB_PASSWORD}@umami-db:5432/${UMAMI_DB_NAME}
       DATABASE_TYPE: postgresql
       APP_SECRET: ${UMAMI_APP_SECRET}
     ports:
-      - "3000:3000"
+      - "${BIND_ADDR:-0.0.0.0}:3000:3000"
     depends_on:
       - umami-db
     networks: [web, internal]
 
   umami-db:
-    image: postgres:16-alpine
-    restart: unless-stopped
+    <<: *hardening
+    image: postgres:${POSTGRES_TAG:-16-alpine}
     environment:
       POSTGRES_USER: ${UMAMI_DB_USER}
       POSTGRES_PASSWORD: ${UMAMI_DB_PASSWORD}
@@ -68,20 +77,20 @@ services:
     networks: [internal]
 
   wakapi:
-    image: ghcr.io/muety/wakapi:latest
-    restart: unless-stopped
+    <<: *hardening
+    image: ghcr.io/muety/wakapi:${WAKAPI_TAG:-2.13.1}
     environment:
       WAKAPI_PASSWORD_SALT: ${WAKAPI_SALT}
       WAKAPI_DB_TYPE: sqlite3
     volumes:
       - wakapi_data:/data
     ports:
-      - "3001:3000"
+      - "${BIND_ADDR:-0.0.0.0}:3001:3000"
     networks: [web, internal]
 
   cal:
-    image: calcom/cal.com:latest
-    restart: unless-stopped
+    <<: *hardening
+    image: calcom/cal.com:${CAL_TAG:-v4.7.5}
     env_file: .env
     environment:
       DATABASE_URL: postgresql://${CAL_DB_USER}:${CAL_DB_PASSWORD}@cal-db:5432/${CAL_DB_NAME}
@@ -89,14 +98,14 @@ services:
       CALENDSO_ENCRYPTION_KEY: ${CAL_ENCRYPTION_KEY}
       NEXT_PUBLIC_WEBAPP_URL: https://cal.ryang.dev
     ports:
-      - "3002:3000"
+      - "${BIND_ADDR:-0.0.0.0}:3002:3000"
     depends_on:
       - cal-db
     networks: [web, internal]
 
   cal-db:
-    image: postgres:16-alpine
-    restart: unless-stopped
+    <<: *hardening
+    image: postgres:${POSTGRES_TAG:-16-alpine}
     environment:
       POSTGRES_USER: ${CAL_DB_USER}
       POSTGRES_PASSWORD: ${CAL_DB_PASSWORD}
@@ -106,8 +115,8 @@ services:
     networks: [internal]
 
   ntfy:
-    image: binwiederhier/ntfy:latest
-    restart: unless-stopped
+    <<: *hardening
+    image: binwiederhier/ntfy:${NTFY_TAG:-v2.11.0}
     command: serve
     environment:
       NTFY_BASE_URL: https://ntfy.ryang.dev
@@ -117,17 +126,20 @@ services:
     networks: [internal]
 
   uptime-kuma:
-    image: louislam/uptime-kuma:1
-    restart: unless-stopped
+    <<: *hardening
+    image: louislam/uptime-kuma:${KUMA_TAG:-1.23.16}
     volumes:
       - kuma_data:/app/data
     ports:
-      - "3010:3001"
+      - "${BIND_ADDR:-0.0.0.0}:3010:3001"
     networks: [web, internal]
 
   gotenberg:
-    image: gotenberg/gotenberg:8
-    restart: unless-stopped
+    <<: *hardening
+    image: gotenberg/gotenberg:${GOTENBERG_TAG:-8.20.0}
+    # gotenberg needs SYS_ADMIN for Chromium's sandbox; drop everything else.
+    cap_drop: [ALL]
+    cap_add: [SYS_ADMIN]
     command:
       - "gotenberg"
       - "--api-timeout=30s"

@@ -25,8 +25,11 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=4321
-# Astro node adapter (standalone) emits dist/server/entry.mjs + dist/client
-COPY --from=build /repo/apps/web/dist ./dist
-COPY --from=build /repo/node_modules ./node_modules
+# Astro node adapter (standalone) emits dist/server/entry.mjs + dist/client.
+# Copy with ownership set to the image's built-in non-root `bun` user.
+COPY --from=build --chown=bun:bun /repo/apps/web/dist ./dist
+COPY --from=build --chown=bun:bun /repo/node_modules ./node_modules
+# Drop root: run the server as the unprivileged `bun` user shipped by the image.
+USER bun
 EXPOSE 4321
 CMD ["bun", "./dist/server/entry.mjs"]
