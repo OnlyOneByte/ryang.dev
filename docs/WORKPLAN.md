@@ -67,10 +67,17 @@ Legend: `[ ]` todo · `[~]` partial/scaffolded · `[x]` done
 - [x] `/uses` page (PB `uses_items`, grouped by category, + fallback)
 - [x] `/colophon` — interactive SVG architecture diagram of this stack
       (click-a-node, theme-token styled). Browser-verified interaction works.
-- [ ] Self-hosted fonts; AVIF/WebP responsive images (polish, deferred to M9)
+- [x] Self-hosted fonts — Fontsource variable Inter + JetBrains Mono (bundled
+      woff2, zero external requests; verified 0 google-font refs in output).
+      Token stacks prefer them with system fallbacks.
+- [x] OG share cards — satori + resvg, dynamic `/og/<title>.png` endpoint
+      (1200x630 cyberpunk card; fonts embedded via a ?arraybuffer vite plugin so
+      no runtime FS read). OG + Twitter meta wired into Base for every page;
+      browser-verified the rendered PNG. (full per-page polish: M9)
+- [ ] AVIF/WebP responsive images (deferred to M9 — no real images yet)
 
-**M3 core pages done** (all 5 surfaces render 200, 0 errors, browser-verified).
-All use a PB-with-static-fallback pattern so they render before M2 stands up.
+**M3 done** (5 surfaces + self-hosted fonts + OG cards; build/check green,
+runtime-verified). PB-with-static-fallback so everything renders before M2.
 
 ## M4 — Blog (MDX)
 

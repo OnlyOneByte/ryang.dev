@@ -16,14 +16,29 @@ interface Props {
   description?: string;
   chrome?: boolean; // show Nav + Footer (default true); false for /unlock, /private
   forceTheme?: string; // pin a legible theme (gate pages) regardless of cookie
+  ogTitle?: string; // text on the share card (defaults to title)
+  ogImage?: string; // override the og:image URL entirely
 }
 const {
   title = 'Richard Yang',
   description = 'Software engineer & self-hoster.',
   chrome = true,
   forceTheme,
+  ogTitle,
+  ogImage,
 } = Astro.props;
 const theme = forceTheme ?? themeFromCookie(Astro.request.headers.get('cookie'));
+
+// Build a canonical absolute URL + the OG image (dynamic card endpoint unless
+// the page supplies its own). Astro.site is configured to https://ryang.dev.
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const cardTitle = ogTitle ?? title;
+const ogUrl =
+  ogImage ??
+  new URL(
+    `/og/${encodeURIComponent(cardTitle)}.png?subtitle=${encodeURIComponent(description)}`,
+    Astro.site
+  ).href;
 ---
 
 <!doctype html>
@@ -33,7 +48,20 @@ const theme = forceTheme ?? themeFromCookie(Astro.request.headers.get('cookie'))
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {/* Open Graph + Twitter share cards */}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogUrl} />
     {/* No-flash: reconcile data-theme before any CSS paints. Skipped when the
         page pins a theme (gate pages) so the cookie can't override it. */}
     {!forceTheme && (

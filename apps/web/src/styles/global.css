@@ -1,4 +1,9 @@
 @import 'tailwindcss';
+/* Self-hosted variable fonts (bundled by Fontsource — zero external requests,
+   consistent across OSes). Themes that want a distinctive face (Georgia for
+   editorial, Tahoma for y2k) still override --font-* in their token block. */
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
 @import './tokens.css';
 
 /**

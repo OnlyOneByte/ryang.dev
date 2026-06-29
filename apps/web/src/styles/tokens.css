@@ -11,6 +11,11 @@
  *   shape   : --radius --border-width --shadow
  *   fonts   : --font-sans --font-mono --font-display
  *   effects : --scanlines --glow  (opt-in; neutral by default)
+ *
+ * Font stacks prefer the self-hosted variable fonts imported in global.css
+ * ('Inter Variable' for sans, 'JetBrains Mono Variable' for mono), with system
+ * fallbacks. Themes with a distinctive face (editorial=Georgia, y2k=Tahoma)
+ * override these in their own block.
  */
 
 /* ---- DEFAULT = Cyberpunk ---- */
@@ -33,9 +38,9 @@
   --radius: 4px;
   --border-width: 1px;
   --shadow: 0 0 16px rgba(0, 229, 255, 0.12);
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
-  --font-display: ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-display: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
   --scanlines: 0.35;
   --glow: 0 0 8px var(--accent);
 }
@@ -58,9 +63,9 @@
   --radius: 10px;
   --border-width: 1px;
   --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
-  --font-display: ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-display: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
   --scanlines: 0;
   --glow: none;
 }
@@ -83,8 +88,8 @@
   --radius: 8px;
   --border-width: 1px;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
   --font-display: Georgia, 'Times New Roman', serif;
   --scanlines: 0;
   --glow: none;
@@ -108,9 +113,9 @@
   --radius: 14px;
   --border-width: 1px;
   --shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
-  --font-display: ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-display: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --scanlines: 0;
   --glow: none;
 }
@@ -133,8 +138,8 @@
   --radius: 18px;
   --border-width: 1px;
   --shadow: 0 4px 16px rgba(120, 110, 80, 0.08);
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
   --font-display: Georgia, serif;
   --scanlines: 0;
   --glow: none;
@@ -158,9 +163,9 @@
   --radius: 2px;
   --border-width: 1px;
   --shadow: none;
-  --font-sans: ui-monospace, 'SF Mono', Menlo, monospace;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
-  --font-display: ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-sans: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-display: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
   --scanlines: 0;
   --glow: none;
 }
@@ -184,7 +189,7 @@
   --border-width: 3px;
   --shadow: none;
   --font-sans: 'Helvetica Neue', Arial, sans-serif;
-  --font-mono: ui-monospace, monospace;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
   --font-display: 'Helvetica Neue', Arial, sans-serif;
   --scanlines: 0;
   --glow: none;
@@ -208,9 +213,9 @@
   --radius: 4px;
   --border-width: 3px;
   --shadow: 4px 4px 0 #111111;
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, monospace;
-  --font-display: ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --font-display: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --scanlines: 0;
   --glow: none;
 }
@@ -235,9 +240,9 @@
   --radius: 8px;
   --border-width: 1px;
   --shadow: 0 0 16px rgba(255, 108, 224, 0.35);
-  --font-sans: ui-monospace, monospace;
-  --font-mono: ui-monospace, monospace;
-  --font-display: ui-monospace, monospace;
+  --font-sans: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --font-display: 'JetBrains Mono Variable', ui-monospace, monospace;
   --scanlines: 0.5;
   --glow: 0 0 8px var(--accent);
 }
@@ -261,7 +266,7 @@
   --border-width: 2px;
   --shadow: 0 6px 16px rgba(40, 110, 170, 0.25);
   --font-sans: Tahoma, Verdana, sans-serif;
-  --font-mono: ui-monospace, monospace;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
   --font-display: Tahoma, Verdana, sans-serif;
   --scanlines: 0;
   --glow: none;
@@ -285,9 +290,9 @@
   --radius: 22px;
   --border-width: 0px;
   --shadow: 8px 8px 18px #c9c4e8, -8px -8px 18px #ffffff;
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, monospace;
-  --font-display: ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --font-display: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --scanlines: 0;
   --glow: none;
 }
@@ -310,8 +315,8 @@
   --radius: 0px;
   --border-width: 2px;
   --shadow: 4px 4px 0 rgba(0, 0, 0, 0.35);
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, monospace;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
   --font-display: Georgia, serif;
   --scanlines: 0;
   --glow: none;
@@ -337,9 +342,9 @@
   --radius: 0px;
   --border-width: 1px;
   --shadow: none;
-  --font-sans: ui-monospace, 'SF Mono', Menlo, monospace;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
-  --font-display: ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-sans: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-display: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
   --scanlines: 0;
   --glow: none;
 }
@@ -362,9 +367,9 @@
   --radius: 16px;
   --border-width: 1px;
   --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, monospace;
-  --font-display: ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --font-display: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --scanlines: 0;
   --glow: none;
 }
@@ -388,7 +393,7 @@
   --border-width: 1px;
   --shadow: none;
   --font-sans: Georgia, 'Times New Roman', serif;
-  --font-mono: ui-monospace, monospace;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
   --font-display: Georgia, 'Times New Roman', serif;
   --scanlines: 0;
   --glow: none;
