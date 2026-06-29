@@ -27,8 +27,8 @@ async function featuredProjects(): Promise<Project[]> {
 }
 
 const FALLBACK: Project[] = [
-  { title: 'Homelab Mesh', summary: 'Self-hosted orchestration across 3 nodes. Docker, Caddy, zero-trust.', tech: ['Go', 'Docker'] },
-  { title: 'VROOM', summary: 'Vehicle cost tracker. 1700+ tests, offline-first sync, analytics.', tech: ['Svelte', 'TS'] },
+  { title: 'VROOM', summary: 'Self-hosted vehicle cost tracker — fuel, maintenance, financing, analytics. 1700+ tests, offline-first sync.', tech: ['Svelte', 'TypeScript'], slug: 'vroom' },
+  { title: 'angryang.dev', summary: 'This site — self-hosted Astro portfolio with a 15-theme engine + Konami unlock.', tech: ['Astro', 'Bun'], slug: 'angryang-dev' },
 ];
 
 // Parallel — independent sources, all fail-soft (return null / fallback).

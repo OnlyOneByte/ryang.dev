@@ -21,9 +21,9 @@ try {
 } catch {
   // dev fallback for the seeded slugs
   const fixtures: Record<string, Project> = {
-    'homelab-mesh': { title: 'Homelab Mesh', summary: 'Self-hosted orchestration across 3 nodes.', description: '<p>Docker + Caddy + zero-trust across three nodes. Full self-hosted stack with automated TLS and backups.</p>', tech: ['Go', 'Docker'], status: 'active' },
-    'vroom': { title: 'VROOM', summary: 'Vehicle cost tracker.', description: '<p>1700+ tests, offline-first sync, analytics engine, money-cents migration.</p>', tech: ['Svelte', 'TS'], status: 'active' },
-    'angryang-dev': { title: 'angryang.dev', summary: 'This site.', description: '<p>Astro + Pocketbase, a 15-theme engine with a Konami unlock, recruiter gate, and a self-hosted companion stack.</p>', tech: ['Astro', 'Bun'], status: 'wip' },
+    'vroom': { title: 'VROOM', summary: 'Self-hosted vehicle cost tracker.', description: '<p>Fuel economy, maintenance schedules, financing/lease math, insurance, and a TCO analytics engine. Offline-first with conflict-resolving sync, money-as-integer-cents, multi-vehicle sharing, and import from Fuelly/Fuelio/Drivvo. 1700+ backend tests.</p>', tech: ['Svelte', 'TypeScript', 'SQLite'], repoUrl: 'https://github.com/OnlyOneByte/VROOM', status: 'active' },
+    'angryang-dev': { title: 'angryang.dev', summary: 'This site.', description: '<p>Astro SSR on Bun, Pocketbase backend, a 15-theme CSS-variable engine with a Konami-code unlock, a shared-password recruiter gate, dynamic OG cards, and a 9-container self-hosted companion stack.</p>', tech: ['Astro', 'Bun', 'Pocketbase'], repoUrl: 'https://github.com/OnlyOneByte/angryang.dev', liveUrl: 'https://ryang.dev', status: 'wip' },
+    'homelab': { title: 'Homelab', summary: 'Self-hosted services on Docker.', description: '<p>The infrastructure everything runs on: a Docker host with Caddy at the router terminating TLS, privacy-first analytics, self-hosted coding stats, status monitoring, and automated backups. Reproducible via docker compose.</p>', tech: ['Docker', 'Caddy', 'Linux'], status: 'active' },
   };
   project = (slug && fixtures[slug]) || null;
 }
