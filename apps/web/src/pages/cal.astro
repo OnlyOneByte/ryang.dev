@@ -1,0 +1,27 @@
+---
+import Base from '@/layouts/Base.astro';
+// Cal.com booking. Embed the self-hosted instance when configured, else link out.
+const CAL = import.meta.env.PUBLIC_CAL_URL; // e.g. https://cal.ryang.dev/angelo/intro
+---
+
+<Base title="Book a call — Angelo Yang" description="Grab time on my calendar.">
+  <main class="mx-auto max-w-3xl px-6 py-16 font-mono">
+    <p class="text-sm" style="color:var(--accent)">$ cal book</p>
+    <h1 class="mt-2 text-3xl font-extrabold" style="color:var(--text-strong)">Book a call</h1>
+    <p class="mt-2 text-sm" style="color:var(--muted)">
+      Recruiters: book a slot and I'll share the passphrase for recruiter mode.
+    </p>
+
+    {CAL ? (
+      <iframe src={CAL} title="Cal.com booking" loading="lazy"
+              class="mt-6 w-full rounded-theme border"
+              style="height:70vh;border-color:var(--border)"></iframe>
+    ) : (
+      <p class="mt-6 rounded-theme border px-4 py-3 text-sm"
+         style="background:var(--panel);border-color:var(--border);color:var(--muted)">
+        Booking opens once Cal.com is live at <span style="color:var(--accent)">cal.ryang.dev</span>.
+        For now, reach me via <a href="/contact" style="color:var(--accent)">/contact</a>.
+      </p>
+    )}
+  </main>
+</Base>

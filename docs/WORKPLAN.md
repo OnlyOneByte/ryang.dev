@@ -130,12 +130,19 @@ Session = HMAC-SHA256-signed token (SESSION_SECRET), constant-time verify,
       all pages 200, 0 errors, honeypot verified.
 
 
-## M8 — Companion services wired into the site
+## M8 — Companion services wired into the site  ✅ (env-gated, fail-soft)
 
-- [ ] Umami analytics snippet (cookieless; `stats.ryang.dev`)
-- [ ] Cal.com booking embed / "Book a call" CTA (`cal.ryang.dev`)
-- [ ] `/resume.pdf` → render print HTML from PB → Gotenberg → stream PDF
-- [ ] Uptime Kuma status page + "homelab status" island reading its API
+- [x] Umami snippet (Analytics.astro) — emitted only when PUBLIC_UMAMI_URL/_ID
+      set; cookieless; verified absent without env (clean dev/preview)
+- [x] Cal.com (/cal) — embeds PUBLIC_CAL_URL iframe when set, else a graceful
+      "book via /contact" fallback (verified)
+- [x] /resume.pdf — renders print HTML from recruiter_content (fallback résumé)
+      → Gotenberg Chromium → streams PDF; if Gotenberg down, serves the HTML
+      (browser Print-to-PDF). Fallback path verified (name + sections render)
+- [x] Homelab status (lib/widgets/status.ts) → footer up/total from Uptime Kuma
+      status API when KUMA_STATUS_URL set, else static "9/9". Wired into Footer.
+- [x] build ✓ + check 40 files/0 errors; all routes 200, 0 errors.
+
 
 ## M9 — Fun & polish
 

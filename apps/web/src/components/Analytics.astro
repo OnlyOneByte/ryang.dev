@@ -1,0 +1,10 @@
+---
+/**
+ * Umami analytics snippet — cookieless, privacy-first. Only emitted when both
+ * PUBLIC_UMAMI_URL + PUBLIC_UMAMI_ID are set (so dev/preview stay clean).
+ * Loaded with Astro's `is:inline` + defer so it never blocks paint.
+ */
+const url = import.meta.env.PUBLIC_UMAMI_URL;   // e.g. https://stats.ryang.dev/script.js
+const id = import.meta.env.PUBLIC_UMAMI_ID;     // website UUID from Umami
+---
+{url && id && <script is:inline defer data-website-id={id} src={url}></script>}

@@ -5,10 +5,11 @@
    */
   import { tapUnlock } from '@/lib/theme/konami';
 
-  // These are injected at build time (see vite define in astro.config); fall
-  // back to dev placeholders so the component renders standalone.
+  // sha is build-time (vite define). `status` is passed from the server layout
+  // (live Uptime Kuma counts) when available, else a static placeholder.
+  let { status = '9/9' } = $props<{ status?: string }>();
   const sha = (import.meta.env.PUBLIC_BUILD_SHA as string) || 'dev';
-  const services = '9/9';
+  const services = status;
 </script>
 
 <footer

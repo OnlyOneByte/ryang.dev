@@ -10,6 +10,8 @@ import Nav from '@/components/Nav.astro';
 import Footer from '@/components/Footer.svelte';
 import CommandPalette from '@/lib/cmdk/CommandPalette.svelte';
 import UnlockToast from '@/lib/theme/UnlockToast.svelte';
+import Analytics from '@/components/Analytics.astro';
+import { getHomelabStatus } from '@/lib/widgets/status';
 
 interface Props {
   title?: string;
@@ -37,6 +39,10 @@ try {
   cookieHeader = null;
 }
 const theme = forceTheme ?? themeFromCookie(cookieHeader);
+
+// Live homelab status for the footer (fail-soft → static placeholder).
+const homelab = await getHomelabStatus();
+const statusLabel = homelab ? `${homelab.up}/${homelab.total}` : '9/9';
 
 // Build a canonical absolute URL + the OG image (dynamic card endpoint unless
 // the page supplies its own). Astro.site is configured to https://ryang.dev.
@@ -71,6 +77,7 @@ const ogUrl =
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogUrl} />
+    <Analytics />
     {/* No-flash: reconcile data-theme before any CSS paints. Skipped when the
         page pins a theme (gate pages) so the cookie can't override it. */}
     {!forceTheme && (
@@ -85,7 +92,7 @@ const ogUrl =
     <div class="flex-1">
       <slot />
     </div>
-    {chrome && <Footer client:load />}
+    {chrome && <Footer status={statusLabel} client:load />}
     {/* ⌘K palette + unlock toast — global, idle-loaded so they never block paint */}
     <CommandPalette client:idle />
     <UnlockToast client:idle />
