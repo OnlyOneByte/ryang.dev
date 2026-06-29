@@ -12,7 +12,8 @@ type Project = {
 let project: Project | null = null;
 try {
   const pb = publicClient();
-  const r: any = await pb.collection('projects').getFirstListItem(`slug = "${slug}"`);
+  // bind the user-controlled slug (no raw interpolation → no filter injection)
+  const r: any = await pb.collection('projects').getFirstListItem(pb.filter('slug = {:slug}', { slug }));
   project = {
     title: r.title, summary: r.summary, description: r.description,
     tech: r.tech ?? [], repoUrl: r.repoUrl, liveUrl: r.liveUrl, status: r.status,

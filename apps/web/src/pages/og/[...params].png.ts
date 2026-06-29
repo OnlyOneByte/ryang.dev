@@ -6,16 +6,30 @@
  */
 import type { APIRoute } from 'astro';
 import { renderOgPng } from '@/og/card';
+import { checkRate } from '@/lib/auth/ratelimit';
+import { createHash } from 'node:crypto';
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ params, url }) => {
-  // [...params] captures the path after /og/ (we use it as the title slugword);
-  // prefer explicit ?title= when present for full control.
+// Cap user-controlled text so a giant string can't blow up the satori render.
+const clamp = (s: string | null | undefined, n: number) => (s ?? '').slice(0, n) || undefined;
+
+export const GET: APIRoute = async ({ params, url, request, clientAddress }) => {
+  // Rate-limit renders per client: each unique URL is a full satori+resvg
+  // render (real CPU). Without this, /og/<random>.png is a cheap amplification
+  // vector. Cached responses don't re-enter here at the proxy, but the origin
+  // still needs protection for cache-miss floods.
+  const ipKey = createHash('sha256')
+    .update((clientAddress || request.headers.get('x-forwarded-for') || 'unknown') + '|og')
+    .digest('hex');
+  if (!checkRate(`og:${ipKey}`).allowed) {
+    return new Response('Too many image requests.', { status: 429, headers: { 'Retry-After': '900' } });
+  }
+
   const raw = params.params ?? '';
-  const title = url.searchParams.get('title') || decodeURIComponent(raw).replace(/\.png$/, '') || 'Angelo Yang';
-  const subtitle = url.searchParams.get('subtitle') || undefined;
-  const kicker = url.searchParams.get('kicker') || undefined;
+  const title = clamp(url.searchParams.get('title') || decodeURIComponent(raw).replace(/\.png$/, ''), 120) || 'Angelo Yang';
+  const subtitle = clamp(url.searchParams.get('subtitle'), 160);
+  const kicker = clamp(url.searchParams.get('kicker'), 40);
 
   try {
     const png = await renderOgPng({ title, subtitle, kicker });

@@ -32,7 +32,7 @@
   async function load() {
     try {
       const list = await pb.collection('reactions').getFullList({
-        filter: `targetType = "${targetType}" && targetId = "${targetId}"`,
+        filter: pb.filter('targetType = {:tt} && targetId = {:tid}', { tt: targetType, tid: targetId }),
       });
       const c: Record<string, number> = { thumbsup: 0, fire: 0, heart: 0 };
       for (const r of list as any[]) c[r.emoji] = (c[r.emoji] ?? 0) + 1;

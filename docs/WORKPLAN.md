@@ -201,3 +201,25 @@ Rationale: get the backend live early (M2) so content surfaces (M3) have real
 data; ship the theme switcher right after so every later screen is built in the
 final visual language; gate + widgets are high-signal for recruiters; blog and
 interactions layer on; polish and launch last.
+
+---
+
+## Security review (antagonistic) — fixes applied
+
+- **[CRITICAL] /resume.pdf leaked gated content** — the public route read all
+  recruiter_content incl. salary/references. FIX: public-section allowlist
+  (`lib/resume/public-sections.ts`: cv, availability) + code-level filter;
+  guarded by a NON-VACUOUS regression test (mutation-verified: adding 'salary'
+  → test fails). Titles HTML-escaped.
+- **[HIGH] PB filter injection** — work/[slug], Comments, Reactions
+  interpolated user input into filter strings. FIX: `pb.filter()` param binding
+  everywhere. Verified injection slug → 302 (no 500, no breakout).
+- **[MED] Gated responses cacheable** — FIX: middleware centrally sets
+  `Cache-Control: private, no-store` + `X-Robots-Tag: noindex` on /private*
+  (verified on the authed 200).
+- **[MED] OG CPU amplification** — FIX: clamp title/subtitle/kicker + per-IP
+  render rate-limit on /og.
+- **[LOW] Rate-limiter unbounded Map** — FIX: prune expired + MAX_KEYS cap.
+- **[LOW] serverClient stale token after PB restart** — FIX: `withServerClient()`
+  retries once on 401/403; both gated readers use it.
+- Unit tests wired into build + CI (`bun test`).

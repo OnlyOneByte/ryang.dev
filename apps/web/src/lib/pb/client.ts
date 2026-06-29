@@ -19,15 +19,7 @@ export function publicClient(): PocketBase {
 
 let cached: { pb: PocketBase; until: number } | null = null;
 
-/**
- * Superuser-authenticated client (cached ~50 min). Server-only.
- * Throws if the service credentials are missing.
- */
-export async function serverClient(): Promise<PocketBase> {
-  const now = Date.now();
-  if (cached && cached.until > now && cached.pb.authStore.isValid) {
-    return cached.pb;
-  }
+async function authenticate(): Promise<PocketBase> {
   const email = process.env.PB_SERVICE_EMAIL;
   const password = process.env.PB_SERVICE_PASSWORD;
   if (!email || !password) {
@@ -35,6 +27,40 @@ export async function serverClient(): Promise<PocketBase> {
   }
   const pb = new PocketBase(PB_URL);
   await pb.collection('_superusers').authWithPassword(email, password);
-  cached = { pb, until: now + 50 * 60 * 1000 };
+  cached = { pb, until: Date.now() + 50 * 60 * 1000 };
   return pb;
+}
+
+/**
+ * Superuser-authenticated client (cached ~50 min). Server-only.
+ * Re-authenticates if the cached token is missing/expired OR if PB reports the
+ * store invalid (e.g. PB restarted and rotated its signing key before our TTL).
+ * Throws if the service credentials are missing.
+ */
+export async function serverClient(): Promise<PocketBase> {
+  if (cached && cached.until > Date.now() && cached.pb.authStore.isValid) {
+    return cached.pb;
+  }
+  cached = null;
+  return authenticate();
+}
+
+/**
+ * Run a server-token PB call, retrying ONCE on an auth failure (401/403) by
+ * forcing a fresh login. Guards against a stale cached token after a PB
+ * restart that the TTL hasn't caught yet.
+ */
+export async function withServerClient<T>(fn: (pb: PocketBase) => Promise<T>): Promise<T> {
+  const pb = await serverClient();
+  try {
+    return await fn(pb);
+  } catch (err: any) {
+    const status = err?.status ?? err?.response?.status;
+    if (status === 401 || status === 403) {
+      cached = null;
+      const fresh = await authenticate();
+      return fn(fresh);
+    }
+    throw err;
+  }
 }

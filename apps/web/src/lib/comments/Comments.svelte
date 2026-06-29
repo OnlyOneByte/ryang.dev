@@ -26,7 +26,7 @@
   async function load() {
     try {
       const list = await pb.collection('comments').getList(1, 50, {
-        filter: `postSlug = "${postSlug}" && approved = true`,
+        filter: pb.filter('postSlug = {:slug} && approved = true', { slug: postSlug }),
         sort: 'created',
       });
       comments = list.items as unknown as Comment[];

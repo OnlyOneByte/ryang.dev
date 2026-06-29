@@ -8,10 +8,21 @@ const MAX_ATTEMPTS = 8;
 
 const hits = new Map<string, { count: number; resetAt: number }>();
 
+// Cap the map size to bound memory under a rotating-key (rotating-IP) flood,
+// and opportunistically evict expired entries on each call.
+const MAX_KEYS = 50_000;
+
+function prune(now: number): void {
+  for (const [k, v] of hits) {
+    if (v.resetAt < now) hits.delete(k);
+  }
+}
+
 export interface RateResult { allowed: boolean; remaining: number; retryAfterSec: number; }
 
 export function checkRate(key: string): RateResult {
   const now = Date.now();
+  if (hits.size > MAX_KEYS) prune(now);
   const e = hits.get(key);
   if (!e || e.resetAt < now) {
     hits.set(key, { count: 1, resetAt: now + WINDOW_MS });

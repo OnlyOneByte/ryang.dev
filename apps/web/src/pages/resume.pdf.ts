@@ -5,15 +5,28 @@
  * Gotenberg is unreachable, fall back to serving the HTML (browser can print).
  */
 import type { APIRoute } from 'astro';
-import { serverClient } from '@/lib/pb/client';
+import { withServerClient } from '@/lib/pb/client';
+import { PUBLIC_RESUME_SECTIONS } from '@/lib/resume/public-sections';
 
 export const prerender = false;
 
 const GOTENBERG = process.env.GOTENBERG_URL || 'http://gotenberg:3000';
 
+// SECURITY: /resume.pdf is PUBLIC. Only the allowlisted sections may appear;
+// salary/references are gated and excluded here. (Single source of truth in
+// lib/resume/public-sections.ts, guarded by the leak regression test.)
+const PUBLIC_SECTIONS = PUBLIC_RESUME_SECTIONS;
+
+function esc(s: string): string {
+  return s.replace(/[&<>"']/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+}
+
 function resumeHtml(sections: { title: string; body: string }[]): string {
+  // Titles are escaped; bodies are admin-authored rich HTML (trusted — only the
+  // PB superuser can write recruiter_content).
   const blocks = sections
-    .map((s) => `<section><h2>${s.title}</h2>${s.body}</section>`)
+    .map((s) => `<section><h2>${esc(s.title)}</h2>${s.body}</section>`)
     .join('\n');
   return `<!doctype html><html><head><meta charset="utf-8"><style>
     @page { margin: 2cm; }
@@ -33,11 +46,15 @@ export const GET: APIRoute = async () => {
   // gather content (fail-soft to a sensible default résumé)
   let sections: { title: string; body: string }[];
   try {
-    const pb = await serverClient();
-    const rows = await pb.collection('recruiter_content').getFullList({ filter: 'visible = true', sort: 'order' });
-    sections = rows.length
-      ? rows.map((r: any) => ({ title: r.title, body: r.body ?? '' }))
-      : [];
+    // Bind the filter value (no string interpolation) AND hard-filter to the
+    // public-section allowlist in code as defense-in-depth — never trust that
+    // the query alone keeps salary/references out of a public document.
+    const rows = await withServerClient((pb) =>
+      pb.collection('recruiter_content').getFullList({ filter: pb.filter('visible = true'), sort: 'order' })
+    );
+    sections = rows
+      .filter((r: any) => PUBLIC_SECTIONS.has(r.section))
+      .map((r: any) => ({ title: r.title, body: r.body ?? '' }));
   } catch {
     sections = [];
   }

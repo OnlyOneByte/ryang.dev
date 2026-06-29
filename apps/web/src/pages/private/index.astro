@@ -6,18 +6,16 @@
  * to a legible theme. Falls back to placeholder sections if the backend is down.
  */
 import Base from '@/layouts/Base.astro';
-import { serverClient } from '@/lib/pb/client';
+import { withServerClient } from '@/lib/pb/client';
 
 type Section = { section: string; title: string; body: string; order: number };
 
 let sections: Section[] = [];
 let backendError = false;
 try {
-  const pb = await serverClient();
-  const rows = await pb.collection('recruiter_content').getFullList({
-    filter: 'visible = true',
-    sort: 'order',
-  });
+  const rows = await withServerClient((pb) =>
+    pb.collection('recruiter_content').getFullList({ filter: pb.filter('visible = true'), sort: 'order' })
+  );
   sections = rows.map((r: any) => ({ section: r.section, title: r.title, body: r.body ?? '', order: r.order ?? 0 }));
 } catch {
   backendError = true;
