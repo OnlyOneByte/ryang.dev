@@ -1,6 +1,12 @@
 ---
 import Base from '@/layouts/Base.astro';
 import { publicClient } from '@/lib/pb/client';
+import { getCurrently } from '@/lib/widgets/wakapi';
+import { getGithubSummary } from '@/lib/widgets/github';
+
+// Live widgets (server-fetched, cached, fail-soft → null when unconfigured).
+const currently = await getCurrently();
+const github = await getGithubSummary();
 
 /**
  * Home. Pulls featured projects from Pocketbase when reachable; falls back to a
@@ -44,9 +50,11 @@ try {
       style="background:var(--panel);border-color:var(--border)"
     >
       <span style="color:var(--muted)">currently</span>
-      <span style="color:var(--accent)">● coding in Rust</span>
+      <span style="color:var(--accent)">
+        ● {currently?.topLanguage ? `coding in ${currently.topLanguage}` : 'building things'}
+      </span>
       <span style="color:var(--muted)">·</span>
-      <span>⌨ 4h 12m today</span>
+      <span>⌨ {currently?.todayText ?? '—'} today</span>
     </div>
 
     <div class="mt-8 flex flex-wrap gap-3">
@@ -80,5 +88,32 @@ try {
         all work →
       </a>
     </section>
+
+    {github && (
+      <section class="mt-14">
+        <p class="text-sm" style="color:var(--accent)">$ gh activity</p>
+        <div class="mt-4 flex flex-wrap gap-4 text-sm" style="color:var(--muted)">
+          <span><span style="color:var(--text-strong)">{github.publicRepos}</span> repos</span>
+          <span><span style="color:var(--text-strong)">{github.followers}</span> followers</span>
+          {github.recentPushes[0] && (
+            <span>last push → <span style="color:var(--text)">{github.recentPushes[0].repo}</span></span>
+          )}
+        </div>
+        <div class="mt-4 grid gap-3 sm:grid-cols-2">
+          {github.topRepos.map((r) => (
+            <a href={`https://github.com/${github.user}/${r.name}`} rel="noopener"
+               class="block rounded-theme border p-3 transition hover:opacity-90"
+               style="background:var(--panel);border-color:var(--border)">
+              <div class="flex items-center justify-between">
+                <span class="font-bold" style="color:var(--text-strong)">{r.name}</span>
+                <span class="text-xs" style="color:var(--muted)">★ {r.stars}</span>
+              </div>
+              {r.description && <div class="mt-1 text-xs" style="color:var(--muted)">{r.description}</div>}
+              {r.language && <div class="mt-2 text-xs" style="color:var(--accent)">{r.language}</div>}
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
   </main>
 </Base>

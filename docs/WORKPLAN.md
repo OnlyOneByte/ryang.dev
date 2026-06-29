@@ -107,11 +107,16 @@ runtime-verified). PB-with-static-fallback so everything renders before M2.
 Session = HMAC-SHA256-signed token (SESSION_SECRET), constant-time verify,
 30-day expiry. No DB session table — the signed cookie is the proof.
 
-## M6 — Live data widgets (server-fetched, cached)
+## M6 — Live data widgets (server-fetched, cached)  ✅
 
-- [ ] GitHub activity (pinned repos / contribution graph / latest commits)
-- [ ] Wakapi "Currently" status (real coding-time feed → home block)
-- [ ] Short server-side cache (TTL) so keys stay server-side, fast renders
+- [x] GitHub activity — server fetch (token-optional), 30-min TTL cache; home
+      shows repos/followers/last-push + top-4 repo cards. LIVE-verified against
+      OnlyOneByte (real data: 5 repos, ★ counts). Fail-soft: bad user → hidden.
+- [x] Wakapi "Currently" — WakaTime-compatible summary fetch, 10-min cache;
+      home block shows top language + today's time. Fail-soft → "building
+      things" placeholder when unconfigured (lights up once the box API is set).
+- [x] Short server-side TTL cache (lib/widgets/cache.ts) keeps tokens server-side.
+
 
 ## M7 — Interactions (Pocketbase-backed)
 
