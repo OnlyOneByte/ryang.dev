@@ -11,6 +11,8 @@ import Footer from '@/components/Footer.svelte';
 import CommandPalette from '@/lib/cmdk/CommandPalette.svelte';
 import UnlockToast from '@/lib/theme/UnlockToast.svelte';
 import Analytics from '@/components/Analytics.astro';
+import Terminal from '@/lib/fun/Terminal.svelte';
+import { ViewTransitions } from 'astro:transitions';
 import { getHomelabStatus } from '@/lib/widgets/status';
 
 interface Props {
@@ -77,6 +79,7 @@ const ogUrl =
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogUrl} />
+    <ViewTransitions />
     <Analytics />
     {/* No-flash: reconcile data-theme before any CSS paints. Skipped when the
         page pins a theme (gate pages) so the cookie can't override it. */}
@@ -88,13 +91,15 @@ const ogUrl =
     )}
   </head>
   <body class="scanline-overlay flex min-h-screen flex-col">
+    <a href="#main" class="skip-link">Skip to content</a>
     {chrome && <Nav />}
-    <div class="flex-1">
+    <div id="main" class="flex-1">
       <slot />
     </div>
     {chrome && <Footer status={statusLabel} client:load />}
     {/* ⌘K palette + unlock toast — global, idle-loaded so they never block paint */}
     <CommandPalette client:idle />
     <UnlockToast client:idle />
+    <Terminal client:idle />
   </body>
 </html>

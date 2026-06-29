@@ -73,6 +73,38 @@ a {
   outline-offset: 2px;
 }
 
+/* Skip-link: off-screen until focused (keyboard a11y). */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 1000;
+  padding: 0.5rem 0.75rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+}
+
+/* Honor reduced-motion globally: kill view transitions, scroll behavior, and
+   long animations for users who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
 /* Confetti fall for the unlock burst (nodes created imperatively in JS, so the
    keyframes must be global, not component-scoped). Reduced-motion users never
    trigger it — the JS guards on prefers-reduced-motion. */

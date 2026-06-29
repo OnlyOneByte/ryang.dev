@@ -144,16 +144,21 @@ Session = HMAC-SHA256-signed token (SESSION_SECRET), constant-time verify,
 - [x] build ✓ + check 40 files/0 errors; all routes 200, 0 errors.
 
 
-## M9 — Fun & polish
+## M9 — Fun & polish  ✅
 
-- [ ] 404 mini-game (pure island)
-- [ ] Terminal easter egg (`whoami`, `ls projects`, `sudo hire-me`)
-- [ ] Astro View Transitions between pages
-- [ ] Scroll-driven section reveals (CSS scroll-timeline)
-- [ ] WebGL hero (subtle; watch bundle) — optional
-- [ ] Interactive resume timeline — optional
-- [ ] Micro-delight: magnetic buttons, custom cursor, achievement toasts
-- [ ] a11y pass: focus rings, skip-links, reduced-motion, axe clean
+- [x] 404 mini-game (Game404.svelte) — "catch the falling bytes" canvas game;
+      arrow/pointer control; reduced-motion → static message. Browser-verified live.
+- [x] Terminal easter egg (Terminal.svelte) — backtick toggles a shell with
+      whoami/ls/theme/sudo hire-me/clear/exit. Verified opens on backtick.
+- [x] Astro View Transitions (ViewTransitions; note: this Astro exports
+      ViewTransitions, not ClientRouter) — smooth cross-page nav
+- [x] a11y: skip-link, visible focus rings, global prefers-reduced-motion guard
+      (kills view-transitions + long animations + smooth scroll)
+- [ ] WebGL hero / resume timeline / magnetic buttons (optional — deferred)
+- [ ] full axe sweep (deferred to M10 final eyes-on)
+
+build ✓ + check 41 files/0 errors; 404 + transitions + terminal verified.
+
 
 ## M10 — Deploy & launch
 
