@@ -79,6 +79,24 @@ needs Secure to stick).
 - [ ] Recruiter flow: unlock with the real passphrase → /private renders PB content
 - [ ] Contact form → you get an ntfy push
 - [ ] Guestbook/comment submit → appears as pending in PB admin
+- [ ] **Moderation hook fires (self-approve probe)** — the `moderation.pb.js`
+      hook needs the v0.23+ JSVM API; if PB is on < 0.23 it silently won't
+      register and the public createRule (`""`) would let anyone self-publish.
+      Prove the hook is live by POSTing a row that *tries* to set `approved:true`
+      and confirming the server forces it back to `false`:
+      ```bash
+      # against the live box — substitute pb.ryang.dev
+      curl -s -X POST https://pb.ryang.dev/api/collections/guestbook/records \
+        -H 'Content-Type: application/json' \
+        -d '{"name":"probe","message":"self-approve test","approved":true}' \
+        | grep -o '"approved":[a-z]*'
+      # MUST print  "approved":false   (and the row MUST NOT appear publicly:)
+      curl -s 'https://pb.ryang.dev/api/collections/guestbook/records?perPage=1' \
+        | grep -c '"name":"probe"'        # MUST print 0
+      ```
+      If `approved` comes back `true` or the probe is publicly listable, the hook
+      didn't register — check `docker compose ... logs pocketbase` for the hook
+      load line and confirm `POCKETBASE_TAG` ≥ 0.23. Delete the probe row after.
 - [ ] Theme switch persists across nav; Konami unlock works; /404 game plays
 - [ ] Lighthouse: perf/a11y/best-practices/SEO all ≥ 95 (see CI step)
 - [ ] Social preview: paste a URL in a card validator → OG image shows
