@@ -13,7 +13,6 @@ import UnlockToast from '@/lib/theme/UnlockToast.svelte';
 import Analytics from '@/components/Analytics.astro';
 import Terminal from '@/lib/fun/Terminal.svelte';
 import { ViewTransitions } from 'astro:transitions';
-import { getHomelabStatus } from '@/lib/widgets/status';
 
 interface Props {
   title?: string;
@@ -41,10 +40,6 @@ try {
   cookieHeader = null;
 }
 const theme = forceTheme ?? themeFromCookie(cookieHeader);
-
-// Live homelab status for the footer (fail-soft → static placeholder).
-const homelab = await getHomelabStatus();
-const statusLabel = homelab ? `${homelab.up}/${homelab.total}` : '9/9';
 
 // Build a canonical absolute URL + the OG image (dynamic card endpoint unless
 // the page supplies its own). Astro.site is configured to https://ryang.dev.
@@ -96,7 +91,7 @@ const ogUrl =
     <div id="main" class="flex-1">
       <slot />
     </div>
-    {chrome && <Footer status={statusLabel} client:load />}
+    {chrome && <Footer client:visible />}
     {/* ⌘K palette + unlock toast — global, idle-loaded so they never block paint */}
     <CommandPalette client:idle />
     <UnlockToast client:idle />

@@ -7,6 +7,7 @@
 import type { APIRoute } from 'astro';
 import { withServerClient } from '@/lib/pb/client';
 import { PUBLIC_RESUME_SECTIONS } from '@/lib/resume/public-sections';
+import { fetchWithTimeout } from '@/lib/widgets/fetch-timeout';
 
 export const prerender = false;
 
@@ -72,10 +73,11 @@ export const GET: APIRoute = async () => {
   try {
     const fd = new FormData();
     fd.append('files', new Blob([html], { type: 'text/html' }), 'index.html');
-    const r = await fetch(`${GOTENBERG.replace(/\/$/, '')}/forms/chromium/convert/html`, {
-      method: 'POST',
-      body: fd,
-    });
+    const r = await fetchWithTimeout(
+      `${GOTENBERG.replace(/\/$/, '')}/forms/chromium/convert/html`,
+      { method: 'POST', body: fd },
+      8000 // PDF render is legitimately slower than a JSON GET
+    );
     if (!r.ok) throw new Error(`gotenberg ${r.status}`);
     const pdf = await r.arrayBuffer();
     return new Response(pdf, {

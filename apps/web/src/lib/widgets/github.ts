@@ -5,6 +5,7 @@
  * any error so the widget can hide gracefully.
  */
 import { cached } from './cache';
+import { fetchWithTimeout } from './fetch-timeout';
 
 const USER = process.env.GITHUB_USER || 'OnlyOneByte';
 const TOKEN = process.env.GITHUB_TOKEN;
@@ -31,9 +32,9 @@ export async function getGithubSummary(): Promise<GithubSummary | null> {
   try {
     return await cached('gh:summary', TTL, async () => {
       const [profileR, reposR, eventsR] = await Promise.all([
-        fetch(`https://api.github.com/users/${USER}`, { headers: headers() }),
-        fetch(`https://api.github.com/users/${USER}/repos?sort=pushed&per_page=100`, { headers: headers() }),
-        fetch(`https://api.github.com/users/${USER}/events/public?per_page=30`, { headers: headers() }),
+        fetchWithTimeout(`https://api.github.com/users/${USER}`, { headers: headers() }),
+        fetchWithTimeout(`https://api.github.com/users/${USER}/repos?sort=pushed&per_page=100`, { headers: headers() }),
+        fetchWithTimeout(`https://api.github.com/users/${USER}/events/public?per_page=30`, { headers: headers() }),
       ]);
       if (!profileR.ok || !reposR.ok) throw new Error(`gh ${profileR.status}/${reposR.status}`);
       const profile: any = await profileR.json();

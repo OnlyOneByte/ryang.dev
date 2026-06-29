@@ -4,6 +4,7 @@
  * — fail-soft → null when unset/unreachable. Returns up/total counts.
  */
 import { cached } from './cache';
+import { fetchWithTimeout } from './fetch-timeout';
 
 const URL_ = process.env.KUMA_STATUS_URL;
 const TTL = 60 * 1000; // 1 min
@@ -14,7 +15,7 @@ export async function getHomelabStatus(): Promise<HomelabStatus | null> {
   if (!URL_) return null;
   try {
     return await cached('kuma:status', TTL, async () => {
-      const r = await fetch(URL_);
+      const r = await fetchWithTimeout(URL_, {}, 2000);
       if (!r.ok) throw new Error(`kuma ${r.status}`);
       const data: any = await r.json();
       // heartbeatList: { monitorId: [{ status: 1|0 }, ...] }; last beat per monitor

@@ -4,34 +4,39 @@ import { publicClient } from '@/lib/pb/client';
 import { getCurrently } from '@/lib/widgets/wakapi';
 import { getGithubSummary } from '@/lib/widgets/github';
 
-// Live widgets (server-fetched, cached, fail-soft → null when unconfigured).
-const currently = await getCurrently();
-const github = await getGithubSummary();
-
 /**
- * Home. Pulls featured projects from Pocketbase when reachable; falls back to a
- * small static set so the page renders standalone (no backend in dev). The
- * "Currently" block is a placeholder until the Wakapi widget lands (M6).
+ * Home. Featured projects from Pocketbase (static fallback in dev). The three
+ * server-side data sources (Wakapi, GitHub, PB projects) run in PARALLEL — they
+ * were serial awaits before, stacking up to 3 round-trips of latency.
  */
 type Project = { title: string; summary: string; tech: string[]; slug?: string };
 
-let featured: Project[] = [];
-try {
-  const pb = publicClient();
-  const rows = await pb.collection('projects').getList(1, 2, {
-    filter: 'featured = true && status = "active"',
-    sort: 'order',
-  });
-  featured = rows.items.map((r: any) => ({
-    title: r.title, summary: r.summary, tech: r.tech ?? [], slug: r.slug,
-  }));
-} catch {
-  // backend not up (dev) — fall back to representative content
-  featured = [
-    { title: 'Homelab Mesh', summary: 'Self-hosted orchestration across 3 nodes. Docker, Caddy, zero-trust.', tech: ['Go', 'Docker'] },
-    { title: 'VROOM', summary: 'Vehicle cost tracker. 1700+ tests, offline-first sync, analytics.', tech: ['Svelte', 'TS'] },
-  ];
+async function featuredProjects(): Promise<Project[]> {
+  try {
+    const pb = publicClient();
+    const rows = await pb.collection('projects').getList(1, 2, {
+      filter: pb.filter('featured = true && status = {:s}', { s: 'active' }),
+      sort: 'order',
+    });
+    return rows.items.map((r: any) => ({
+      title: r.title, summary: r.summary, tech: r.tech ?? [], slug: r.slug,
+    }));
+  } catch {
+    return FALLBACK;
+  }
 }
+
+const FALLBACK: Project[] = [
+  { title: 'Homelab Mesh', summary: 'Self-hosted orchestration across 3 nodes. Docker, Caddy, zero-trust.', tech: ['Go', 'Docker'] },
+  { title: 'VROOM', summary: 'Vehicle cost tracker. 1700+ tests, offline-first sync, analytics.', tech: ['Svelte', 'TS'] },
+];
+
+// Parallel — independent sources, all fail-soft (return null / fallback).
+const [currently, github, featured] = await Promise.all([
+  getCurrently(),
+  getGithubSummary(),
+  featuredProjects(),
+]);
 ---
 
 <Base title="Angelo Yang — Software Engineer & Self-Hoster">

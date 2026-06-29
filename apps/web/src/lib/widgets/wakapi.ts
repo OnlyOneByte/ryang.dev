@@ -4,6 +4,7 @@
  * + WAKAPI_API_KEY (gated on the live self-hosted instance). Fail-soft → null.
  */
 import { cached } from './cache';
+import { fetchWithTimeout } from './fetch-timeout';
 
 const API = process.env.WAKAPI_API_URL; // e.g. https://wakapi.ryang.dev/api
 const KEY = process.env.WAKAPI_API_KEY;
@@ -20,7 +21,7 @@ export async function getCurrently(): Promise<Currently | null> {
     return await cached('wakapi:today', TTL, async () => {
       // WakaTime-compatible: /v1/users/current/summaries?range=today
       const url = `${API.replace(/\/$/, '')}/v1/users/current/summaries?range=today`;
-      const r = await fetch(url, {
+      const r = await fetchWithTimeout(url, {
         headers: { Authorization: `Basic ${Buffer.from(KEY).toString('base64')}` },
       });
       if (!r.ok) throw new Error(`wakapi ${r.status}`);

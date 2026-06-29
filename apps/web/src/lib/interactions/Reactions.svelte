@@ -13,9 +13,9 @@
   const PB = (import.meta.env.PUBLIC_PB_URL as string) || 'https://pb.ryang.dev';
   const pb = new PocketBase(PB);
   const EMOJIS = [
-    { key: 'thumbsup', char: '👍' },
-    { key: 'fire', char: '🔥' },
-    { key: 'heart', char: '❤️' },
+    { key: 'thumbsup', char: '👍', label: 'thumbs up' },
+    { key: 'fire', char: '🔥', label: 'fire' },
+    { key: 'heart', char: '❤️', label: 'love' },
   ];
 
   let counts = $state<Record<string, number>>({ thumbsup: 0, fire: 0, heart: 0 });
@@ -61,9 +61,11 @@
 <div class="flex gap-2 font-mono">
   {#each EMOJIS as e (e.key)}
     <button type="button" onclick={() => react(e.key)} disabled={mine.has(e.key)}
+            aria-label={`React ${e.label} (${counts[e.key] ?? 0})`}
+            aria-pressed={mine.has(e.key)}
             class="rounded-theme border px-3 py-1.5 text-sm transition hover:opacity-80"
             style="background:var(--panel);border-color:{mine.has(e.key) ? 'var(--accent)' : 'var(--border)'};color:var(--text)">
-      {e.char} <span style="color:var(--muted)">{counts[e.key] ?? 0}</span>
+      <span aria-hidden="true">{e.char}</span> <span style="color:var(--muted)">{counts[e.key] ?? 0}</span>
     </button>
   {/each}
 </div>
