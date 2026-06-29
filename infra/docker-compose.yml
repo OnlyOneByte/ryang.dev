@@ -38,7 +38,8 @@ services:
 
   pocketbase:
     <<: *hardening
-    image: ghcr.io/muchobien/pocketbase:${POCKETBASE_TAG:-0.22.21}
+    # MUST be >= 0.23 — pb_hooks use the v0.23+ JSVM API (see .env.example).
+    image: ghcr.io/muchobien/pocketbase:${POCKETBASE_TAG:-0.28.4}
     # Volume-mount hooks for fast iteration (edit → restart, no rebuild).
     # For a baked image instead, build docker/pocketbase.Dockerfile.
     volumes:

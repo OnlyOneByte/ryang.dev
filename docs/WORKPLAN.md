@@ -241,3 +241,21 @@ interactions layer on; polish and launch last.
 - **[LOW] No dep audit** — added advisory `bun audit` CI step.
 - Verified: DBs internal-only (no host port), ntfy/gotenberg internal-only,
   web secrets via env_file (not baked). build/check/test green.
+
+## Security review #4 (Pocketbase rules + pb_hooks) — fixes applied
+
+- **[CRITICAL] Hook/image API mismatch** — pb_hooks use the v0.23+ JSVM API
+  (onRecordCreateRequest / onRecordAfterCreateSuccess / e.next), but pass-3
+  pinned the image to 0.22.21 where those names DON'T register. Net effect:
+  moderation wouldn't run, and with `approved` not field-write-protected, a
+  public client could POST approved=true → self-approved spam. FIX: pin PB
+  image ≥ 0.23 (now 0.28.4) + documented the hard requirement.
+- **[HIGH] Field-level write exposure** — rules gate WHO writes, not WHICH
+  fields. FIX: moderation.pb.js now also forces `contact_messages.read=false`
+  (admin-only flag) + server-stamps ipHash there, and server-stamps
+  `reactions.sessionHash` from the hashed IP (dedup can't be spoofed).
+- **[MED] Unbounded public-write text fields** — comments.postSlug,
+  reactions.targetId, contact name/subject were uncapped (junk/DoS vector).
+  FIX: length caps added to the schema (200/200/120/200; hashes 128).
+- Verified: createRules unchanged, schema valid, all hook events on the v0.23+
+  API, build/check/test green.

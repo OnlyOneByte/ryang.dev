@@ -71,8 +71,23 @@ fires Ntfy ("someone opened recruiter mode 👀"). All rules `null`.
 
 ## Hooks (`services/pocketbase/pb_hooks/`)
 
-1. **moderation.pb.js** — force `approved=false` + set `ipHash` on guestbook/comments create.
-2. **ntfy.pb.js** — POST to Ntfy on `contact_messages` create and `recruiter_unlocks` create.
+> **Requires Pocketbase ≥ 0.23.** Hooks use the v0.23+ JSVM API
+> (`onRecordCreateRequest`, `onRecordAfterCreateSuccess`, `e.next()`). On 0.22
+> they silently fail to register — and since `approved`/`read` are not field-
+> write-protected by rules, guestbook/comments could be self-approved. The
+> compose image is pinned ≥ 0.23 for exactly this reason.
+
+1. **moderation.pb.js** — server-side write hardening for public-write
+   collections (rules gate WHO writes, not WHICH fields):
+   - guestbook/comments: force `approved=false` + server-stamp `ipHash`
+   - contact_messages: force `read=false` + server-stamp `ipHash`
+   - reactions: server-stamp `sessionHash` (from hashed IP) so dedup can't be
+     defeated by a spoofed client session.
+2. **ntfy.pb.js** — POST to Ntfy on `contact_messages` + `recruiter_unlocks` create.
+
+Public-write text fields are length-capped in the schema (postSlug 200,
+targetId 200, contact name/subject 120/200, ipHash/sessionHash 128) to bound
+junk/oversized rows.
 
 ## Service-token pattern
 

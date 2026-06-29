@@ -8,19 +8,84 @@
     "updateRule": null,
     "deleteRule": null,
     "schema": [
-      { "name": "title", "type": "text", "required": true },
-      { "name": "slug", "type": "text", "required": true, "unique": true },
-      { "name": "summary", "type": "text", "required": false },
-      { "name": "description", "type": "editor", "required": false },
-      { "name": "tech", "type": "json", "required": false },
-      { "name": "repoUrl", "type": "url", "required": false },
-      { "name": "liveUrl", "type": "url", "required": false },
-      { "name": "coverImage", "type": "file", "required": false, "options": { "maxSelect": 1, "mimeTypes": ["image/png", "image/jpeg", "image/webp", "image/avif", "image/svg+xml"] } },
-      { "name": "featured", "type": "bool", "required": false },
-      { "name": "order", "type": "number", "required": false },
-      { "name": "status", "type": "select", "required": false, "options": { "maxSelect": 1, "values": ["active", "wip", "archived"] } }
+      {
+        "name": "title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "slug",
+        "type": "text",
+        "required": true,
+        "unique": true
+      },
+      {
+        "name": "summary",
+        "type": "text",
+        "required": false
+      },
+      {
+        "name": "description",
+        "type": "editor",
+        "required": false
+      },
+      {
+        "name": "tech",
+        "type": "json",
+        "required": false
+      },
+      {
+        "name": "repoUrl",
+        "type": "url",
+        "required": false
+      },
+      {
+        "name": "liveUrl",
+        "type": "url",
+        "required": false
+      },
+      {
+        "name": "coverImage",
+        "type": "file",
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "mimeTypes": [
+            "image/png",
+            "image/jpeg",
+            "image/webp",
+            "image/avif",
+            "image/svg+xml"
+          ]
+        }
+      },
+      {
+        "name": "featured",
+        "type": "bool",
+        "required": false
+      },
+      {
+        "name": "order",
+        "type": "number",
+        "required": false
+      },
+      {
+        "name": "status",
+        "type": "select",
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "values": [
+            "active",
+            "wip",
+            "archived"
+          ]
+        }
+      }
     ],
-    "indexes": ["CREATE INDEX idx_projects_featured_order ON projects (featured, `order`)"]
+    "indexes": [
+      "CREATE INDEX idx_projects_featured_order ON projects (featured, `order`)"
+    ]
   },
   {
     "name": "uses_items",
@@ -31,11 +96,40 @@
     "updateRule": null,
     "deleteRule": null,
     "schema": [
-      { "name": "category", "type": "select", "required": true, "options": { "maxSelect": 1, "values": ["hardware", "software", "dev-tools", "desk"] } },
-      { "name": "name", "type": "text", "required": true },
-      { "name": "description", "type": "text", "required": false },
-      { "name": "url", "type": "url", "required": false },
-      { "name": "order", "type": "number", "required": false }
+      {
+        "name": "category",
+        "type": "select",
+        "required": true,
+        "options": {
+          "maxSelect": 1,
+          "values": [
+            "hardware",
+            "software",
+            "dev-tools",
+            "desk"
+          ]
+        }
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "required": false
+      },
+      {
+        "name": "url",
+        "type": "url",
+        "required": false
+      },
+      {
+        "name": "order",
+        "type": "number",
+        "required": false
+      }
     ]
   },
   {
@@ -47,8 +141,16 @@
     "updateRule": null,
     "deleteRule": null,
     "schema": [
-      { "name": "focus", "type": "text", "required": true },
-      { "name": "note", "type": "editor", "required": false }
+      {
+        "name": "focus",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "note",
+        "type": "editor",
+        "required": false
+      }
     ]
   },
   {
@@ -60,11 +162,41 @@
     "updateRule": null,
     "deleteRule": null,
     "schema": [
-      { "name": "name", "type": "text", "required": true, "options": { "max": 60 } },
-      { "name": "message", "type": "text", "required": true, "options": { "max": 500 } },
-      { "name": "website", "type": "url", "required": false },
-      { "name": "approved", "type": "bool", "required": false },
-      { "name": "ipHash", "type": "text", "required": false, "system": false }
+      {
+        "name": "name",
+        "type": "text",
+        "required": true,
+        "options": {
+          "max": 60
+        }
+      },
+      {
+        "name": "message",
+        "type": "text",
+        "required": true,
+        "options": {
+          "max": 500
+        }
+      },
+      {
+        "name": "website",
+        "type": "url",
+        "required": false
+      },
+      {
+        "name": "approved",
+        "type": "bool",
+        "required": false
+      },
+      {
+        "name": "ipHash",
+        "type": "text",
+        "required": false,
+        "system": false,
+        "options": {
+          "max": 128
+        }
+      }
     ]
   },
   {
@@ -76,14 +208,57 @@
     "updateRule": null,
     "deleteRule": null,
     "schema": [
-      { "name": "postSlug", "type": "text", "required": true },
-      { "name": "author", "type": "text", "required": true, "options": { "max": 60 } },
-      { "name": "body", "type": "text", "required": true, "options": { "max": 1000 } },
-      { "name": "parent", "type": "relation", "required": false, "options": { "maxSelect": 1, "collectionId": "comments", "cascadeDelete": true } },
-      { "name": "approved", "type": "bool", "required": false },
-      { "name": "ipHash", "type": "text", "required": false }
+      {
+        "name": "postSlug",
+        "type": "text",
+        "required": true,
+        "options": {
+          "max": 200
+        }
+      },
+      {
+        "name": "author",
+        "type": "text",
+        "required": true,
+        "options": {
+          "max": 60
+        }
+      },
+      {
+        "name": "body",
+        "type": "text",
+        "required": true,
+        "options": {
+          "max": 1000
+        }
+      },
+      {
+        "name": "parent",
+        "type": "relation",
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "collectionId": "comments",
+          "cascadeDelete": true
+        }
+      },
+      {
+        "name": "approved",
+        "type": "bool",
+        "required": false
+      },
+      {
+        "name": "ipHash",
+        "type": "text",
+        "required": false,
+        "options": {
+          "max": 128
+        }
+      }
     ],
-    "indexes": ["CREATE INDEX idx_comments_postslug ON comments (postSlug)"]
+    "indexes": [
+      "CREATE INDEX idx_comments_postslug ON comments (postSlug)"
+    ]
   },
   {
     "name": "reactions",
@@ -94,12 +269,51 @@
     "updateRule": null,
     "deleteRule": null,
     "schema": [
-      { "name": "targetType", "type": "select", "required": true, "options": { "maxSelect": 1, "values": ["post", "project"] } },
-      { "name": "targetId", "type": "text", "required": true },
-      { "name": "emoji", "type": "select", "required": true, "options": { "maxSelect": 1, "values": ["thumbsup", "fire", "heart"] } },
-      { "name": "sessionHash", "type": "text", "required": true }
+      {
+        "name": "targetType",
+        "type": "select",
+        "required": true,
+        "options": {
+          "maxSelect": 1,
+          "values": [
+            "post",
+            "project"
+          ]
+        }
+      },
+      {
+        "name": "targetId",
+        "type": "text",
+        "required": true,
+        "options": {
+          "max": 200
+        }
+      },
+      {
+        "name": "emoji",
+        "type": "select",
+        "required": true,
+        "options": {
+          "maxSelect": 1,
+          "values": [
+            "thumbsup",
+            "fire",
+            "heart"
+          ]
+        }
+      },
+      {
+        "name": "sessionHash",
+        "type": "text",
+        "required": true,
+        "options": {
+          "max": 128
+        }
+      }
     ],
-    "indexes": ["CREATE UNIQUE INDEX idx_reactions_dedup ON reactions (sessionHash, targetId, emoji)"]
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_reactions_dedup ON reactions (sessionHash, targetId, emoji)"
+    ]
   },
   {
     "name": "contact_messages",
@@ -110,12 +324,48 @@
     "updateRule": null,
     "deleteRule": null,
     "schema": [
-      { "name": "name", "type": "text", "required": true },
-      { "name": "email", "type": "email", "required": true },
-      { "name": "subject", "type": "text", "required": false },
-      { "name": "body", "type": "text", "required": true, "options": { "max": 5000 } },
-      { "name": "read", "type": "bool", "required": false },
-      { "name": "ipHash", "type": "text", "required": false }
+      {
+        "name": "name",
+        "type": "text",
+        "required": true,
+        "options": {
+          "max": 120
+        }
+      },
+      {
+        "name": "email",
+        "type": "email",
+        "required": true
+      },
+      {
+        "name": "subject",
+        "type": "text",
+        "required": false,
+        "options": {
+          "max": 200
+        }
+      },
+      {
+        "name": "body",
+        "type": "text",
+        "required": true,
+        "options": {
+          "max": 5000
+        }
+      },
+      {
+        "name": "read",
+        "type": "bool",
+        "required": false
+      },
+      {
+        "name": "ipHash",
+        "type": "text",
+        "required": false,
+        "options": {
+          "max": 128
+        }
+      }
     ]
   },
   {
@@ -127,11 +377,40 @@
     "updateRule": null,
     "deleteRule": null,
     "schema": [
-      { "name": "section", "type": "select", "required": true, "options": { "maxSelect": 1, "values": ["cv", "salary", "references", "availability"] } },
-      { "name": "title", "type": "text", "required": true },
-      { "name": "body", "type": "editor", "required": false },
-      { "name": "order", "type": "number", "required": false },
-      { "name": "visible", "type": "bool", "required": false }
+      {
+        "name": "section",
+        "type": "select",
+        "required": true,
+        "options": {
+          "maxSelect": 1,
+          "values": [
+            "cv",
+            "salary",
+            "references",
+            "availability"
+          ]
+        }
+      },
+      {
+        "name": "title",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "body",
+        "type": "editor",
+        "required": false
+      },
+      {
+        "name": "order",
+        "type": "number",
+        "required": false
+      },
+      {
+        "name": "visible",
+        "type": "bool",
+        "required": false
+      }
     ]
   },
   {
@@ -143,9 +422,21 @@
     "updateRule": null,
     "deleteRule": null,
     "schema": [
-      { "name": "ipHash", "type": "text", "required": false },
-      { "name": "userAgent", "type": "text", "required": false },
-      { "name": "unlockedAt", "type": "date", "required": false }
+      {
+        "name": "ipHash",
+        "type": "text",
+        "required": false
+      },
+      {
+        "name": "userAgent",
+        "type": "text",
+        "required": false
+      },
+      {
+        "name": "unlockedAt",
+        "type": "date",
+        "required": false
+      }
     ]
   }
 ]
