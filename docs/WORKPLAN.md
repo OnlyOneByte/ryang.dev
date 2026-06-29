@@ -20,7 +20,8 @@ Legend: `[ ]` todo · `[~]` partial/scaffolded · `[x]` done
 - [x] docker-compose (9 services) + dev override + `.env.example`
 - [x] Router Caddyfile snippets
 - [x] 6 design docs + this work plan
-- [ ] **`bun install` builds clean** (after Bun is installed on the box)
+- [x] **`bun install` builds clean** — Bun 1.3.14; public-registry `bunfig.toml`;
+      `astro build` ✓ + `astro check` 0/0/0. (sitemap removed → returns in M4)
 - [ ] Add a minimal CI (GitHub Actions: `bun install` + `astro build` + `astro check`)
 
 ## M1 — Theme engine (finish the interactive layer)

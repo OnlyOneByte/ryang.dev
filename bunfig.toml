@@ -1,0 +1,5 @@
+# Personal project — always use the PUBLIC npm registry.
+# Overrides any inherited corp/CodeArtifact registry from a global ~/.npmrc so
+# `bun install` resolves public packages (astro, svelte, etc.) without 401s.
+[install]
+registry = "https://registry.npmjs.org"
