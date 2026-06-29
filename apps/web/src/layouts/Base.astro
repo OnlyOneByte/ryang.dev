@@ -27,7 +27,16 @@ const {
   ogTitle,
   ogImage,
 } = Astro.props;
-const theme = forceTheme ?? themeFromCookie(Astro.request.headers.get('cookie'));
+// Prerendered pages (e.g. blog posts) have no live request headers; guard the
+// read so SSR theming works on-demand and prerender falls back to default
+// (the no-flash inline script still applies the cookie theme client-side).
+let cookieHeader: string | null = null;
+try {
+  cookieHeader = Astro.request.headers.get('cookie');
+} catch {
+  cookieHeader = null;
+}
+const theme = forceTheme ?? themeFromCookie(cookieHeader);
 
 // Build a canonical absolute URL + the OG image (dynamic card endpoint unless
 // the page supplies its own). Astro.site is configured to https://ryang.dev.

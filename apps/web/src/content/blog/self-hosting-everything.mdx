@@ -1,0 +1,24 @@
+---
+title: Self-hosting everything (and why)
+description: The case for running your own stack — and the nine-container setup behind this site.
+pubDate: 2026-06-24
+tags: ['self-hosting', 'docker', 'homelab']
+---
+
+This site runs entirely on hardware I own. No serverless, no third-party SaaS in
+the hot path. The stack:
+
+- **Astro** (SSR) for the site itself — zero JS by default
+- **Pocketbase** for auth, data, files, realtime
+- **Umami** for cookieless analytics
+- **Wakapi** for self-hosted coding stats
+- **Cal.com**, **Ntfy**, **Gotenberg**, **Uptime Kuma** for the trimmings
+
+TLS terminates at my router's Caddy; the box only serves plain HTTP on the LAN.
+Everything is one `docker compose up -d`.
+
+## Why bother?
+
+Control, privacy, and — honestly — because it's fun. When the whole thing is
+yours, you can wire it together in ways a pile of SaaS subscriptions never lets
+you. The colophon page has an interactive diagram of how it all connects.

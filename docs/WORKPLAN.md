@@ -81,11 +81,14 @@ runtime-verified). PB-with-static-fallback so everything renders before M2.
 
 ## M4 — Blog (MDX)
 
-- [ ] Astro content collection in `src/content` (frontmatter schema)
-- [ ] `/blog` index + `/blog/[slug]` with Shiki highlight, reading time, auto-TOC
-- [ ] RSS feed + sitemap
-- [ ] Build-time OG image generation (satori) per page
-- [ ] `comments` wired (moderated; keyed on postSlug)
+- [x] Astro content collection in `src/content` (frontmatter schema + 2 posts)
+- [x] `/blog` index + `/blog/[slug]` (Shiki highlight via MDX, reading time, tags;
+      prerendered, theme-token prose styling)
+- [x] RSS feed (`/rss.xml`) — sitemap dropped (sitemap@3.7 crashes under this
+      SSR+prerender mix; RSS is the primary feed). OG cards per post via ogTitle.
+- [x] `comments` island wired (moderated; fail-soft if PB down). Browser-verified.
+- [ ] Build-time OG image generation already covered by the /og endpoint (M3)
+
 
 ## M5 — Recruiter gate  ✅ (end-to-end verified)
 

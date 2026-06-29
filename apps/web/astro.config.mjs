@@ -3,6 +3,9 @@ import { defineConfig } from 'astro/config';
 import node from '@astrojs/node';
 import svelte from '@astrojs/svelte';
 import mdx from '@astrojs/mdx';
+// @astrojs/sitemap@3.7 crashes at build:done under this SSR+prerender mix
+// (reduce-of-undefined); RSS (/rss.xml) is the primary feed. Revisit sitemap
+// if a fixed version lands. See docs/WORKPLAN.md M4.
 import tailwindcss from '@tailwindcss/vite';
 import { readFileSync } from 'node:fs';
 
@@ -31,10 +34,6 @@ function ttfArrayBuffer() {
     },
   };
 }
-// NOTE: @astrojs/sitemap is added back in M4 (blog). In full `output: 'server'`
-// mode with zero prerendered pages it crashes at build:done; it needs
-// prerenderable content + per-route prerender config, which lands with the blog.
-
 // SSR mode: the recruiter gate + server-token PB reads require a server.
 export default defineConfig({
   site: process.env.PUBLIC_SITE_URL || 'https://ryang.dev',

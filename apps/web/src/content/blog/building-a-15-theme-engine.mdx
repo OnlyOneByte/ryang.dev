@@ -1,0 +1,31 @@
+---
+title: Building a 15-theme engine with a Konami unlock
+description: How ryang.dev swaps 15 themes with one attribute and zero re-renders — plus a secret-theme easter egg.
+pubDate: 2026-06-20
+tags: ['astro', 'css', 'theming']
+---
+
+The whole theme engine rides on **CSS custom properties**. Every theme implements
+the same token contract (`--bg`, `--accent`, `--accent-ink`, …), and switching
+themes is just setting one attribute on `<html>`:
+
+```html
+<html data-theme="cyberpunk">
+```
+
+No re-render, no rebuild — the browser repaints from the new variable values.
+Components only ever read `var(--accent)`, never raw hex, so a theme is a pure
+token swap.
+
+## The Konami unlock
+
+Eight of the themes are always visible. The four *fun* ones (vaporwave, y2k,
+clay, zine) stay hidden until you enter `↑ ↑ ↓ ↓ ← → ← → B A`. The unlock is
+sticky (localStorage) and there's a mobile fallback — tap the footer status dot
+seven times.
+
+## No flash
+
+The correct theme renders **server-side** from a cookie, and a tiny inline
+`<head>` script reconciles before first paint. You never see a flash of the
+wrong theme, even cold.
