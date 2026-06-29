@@ -1,0 +1,61 @@
+---
+/**
+ * /private — the gated recruiter view. Reached only past the middleware cookie
+ * check. Content is read SERVER-SIDE via the PB service token (recruiter_content
+ * is all-null-rules, so it never reaches the browser unauthenticated). Pinned
+ * to a legible theme. Falls back to placeholder sections if the backend is down.
+ */
+import Base from '@/layouts/Base.astro';
+import { serverClient } from '@/lib/pb/client';
+
+type Section = { section: string; title: string; body: string; order: number };
+
+let sections: Section[] = [];
+let backendError = false;
+try {
+  const pb = await serverClient();
+  const rows = await pb.collection('recruiter_content').getFullList({
+    filter: 'visible = true',
+    sort: 'order',
+  });
+  sections = rows.map((r: any) => ({ section: r.section, title: r.title, body: r.body ?? '', order: r.order ?? 0 }));
+} catch {
+  backendError = true;
+  sections = [
+    { section: 'cv', title: 'Curriculum Vitae', body: '<p>Full CV loads here from Pocketbase once the stack is up and the recruiter_content collection is populated.</p>', order: 0 },
+    { section: 'availability', title: 'Availability', body: '<p>Open to senior/staff backend & infra roles.</p>', order: 1 },
+  ];
+}
+---
+
+<Base title="Recruiter — Angelo Yang" chrome={false} forceTheme="cyberpunk">
+  <main class="mx-auto max-w-3xl px-6 py-16 font-mono">
+    <div class="flex items-center justify-between">
+      <p class="text-sm" style="color:var(--accent)">$ cat ~/private/*</p>
+      <form method="POST" action="/api/logout">
+        <button type="submit" class="text-xs" style="color:var(--muted)">lock ↩</button>
+      </form>
+    </div>
+    <h1 class="mt-2 text-3xl font-extrabold" style="color:var(--text-strong)">
+      Recruiter mode <span style="color:var(--ok)">● unlocked</span>
+    </h1>
+
+    {backendError && (
+      <p class="mt-3 rounded-theme border px-3 py-2 text-xs"
+         style="border-color:var(--warn);color:var(--warn)">
+        Backend not reachable — showing placeholders. Populate recruiter_content in Pocketbase.
+      </p>
+    )}
+
+    {sections.map((s) => (
+      <section class="mt-8">
+        <h2 class="text-sm uppercase tracking-wider" style="color:var(--accent)">{s.title}</h2>
+        <article class="mt-2 text-sm leading-relaxed" style="color:var(--text)" set:html={s.body} />
+      </section>
+    ))}
+
+    <p class="mt-12 text-xs" style="color:var(--muted)">
+      This page is private — shared-passphrase gated, rendered server-side. Please don't redistribute.
+    </p>
+  </main>
+</Base>

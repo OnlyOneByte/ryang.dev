@@ -87,13 +87,22 @@ runtime-verified). PB-with-static-fallback so everything renders before M2.
 - [ ] Build-time OG image generation (satori) per page
 - [ ] `comments` wired (moderated; keyed on postSlug)
 
-## M5 — Recruiter gate
+## M5 — Recruiter gate  ✅ (end-to-end verified)
 
-- [ ] `scripts/hash-passphrase.ts` (argon2 hash generator)
-- [ ] `POST /api/unlock` — argon2 verify + signed cookie + rate-limit + lockout
-- [ ] Write `recruiter_unlocks` row → ntfy ping on success
-- [ ] `/private` server-renders `recruiter_content` via service token
-- [ ] Middleware: redirect `/private` → `/unlock` without a valid cookie
+- [x] `scripts/hash-passphrase.ts` (argon2id generator) — verified produces a hash
+- [x] `POST /api/unlock` — argon2 verify + signed httpOnly cookie + in-memory
+      rate-limit (8/15min) + generic errors (no oracle)
+- [x] Writes `recruiter_unlocks` row → ntfy hook on success (fail-soft if backend down)
+- [x] `/private` server-renders `recruiter_content` via PB service token
+      (fallback placeholders if backend down); pinned to a legible theme
+- [x] Middleware guards `/private*` → redirect to /unlock without a valid cookie
+- [x] `/api/logout` clears the cookie
+- [x] **E2E verified**: deny-no-cookie (302), wrong-pass (303 no cookie),
+      right-pass (303 + signed cookie), authed render (200 ● unlocked),
+      TAMPERED cookie rejected (302). 0 server errors.
+
+Session = HMAC-SHA256-signed token (SESSION_SECRET), constant-time verify,
+30-day expiry. No DB session table — the signed cookie is the proof.
 
 ## M6 — Live data widgets (server-fetched, cached)
 
