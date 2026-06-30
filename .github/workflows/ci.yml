@@ -43,3 +43,30 @@ jobs:
         run: |
           bunx @lhci/cli@0.14.x autorun --config=apps/web/lighthouserc.json || true
         continue-on-error: true
+
+  # Proves the Pocketbase moderation hook actually ENFORCES at runtime — a green
+  # `build` job does NOT (hooks load from disk, run in an isolated JSVM, and the
+  # schema is imported, none of which the build exercises). This job builds the
+  # baked image (so it tests exactly what ships), boots it, and runs the
+  # self-approve probe. It catches: wrong --hooksDir path, hook runtime throws,
+  # and a pre-0.23-format schema that imports as empty-fielded shells.
+  pocketbase-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build baked Pocketbase image
+        run: docker build -f docker/pocketbase.Dockerfile -t ryangdev-pocketbase:ci .
+
+      - name: Boot Pocketbase
+        run: docker run -d -p 8090:8090 --name pb ryangdev-pocketbase:ci
+
+      - name: Smoke test (boots PB, imports schema, self-approve probe)
+        env:
+          PB_URL: http://localhost:8090
+          PB_CONTAINER: pb
+        run: bash services/pocketbase/smoke-test.sh
+
+      - name: Dump PB logs on failure
+        if: failure()
+        run: docker logs pb || true

@@ -27,12 +27,28 @@ docker compose -f infra/docker-compose.yml up -d
 ## 2. Bootstrap Pocketbase **[you]**
 
 ```bash
+# Binary is /usr/local/bin/pocketbase; --dir=/pb_data targets the server's data
+# dir (this image runs `serve --dir=/pb_data`). Without --dir the superuser is
+# written to a cwd-relative dir the running server never reads → auth fails.
 docker compose -f infra/docker-compose.yml exec pocketbase \
-  /pb/pocketbase superuser create "$PB_SERVICE_EMAIL" "$PB_SERVICE_PASSWORD"
+  /usr/local/bin/pocketbase superuser create "$PB_SERVICE_EMAIL" "$PB_SERVICE_PASSWORD" --dir=/pb_data
 ```
 Then PB admin UI → Settings → Import collections → paste
-`services/pocketbase/pb_schema.json`. Add a couple `projects`, `uses_items`,
-a `now` row, and your `recruiter_content` sections.
+`services/pocketbase/pb_schema.json`.
+
+Seed the public-safe content (projects / uses_items / now) — idempotent, skips
+non-empty collections:
+
+```bash
+PB_URL=https://pb.ryang.dev \
+PB_SUPERUSER_EMAIL="$PB_SERVICE_EMAIL" PB_SUPERUSER_PASSWORD="$PB_SERVICE_PASSWORD" \
+  bun run services/pocketbase/seed.ts
+```
+
+`recruiter_content` is **not** seeded by that script (it's gated). Fill in
+`services/pocketbase/pb_seed/recruiter_content.template.json` privately and
+import it via the admin UI — only `cv` + `availability` ever reach the public
+`/resume.pdf`; `salary`/`references` stay on `/private`.
 
 ## 3. Wire the public env into the web build **[you]**
 

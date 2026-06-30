@@ -1,6 +1,10 @@
 # Pocketbase Schema
 
-8 collections across 3 privacy tiers. Importable via `services/pocketbase/pb_schema.json`.
+9 collections across 3 privacy tiers. Importable via `services/pocketbase/pb_schema.json`
+(0.28-format `fields`; verified import-clean against the pinned image by the
+`pocketbase-smoke` CI job). Public-safe content seeds from
+`services/pocketbase/pb_seed/<collection>.json` via `bun run services/pocketbase/seed.ts`;
+gated `recruiter_content` ships only as a `.template.json` to fill in privately.
 Live cursors (`presence`) are **deferred to post-v1** (documented at the bottom).
 
 ## Privacy tiers (API rules)

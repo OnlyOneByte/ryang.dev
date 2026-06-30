@@ -20,11 +20,18 @@ docker compose -f infra/docker-compose.yml up -d        # bring up all 9 service
 ## Pocketbase bootstrap (once)
 
 ```bash
+# Binary lives at /usr/local/bin/pocketbase; pass --dir=/pb_data so the
+# superuser lands in the SAME data dir the server serves from (this image runs
+# `serve --dir=/pb_data`; omitting it writes to a cwd-relative dir the server
+# never reads → auth fails).
 docker compose -f infra/docker-compose.yml exec pocketbase \
-  /pb/pocketbase superuser create "$PB_SERVICE_EMAIL" "$PB_SERVICE_PASSWORD"
+  /usr/local/bin/pocketbase superuser create "$PB_SERVICE_EMAIL" "$PB_SERVICE_PASSWORD" --dir=/pb_data
 # then: pb.ryang.dev/_/  →  Settings → Import collections →
 #       paste services/pocketbase/pb_schema.json
-# seed: a few projects, uses_items, a `now` row, recruiter_content sections
+# seed public-safe content (idempotent; skips non-empty collections):
+#   PB_URL=https://pb.ryang.dev PB_SUPERUSER_EMAIL=$PB_SERVICE_EMAIL \
+#   PB_SUPERUSER_PASSWORD=$PB_SERVICE_PASSWORD bun run services/pocketbase/seed.ts
+# recruiter_content is GATED → fill pb_seed/recruiter_content.template.json + import privately
 ```
 
 > ⚠️ `recruiter_content` sections: only `cv` + `availability` appear in the

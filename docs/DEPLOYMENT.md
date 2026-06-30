@@ -27,9 +27,11 @@ docker compose -f infra/docker-compose.yml up -d
 Then, one-time Pocketbase bootstrap:
 
 ```bash
-# create the superuser the app authenticates as
+# create the superuser the app authenticates as. Binary: /usr/local/bin/pocketbase.
+# --dir=/pb_data targets the server's data dir (this image runs `serve --dir=/pb_data`);
+# omitting it writes to a cwd-relative dir the server never reads → auth fails.
 docker compose -f infra/docker-compose.yml exec pocketbase \
-  /pb/pocketbase superuser create "$PB_SERVICE_EMAIL" "$PB_SERVICE_PASSWORD"
+  /usr/local/bin/pocketbase superuser create "$PB_SERVICE_EMAIL" "$PB_SERVICE_PASSWORD" --dir=/pb_data
 # import the schema (via admin UI → Settings → Import collections,
 # paste services/pocketbase/pb_schema.json)
 ```

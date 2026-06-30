@@ -1,0 +1,6 @@
+[
+  { "section": "cv",           "title": "Curriculum Vitae",    "body": "<p>FILL IN — public-allowlisted (appears in /resume.pdf).</p>",        "order": 1, "visible": true },
+  { "section": "availability", "title": "Availability",        "body": "<p>FILL IN — public-allowlisted.</p>",                                "order": 2, "visible": true },
+  { "section": "salary",       "title": "Salary Expectations", "body": "<p>FILL IN — GATED, /private only, NEVER in /resume.pdf.</p>",         "order": 3, "visible": true },
+  { "section": "references",   "title": "References",          "body": "<p>FILL IN — GATED, /private only.</p>",                              "order": 4, "visible": true }
+]

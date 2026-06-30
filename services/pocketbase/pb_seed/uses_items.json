@@ -1,0 +1,10 @@
+[
+  { "category": "hardware", "name": "Homelab Docker box", "description": "Always-on host for the self-hosted stack", "order": 1 },
+  { "category": "hardware", "name": "Router w/ Caddy", "description": "TLS termination + reverse proxy for every subdomain", "order": 2 },
+  { "category": "software", "name": "Pocketbase", "description": "Auth, SQLite, file storage, realtime, admin UI", "url": "https://pocketbase.io", "order": 3 },
+  { "category": "software", "name": "Umami", "description": "Cookieless, privacy-first analytics", "url": "https://umami.is", "order": 4 },
+  { "category": "software", "name": "Wakapi", "description": "Self-hosted WakaTime-compatible coding stats", "url": "https://wakapi.dev", "order": 5 },
+  { "category": "dev-tools", "name": "Bun", "description": "Runtime, package manager, bundler, test runner", "url": "https://bun.sh", "order": 6 },
+  { "category": "dev-tools", "name": "Astro", "description": "Zero-JS-by-default SSR framework", "url": "https://astro.build", "order": 7 },
+  { "category": "dev-tools", "name": "Neovim", "description": "Where the hours go", "order": 8 }
+]

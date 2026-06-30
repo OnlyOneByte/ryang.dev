@@ -1,0 +1,35 @@
+[
+  {
+    "title": "VROOM",
+    "slug": "vroom",
+    "summary": "Self-hosted vehicle cost tracker — fuel, maintenance, financing, insurance, analytics.",
+    "description": "<p>A full vehicle cost-of-ownership tracker: fuel economy, maintenance schedules, financing/lease math, insurance terms, and a TCO analytics engine. Offline-first with conflict-resolving sync, a money-as-integer-cents data model, multi-vehicle sharing, and import from Fuelly/Fuelio/Drivvo. 1700+ backend tests.</p>",
+    "tech": ["Svelte", "TypeScript", "SQLite", "Drizzle"],
+    "repoUrl": "https://github.com/OnlyOneByte/VROOM",
+    "featured": true,
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "title": "angryang.dev",
+    "slug": "angryang-dev",
+    "summary": "This site — a self-hosted Astro portfolio with a 15-theme engine.",
+    "description": "<p>The site you're on. Astro SSR on Bun, Pocketbase backend, a 15-theme CSS-variable engine with a Konami-code unlock, a shared-password recruiter gate, dynamic OG share cards, and a 9-container self-hosted companion stack — all behind my own router's Caddy.</p>",
+    "tech": ["Astro", "Bun", "Pocketbase", "Docker"],
+    "repoUrl": "https://github.com/OnlyOneByte/angryang.dev",
+    "liveUrl": "https://ryang.dev",
+    "featured": true,
+    "order": 2,
+    "status": "wip"
+  },
+  {
+    "title": "Homelab",
+    "slug": "homelab",
+    "summary": "Self-hosted services on Docker behind a single reverse proxy.",
+    "description": "<p>The infrastructure everything else runs on: a Docker host with Caddy terminating TLS at the router, privacy-first analytics, self-hosted coding stats, status monitoring, and automated backups. Reproducible via docker compose.</p>",
+    "tech": ["Docker", "Caddy", "Linux"],
+    "featured": false,
+    "order": 3,
+    "status": "active"
+  }
+]
