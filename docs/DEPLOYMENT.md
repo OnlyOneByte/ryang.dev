@@ -36,6 +36,33 @@ docker compose -f infra/docker-compose.yml exec pocketbase \
 # paste services/pocketbase/pb_schema.json)
 ```
 
+### Finch / Apple Silicon (Mac)
+
+The container tool is parameterized — `bun run stack:*` uses `${CONTAINER_TOOL:-docker}`.
+On a Mac with [Finch](https://github.com/runfinch/finch) instead of Docker:
+
+```bash
+finch vm init && finch vm start          # one-time: provision + start the Lima VM
+CONTAINER_TOOL=finch bun run stack:up     # or: finch compose -f infra/docker-compose.yml up -d
+```
+
+All `docker compose …` commands in these docs work verbatim as `finch compose …`
+(including `exec`, `logs`, `pull`). The `CONTAINER_TOOL` env var only affects the
+`bun run stack:*` convenience scripts.
+
+**cal.com is amd64-only** (no arm64 image). On Apple Silicon it runs only under
+slow emulation and is the most fragile service to first-boot. Since `/cal` is
+fail-soft (shows a "book via /contact" fallback when `PUBLIC_CAL_URL` is unset),
+bring up everything *except* cal:
+
+```bash
+CONTAINER_TOOL=finch bun run stack:up:lite   # web + pocketbase + umami(+db) + wakapi + ntfy + kuma + gotenberg
+```
+
+> If umami/cal flake on first boot, your Finch may predate compose
+> `depends_on: condition: service_healthy` support — check `finch --version` and
+> update (the DB healthcheck gating that prevents the race is in the compose file).
+
 ## 2. Router Caddyfile
 
 Add the snippets from `infra/caddy/ryang.dev.Caddyfile` to your router's Caddy

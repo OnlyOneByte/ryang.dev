@@ -7,6 +7,12 @@
 #
 #   docker compose -f infra/docker-compose.yml up -d
 #
+# Container tool is parameterized: `bun run stack:up` uses ${CONTAINER_TOOL:-docker}.
+# On a Mac with Finch: `CONTAINER_TOOL=finch bun run stack:up` (or `finch compose
+# -f infra/docker-compose.yml up -d`). NOTE: cal.com is amd64-only — on Apple
+# Silicon use `bun run stack:up:lite` (everything except cal/cal-db; /cal is
+# fail-soft) or accept slow emulation. See docs/DEPLOYMENT.md "Finch / Apple Silicon".
+#
 # Image tags are pinned via *_TAG vars in .env (default to a sensible tag). For
 # real supply-chain safety, pin to a DIGEST in .env:
 #   POCKETBASE_TAG=sha256:<digest>   (see docs/CHEATSHEET.md "pin images").

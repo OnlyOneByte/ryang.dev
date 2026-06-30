@@ -3,7 +3,11 @@
 ## Prerequisites
 
 - **Bun** ≥ 1.1 — `curl -fsSL https://bun.sh/install | bash`
-- **Docker** + `docker compose` (for the backing services)
+- A container engine with Compose — **Docker** or **Finch** (Mac). The
+  `bun run stack:*` scripts use `${CONTAINER_TOOL:-docker}`, so on Finch prefix
+  with `CONTAINER_TOOL=finch`. Only needed for the backing services; the web app
+  runs standalone (everything is fail-soft). See `docs/DEPLOYMENT.md` →
+  "Finch / Apple Silicon" (incl. the cal.com amd64-only caveat).
 
 ## Install
 

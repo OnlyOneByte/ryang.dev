@@ -3,6 +3,12 @@
 One-screen reference for deploying `angryang.dev` on the Arcane Docker box.
 Full detail in `DEPLOYMENT.md` / `LAUNCH.md`; this is the fast path.
 
+> **Finch / other tool?** Commands below say `docker`, but the container tool is
+> parameterized. Either prefix the `bun run stack:*` scripts with
+> `CONTAINER_TOOL=finch`, or just read `docker` as `finch` in the raw commands
+> (`finch compose ...` is drop-in). On Apple Silicon also see the cal.com caveat
+> in `DEPLOYMENT.md` → use `bun run stack:up:lite`.
+
 ## First deploy
 
 ```bash

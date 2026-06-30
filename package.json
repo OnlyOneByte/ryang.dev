@@ -11,9 +11,10 @@
     "dev": "bun run --filter web dev",
     "build": "bun run --filter web build",
     "preview": "bun run --filter web preview",
-    "stack:up": "docker compose -f infra/docker-compose.yml up -d",
-    "stack:down": "docker compose -f infra/docker-compose.yml down",
-    "stack:dev": "docker compose -f infra/docker-compose.yml -f infra/docker-compose.dev.yml up"
+    "stack:up": "${CONTAINER_TOOL:-docker} compose -f infra/docker-compose.yml up -d",
+    "stack:up:lite": "${CONTAINER_TOOL:-docker} compose -f infra/docker-compose.yml up -d web pocketbase umami umami-db wakapi ntfy uptime-kuma gotenberg",
+    "stack:down": "${CONTAINER_TOOL:-docker} compose -f infra/docker-compose.yml down",
+    "stack:dev": "${CONTAINER_TOOL:-docker} compose -f infra/docker-compose.yml -f infra/docker-compose.dev.yml up"
   },
   "engines": {
     "bun": ">=1.1.0"
