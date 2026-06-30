@@ -14,7 +14,37 @@ The router maps each public subdomain to a LAN `host:port`. The box binds
 service ports on the LAN interface only; nothing is publicly exposed except via
 the router.
 
-## 1. First-time setup
+## 0. Build from source vs. pull prebuilt images
+
+There are **two** ways to bring up the stack:
+
+- **Build from source (this repo):** `infra/docker-compose.yml` **builds** the web
+  image from the repo root (`context: ..`). `bun run stack:up` / `stack:up:lite` spin
+  up the full stack from source — no registry needed. Use this for local dev, or on
+  any single host where you're happy to keep the source checked out and build there.
+- **Pull prebuilt images:** for a host that orchestrates from a separate location (a
+  different repo, a deployment tool, etc.) and can't reference this repo's build
+  context, CI publishes ready-to-run images to GHCR on every merge to `main`:
+
+  | image | built from | tags |
+  |---|---|---|
+  | `ghcr.io/<owner>/<repo>/web` | `docker/web.Dockerfile` | `main`, `latest`, `sha-<short>` |
+  | `ghcr.io/<owner>/<repo>/pocketbase` | `docker/pocketbase.Dockerfile` (hooks baked in) | `main`, `latest`, `sha-<short>` |
+
+  The publish jobs (`.github/workflows/ci.yml` → `publish-web` / `publish-pocketbase`)
+  are gated on the `build` and `pocketbase-smoke` jobs, so an image ships only when
+  type-check, contrast, tests, and the moderation-hook self-approve probe are green.
+  A consuming compose just references the image instead of `build:`; roll forward with
+  `docker compose pull && up -d` (or a tool like Watchtower). Because `PUBLIC_*` config
+  is read at runtime (`/env.js`), one published image is repointed at any backend purely
+  via container env — no rebuild. (`PUBLIC_BUILD_SHA`, the footer deploy stamp, is the
+  one value baked at build; CI passes it as a `--build-arg`.)
+
+> The image path follows `${{ github.repository }}`, so the GHCR namespace tracks the
+> repo's `<owner>/<repo>` automatically — a rename just moves the images and consumers
+> update their image ref to match.
+
+## 1. First-time setup (local / reference)
 
 ```bash
 git clone git@github.com:OnlyOneByte/ryang.dev.git

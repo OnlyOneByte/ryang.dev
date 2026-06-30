@@ -24,6 +24,12 @@ COPY --from=deps /repo/apps/web/node_modules ./apps/web/node_modules
 # source — it does NOT clobber the installed node_modules from the deps stage.
 COPY . .
 WORKDIR /repo/apps/web
+# Deploy stamp for the build-info footer. astro.config reads process.env at build
+# time (import.meta.env.PUBLIC_BUILD_SHA define), so it MUST be set in THIS stage,
+# not at runtime. CI passes --build-arg PUBLIC_BUILD_SHA=${{ github.sha }}; a local
+# `docker build` (stack:up) with no arg falls back to "dev".
+ARG PUBLIC_BUILD_SHA=dev
+ENV PUBLIC_BUILD_SHA=$PUBLIC_BUILD_SHA
 RUN bun run build
 
 # ---- runtime: minimal server image ----
