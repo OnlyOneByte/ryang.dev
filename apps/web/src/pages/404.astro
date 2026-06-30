@@ -1,6 +1,18 @@
 ---
 import Base from '@/layouts/Base.astro';
 import Game404 from '@/lib/fun/Game404.svelte';
+import { publicClient } from '@/lib/pb/client';
+
+// Top scores (approved only — listRule enforces it). Fail-soft: PB down → hidden.
+type Score = { initials: string; score: number };
+let top: Score[] = [];
+try {
+  const pb = publicClient();
+  const rows = await pb.collection('scores').getList(1, 10, { filter: 'approved = true', sort: '-score' });
+  top = rows.items.map((r: any) => ({ initials: r.initials, score: r.score }));
+} catch {
+  top = [];
+}
 ---
 
 <Base title="404 — Angelo Yang" description="Page not found (but here's a game).">
@@ -11,6 +23,23 @@ import Game404 from '@/lib/fun/Game404.svelte';
       That page doesn't exist. While you're here — catch some bytes.
     </p>
     <Game404 client:load />
-    <a href="/" class="mt-6 inline-block text-sm" style="color:var(--accent)">← back home</a>
+
+    {top.length > 0 && (
+      <section class="mt-8">
+        <h2 class="text-sm uppercase tracking-wider" style="color:var(--accent)">high scores</h2>
+        <ol class="mt-3 space-y-1 text-sm">
+          {top.map((s, i) => (
+            <li class="flex items-baseline gap-3">
+              <span style="color:var(--muted)">{String(i + 1).padStart(2, '0')}</span>
+              <span class="font-bold" style="color:var(--text-strong)">{s.initials}</span>
+              <span class="flex-1 border-b" style="border-color:var(--border)"></span>
+              <span style="color:var(--accent)">{s.score}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+    )}
+
+    <a href="/" class="mt-8 inline-block text-sm" style="color:var(--accent)">← back home</a>
   </main>
 </Base>

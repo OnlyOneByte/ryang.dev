@@ -1,8 +1,15 @@
 # Spec — 404 Game Leaderboard + Unlock (egg #7)
 
-> Status: SPEC (not built). Turn the existing "catch the falling bytes" 404 game
-> (`lib/fun/Game404.svelte`) into something with stakes: a high-score table and
-> a beat-the-threshold theme unlock. Public-safe.
+> Status: ✅ BUILT. The "catch the falling bytes" 404 game now has stakes: a
+> moderated high-score table and a catch-30 theme unlock. Public-safe.
+>
+> Shipped: `scores` PB collection (moderated) + `moderation.pb.js` hook +
+> `score` index · `POST /api/score` (clamp + rate-limit + service write) ·
+> leaderboard on `404.astro` (fail-soft) · submit UI + `UNLOCK_THRESHOLD=30` in
+> `Game404.svelte` · `scores` self-approve probe added to `smoke-test.sh`.
+> Verified e2e: spoofed `approved:true` forced false + unlisted; valid submit
+> stored `approved=false`; absurd score clamped; leaderboard renders approved
+> rows. (Original spec below.)
 
 ## Goal
 

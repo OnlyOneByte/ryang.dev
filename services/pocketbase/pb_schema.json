@@ -1153,5 +1153,86 @@
     "created": "2026-06-30 17:38:51.978Z",
     "updated": "2026-06-30 17:38:51.978Z",
     "system": false
+  },
+  {
+    "id": "pbc_809716240",
+    "listRule": "approved = true",
+    "viewRule": "approved = true",
+    "createRule": "",
+    "updateRule": null,
+    "deleteRule": null,
+    "name": "scores",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1574524527",
+        "max": 3,
+        "min": 0,
+        "name": "initials",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "number848901969",
+        "max": null,
+        "min": null,
+        "name": "score",
+        "onlyInt": false,
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "number"
+      },
+      {
+        "hidden": false,
+        "id": "bool2086131741",
+        "name": "approved",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1094208582",
+        "max": 128,
+        "min": 0,
+        "name": "sessionHash",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_scores_score ON scores (score)"
+    ],
+    "created": "2026-06-30 19:01:44.420Z",
+    "updated": "2026-06-30 19:01:44.420Z",
+    "system": false
   }
 ]

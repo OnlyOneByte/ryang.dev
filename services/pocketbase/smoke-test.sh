@@ -86,4 +86,14 @@ COUNT="$(curl -fsS "$PB_URL/api/collections/guestbook/records?perPage=50" \
 [ "$COUNT" = "0" ] || fail "smoke-probe row is publicly listable ($COUNT) — moderation/listRule not enforcing"
 pass "probe row not publicly listable"
 
+# ---- 6. scores collection: same moderation contract (404 leaderboard) ----
+SRESP="$(curl -fsS -X POST "$PB_URL/api/collections/scores/records" \
+  -H 'Content-Type: application/json' \
+  -d '{"initials":"HAX","score":999999,"approved":true}')"
+SAPP="$(echo "$SRESP" | python3 -c "import sys,json;print(json.load(sys.stdin).get('approved'))" 2>/dev/null || echo "ERR")"
+[ "$SAPP" = "False" ] || fail "scores self-approve probe returned approved=$SAPP (expected False) — scores hook not enforcing"
+SCOUNT="$(curl -fsS "$PB_URL/api/collections/scores/records?perPage=50" | grep -c '"initials":"HAX"' || true)"
+[ "$SCOUNT" = "0" ] || fail "spoofed score is publicly listable ($SCOUNT) — would let a forged 999999 top the board"
+pass "scores: spoofed self-approve forced false + not listed"
+
 echo "✓✓ Pocketbase smoke test PASSED"

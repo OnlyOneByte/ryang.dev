@@ -63,3 +63,17 @@ onRecordCreateRequest((e) => {
   } catch (_) { /* best-effort */ }
   e.next();
 }, 'reactions');
+
+// scores (404 game leaderboard): client-submitted + spoofable → force
+// approved=false (you approve in admin UI) and server-stamp sessionHash. A
+// posted score is NOT public until approved, so a forged 9999999 can't top the
+// board on its own.
+onRecordCreateRequest((e) => {
+  e.record.set('approved', false);
+  try {
+    const ip = (typeof e.realIP === 'function' ? e.realIP() : e.realIP) || '';
+    const day = new Date().toISOString().slice(0, 10);
+    e.record.set('sessionHash', $security.sha256(`${ip}|${day}|ryang`));
+  } catch (_) { /* best-effort */ }
+  e.next();
+}, 'scores');
