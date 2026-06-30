@@ -1,4 +1,4 @@
-# Router Caddy snippets for angryang.dev.
+# Router Caddy snippets for ryang.dev.
 # These live on your ROUTER (the external Caddy that terminates TLS), NOT on the
 # Docker box. Replace BOX_LAN_IP with the Docker box's LAN address, then reload
 # Caddy. Caddy auto-provisions Let's Encrypt certs for each hostname.
