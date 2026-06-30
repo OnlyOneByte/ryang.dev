@@ -9,28 +9,34 @@
  * WHICH FIELDS they may set. A public writer (createRule = "") could otherwise
  * POST approved=true, a forged ipHash, or read=true. We strip/override those
  * privileged fields here so the client can never set them.
+ *
+ * JSVM SCOPING (critical): each handler callback is serialized and executed in
+ * its OWN isolated runtime — module-scope functions are NOT visible inside it
+ * (you get "ReferenceError: <fn> is not defined" at runtime, never at build).
+ * So every helper MUST be defined INSIDE the handler. Likewise `e.realIP` is a
+ * METHOD: call `e.realIP()`, not the bare property (which is a function ref).
+ * Both verified against the pinned 0.28.4 image with a live self-approve probe.
  */
 
-function hashIp(e) {
-  // Coarse, salted, daily-rotating hash — abuse/rate-limit signal, no raw PII.
-  const ip = e.realIP || (e.httpContext && e.httpContext.realIP) || '';
-  const day = new Date().toISOString().slice(0, 10);
-  return $security.sha256(`${ip}|${day}|ryang`);
-}
-
-// Force moderation: client can never self-approve, and ipHash is server-stamped.
-function moderate(e) {
-  e.record.set('approved', false);
-  try { e.record.set('ipHash', hashIp(e)); } catch (_) { /* best-effort */ }
-}
-
+// Force moderation on append-style public collections: the client can never
+// self-approve, and ipHash is stamped server-side from the real client IP.
 onRecordCreateRequest((e) => {
-  moderate(e);
+  e.record.set('approved', false);
+  try {
+    const ip = (typeof e.realIP === 'function' ? e.realIP() : e.realIP) || '';
+    const day = new Date().toISOString().slice(0, 10);
+    e.record.set('ipHash', $security.sha256(`${ip}|${day}|ryang`));
+  } catch (_) { /* best-effort: never block the write on hashing */ }
   e.next();
 }, 'guestbook');
 
 onRecordCreateRequest((e) => {
-  moderate(e);
+  e.record.set('approved', false);
+  try {
+    const ip = (typeof e.realIP === 'function' ? e.realIP() : e.realIP) || '';
+    const day = new Date().toISOString().slice(0, 10);
+    e.record.set('ipHash', $security.sha256(`${ip}|${day}|ryang`));
+  } catch (_) { /* best-effort */ }
   e.next();
 }, 'comments');
 
@@ -38,7 +44,11 @@ onRecordCreateRequest((e) => {
 // ipHash. Stamp ipHash server-side; force read=false regardless of input.
 onRecordCreateRequest((e) => {
   e.record.set('read', false);
-  try { e.record.set('ipHash', hashIp(e)); } catch (_) { /* best-effort */ }
+  try {
+    const ip = (typeof e.realIP === 'function' ? e.realIP() : e.realIP) || '';
+    const day = new Date().toISOString().slice(0, 10);
+    e.record.set('ipHash', $security.sha256(`${ip}|${day}|ryang`));
+  } catch (_) { /* best-effort */ }
   e.next();
 }, 'contact_messages');
 
@@ -46,6 +56,10 @@ onRecordCreateRequest((e) => {
 // can't be defeated by a client spoofing a fresh sessionHash each request.
 // (Per-IP/day granularity — good enough for vanity counts; not ballot-grade.)
 onRecordCreateRequest((e) => {
-  try { e.record.set('sessionHash', hashIp(e)); } catch (_) { /* best-effort */ }
+  try {
+    const ip = (typeof e.realIP === 'function' ? e.realIP() : e.realIP) || '';
+    const day = new Date().toISOString().slice(0, 10);
+    e.record.set('sessionHash', $security.sha256(`${ip}|${day}|ryang`));
+  } catch (_) { /* best-effort */ }
   e.next();
 }, 'reactions');

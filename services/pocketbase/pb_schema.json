@@ -1,442 +1,886 @@
 [
   {
-    "name": "projects",
-    "type": "base",
+    "id": "pbc_484305853",
     "listRule": "",
     "viewRule": "",
     "createRule": null,
     "updateRule": null,
     "deleteRule": null,
-    "schema": [
+    "name": "projects",
+    "type": "base",
+    "fields": [
       {
-        "name": "title",
-        "type": "text",
-        "required": true
-      },
-      {
-        "name": "slug",
-        "type": "text",
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
         "required": true,
-        "unique": true
+        "system": true,
+        "type": "text"
       },
       {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text724990059",
+        "max": 0,
+        "min": 0,
+        "name": "title",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text2560465762",
+        "max": 0,
+        "min": 0,
+        "name": "slug",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text3458754147",
+        "max": 0,
+        "min": 0,
         "name": "summary",
-        "type": "text",
-        "required": false
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
       },
       {
+        "convertURLs": false,
+        "hidden": false,
+        "id": "editor1843675174",
+        "maxSize": 0,
         "name": "description",
-        "type": "editor",
-        "required": false
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "editor"
       },
       {
+        "hidden": false,
+        "id": "json2260480018",
+        "maxSize": 0,
         "name": "tech",
-        "type": "json",
-        "required": false
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "json"
       },
       {
+        "exceptDomains": null,
+        "hidden": false,
+        "id": "url391077203",
         "name": "repoUrl",
-        "type": "url",
-        "required": false
+        "onlyDomains": null,
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "url"
       },
       {
+        "exceptDomains": null,
+        "hidden": false,
+        "id": "url3079761791",
         "name": "liveUrl",
-        "type": "url",
-        "required": false
+        "onlyDomains": null,
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "url"
       },
       {
+        "hidden": false,
+        "id": "file1829049001",
+        "maxSelect": 1,
+        "maxSize": 0,
+        "mimeTypes": [
+          "image/png",
+          "image/jpeg",
+          "image/webp",
+          "image/avif",
+          "image/svg+xml"
+        ],
         "name": "coverImage",
-        "type": "file",
+        "presentable": false,
+        "protected": false,
         "required": false,
-        "options": {
-          "maxSelect": 1,
-          "mimeTypes": [
-            "image/png",
-            "image/jpeg",
-            "image/webp",
-            "image/avif",
-            "image/svg+xml"
-          ]
-        }
+        "system": false,
+        "thumbs": null,
+        "type": "file"
       },
       {
+        "hidden": false,
+        "id": "bool1007901140",
         "name": "featured",
-        "type": "bool",
-        "required": false
-      },
-      {
-        "name": "order",
-        "type": "number",
-        "required": false
-      },
-      {
-        "name": "status",
-        "type": "select",
+        "presentable": false,
         "required": false,
-        "options": {
-          "maxSelect": 1,
-          "values": [
-            "active",
-            "wip",
-            "archived"
-          ]
-        }
+        "system": false,
+        "type": "bool"
+      },
+      {
+        "hidden": false,
+        "id": "number4113142680",
+        "max": null,
+        "min": null,
+        "name": "order",
+        "onlyInt": false,
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "number"
+      },
+      {
+        "hidden": false,
+        "id": "select2063623452",
+        "maxSelect": 1,
+        "name": "status",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "select",
+        "values": [
+          "active",
+          "wip",
+          "archived"
+        ]
       }
     ],
     "indexes": [
-      "CREATE INDEX idx_projects_featured_order ON projects (featured, `order`)"
-    ]
+      "CREATE INDEX idx_projects_featured_order ON projects (featured, `order`)",
+      "CREATE UNIQUE INDEX idx_projects_slug_uniq ON projects (`slug`)"
+    ],
+    "created": "2026-06-30 16:35:24.331Z",
+    "updated": "2026-06-30 16:35:24.331Z",
+    "system": false
   },
   {
+    "id": "pbc_1528506673",
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
     "name": "uses_items",
     "type": "base",
-    "listRule": "",
-    "viewRule": "",
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "schema": [
+    "fields": [
       {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "select105650625",
+        "maxSelect": 1,
         "name": "category",
+        "presentable": false,
+        "required": true,
+        "system": false,
         "type": "select",
-        "required": true,
-        "options": {
-          "maxSelect": 1,
-          "values": [
-            "hardware",
-            "software",
-            "dev-tools",
-            "desk"
-          ]
-        }
+        "values": [
+          "hardware",
+          "software",
+          "dev-tools",
+          "desk"
+        ]
       },
       {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1579384326",
+        "max": 0,
+        "min": 0,
         "name": "name",
-        "type": "text",
-        "required": true
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
       },
       {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1843675174",
+        "max": 0,
+        "min": 0,
         "name": "description",
-        "type": "text",
-        "required": false
-      },
-      {
-        "name": "url",
-        "type": "url",
-        "required": false
-      },
-      {
-        "name": "order",
-        "type": "number",
-        "required": false
-      }
-    ]
-  },
-  {
-    "name": "now",
-    "type": "base",
-    "listRule": "",
-    "viewRule": "",
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "schema": [
-      {
-        "name": "focus",
-        "type": "text",
-        "required": true
-      },
-      {
-        "name": "note",
-        "type": "editor",
-        "required": false
-      }
-    ]
-  },
-  {
-    "name": "guestbook",
-    "type": "base",
-    "listRule": "approved = true",
-    "viewRule": "approved = true",
-    "createRule": "",
-    "updateRule": null,
-    "deleteRule": null,
-    "schema": [
-      {
-        "name": "name",
-        "type": "text",
-        "required": true,
-        "options": {
-          "max": 60
-        }
-      },
-      {
-        "name": "message",
-        "type": "text",
-        "required": true,
-        "options": {
-          "max": 500
-        }
-      },
-      {
-        "name": "website",
-        "type": "url",
-        "required": false
-      },
-      {
-        "name": "approved",
-        "type": "bool",
-        "required": false
-      },
-      {
-        "name": "ipHash",
-        "type": "text",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
         "required": false,
         "system": false,
-        "options": {
-          "max": 128
-        }
+        "type": "text"
+      },
+      {
+        "exceptDomains": null,
+        "hidden": false,
+        "id": "url4101391790",
+        "name": "url",
+        "onlyDomains": null,
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "url"
+      },
+      {
+        "hidden": false,
+        "id": "number4113142680",
+        "max": null,
+        "min": null,
+        "name": "order",
+        "onlyInt": false,
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "number"
       }
-    ]
+    ],
+    "indexes": [],
+    "created": "2026-06-30 16:35:24.338Z",
+    "updated": "2026-06-30 16:35:24.338Z",
+    "system": false
   },
   {
-    "name": "comments",
+    "id": "pbc_2653599422",
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "name": "now",
     "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1656769257",
+        "max": 0,
+        "min": 0,
+        "name": "focus",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "convertURLs": false,
+        "hidden": false,
+        "id": "editor3485334036",
+        "maxSize": 0,
+        "name": "note",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "editor"
+      }
+    ],
+    "indexes": [],
+    "created": "2026-06-30 16:35:24.343Z",
+    "updated": "2026-06-30 16:35:24.343Z",
+    "system": false
+  },
+  {
+    "id": "pbc_3965429664",
     "listRule": "approved = true",
     "viewRule": "approved = true",
     "createRule": "",
     "updateRule": null,
     "deleteRule": null,
-    "schema": [
+    "name": "guestbook",
+    "type": "base",
+    "fields": [
       {
-        "name": "postSlug",
-        "type": "text",
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
         "required": true,
-        "options": {
-          "max": 200
-        }
+        "system": true,
+        "type": "text"
       },
       {
-        "name": "author",
-        "type": "text",
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1579384326",
+        "max": 60,
+        "min": 0,
+        "name": "name",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
         "required": true,
-        "options": {
-          "max": 60
-        }
+        "system": false,
+        "type": "text"
       },
       {
-        "name": "body",
-        "type": "text",
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text3065852031",
+        "max": 500,
+        "min": 0,
+        "name": "message",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
         "required": true,
-        "options": {
-          "max": 1000
-        }
+        "system": false,
+        "type": "text"
       },
       {
-        "name": "parent",
-        "type": "relation",
+        "exceptDomains": null,
+        "hidden": false,
+        "id": "url1198480871",
+        "name": "website",
+        "onlyDomains": null,
+        "presentable": false,
         "required": false,
-        "options": {
-          "maxSelect": 1,
-          "collectionId": "comments",
-          "cascadeDelete": true
-        }
+        "system": false,
+        "type": "url"
       },
       {
+        "hidden": false,
+        "id": "bool2086131741",
         "name": "approved",
-        "type": "bool",
-        "required": false
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
       },
       {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text925175140",
+        "max": 128,
+        "min": 0,
         "name": "ipHash",
-        "type": "text",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
         "required": false,
-        "options": {
-          "max": 128
-        }
+        "system": false,
+        "type": "text"
+      }
+    ],
+    "indexes": [],
+    "created": "2026-06-30 16:35:24.347Z",
+    "updated": "2026-06-30 16:35:24.347Z",
+    "system": false
+  },
+  {
+    "id": "pbc_533777971",
+    "listRule": "approved = true",
+    "viewRule": "approved = true",
+    "createRule": "",
+    "updateRule": null,
+    "deleteRule": null,
+    "name": "comments",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text746823893",
+        "max": 200,
+        "min": 0,
+        "name": "postSlug",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text3182418120",
+        "max": 60,
+        "min": 0,
+        "name": "author",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text3685223346",
+        "max": 1000,
+        "min": 0,
+        "name": "body",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "bool2086131741",
+        "name": "approved",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text925175140",
+        "max": 128,
+        "min": 0,
+        "name": "ipHash",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "cascadeDelete": true,
+        "collectionId": "pbc_533777971",
+        "hidden": false,
+        "id": "relation1032740943",
+        "maxSelect": 1,
+        "minSelect": 0,
+        "name": "parent",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "relation"
       }
     ],
     "indexes": [
       "CREATE INDEX idx_comments_postslug ON comments (postSlug)"
-    ]
+    ],
+    "created": "2026-06-30 16:35:24.352Z",
+    "updated": "2026-06-30 16:35:24.381Z",
+    "system": false
   },
   {
-    "name": "reactions",
-    "type": "base",
+    "id": "pbc_1549310251",
     "listRule": "",
     "viewRule": "",
     "createRule": "",
     "updateRule": null,
     "deleteRule": null,
-    "schema": [
+    "name": "reactions",
+    "type": "base",
+    "fields": [
       {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "select2929181464",
+        "maxSelect": 1,
         "name": "targetType",
-        "type": "select",
+        "presentable": false,
         "required": true,
-        "options": {
-          "maxSelect": 1,
-          "values": [
-            "post",
-            "project"
-          ]
-        }
+        "system": false,
+        "type": "select",
+        "values": [
+          "post",
+          "project"
+        ]
       },
       {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text962958965",
+        "max": 200,
+        "min": 0,
         "name": "targetId",
-        "type": "text",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
         "required": true,
-        "options": {
-          "max": 200
-        }
+        "system": false,
+        "type": "text"
       },
       {
+        "hidden": false,
+        "id": "select3058431538",
+        "maxSelect": 1,
         "name": "emoji",
-        "type": "select",
+        "presentable": false,
         "required": true,
-        "options": {
-          "maxSelect": 1,
-          "values": [
-            "thumbsup",
-            "fire",
-            "heart"
-          ]
-        }
+        "system": false,
+        "type": "select",
+        "values": [
+          "thumbsup",
+          "fire",
+          "heart"
+        ]
       },
       {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1094208582",
+        "max": 128,
+        "min": 0,
         "name": "sessionHash",
-        "type": "text",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
         "required": true,
-        "options": {
-          "max": 128
-        }
+        "system": false,
+        "type": "text"
       }
     ],
     "indexes": [
       "CREATE UNIQUE INDEX idx_reactions_dedup ON reactions (sessionHash, targetId, emoji)"
-    ]
+    ],
+    "created": "2026-06-30 16:35:24.357Z",
+    "updated": "2026-06-30 16:35:24.357Z",
+    "system": false
   },
   {
-    "name": "contact_messages",
-    "type": "base",
+    "id": "pbc_1598569604",
     "listRule": null,
     "viewRule": null,
     "createRule": "",
     "updateRule": null,
     "deleteRule": null,
-    "schema": [
+    "name": "contact_messages",
+    "type": "base",
+    "fields": [
       {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1579384326",
+        "max": 120,
+        "min": 0,
         "name": "name",
-        "type": "text",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
         "required": true,
-        "options": {
-          "max": 120
-        }
+        "system": false,
+        "type": "text"
       },
       {
+        "exceptDomains": null,
+        "hidden": false,
+        "id": "email3885137012",
         "name": "email",
-        "type": "email",
-        "required": true
-      },
-      {
-        "name": "subject",
-        "type": "text",
-        "required": false,
-        "options": {
-          "max": 200
-        }
-      },
-      {
-        "name": "body",
-        "type": "text",
+        "onlyDomains": null,
+        "presentable": false,
         "required": true,
-        "options": {
-          "max": 5000
-        }
+        "system": false,
+        "type": "email"
       },
       {
-        "name": "read",
-        "type": "bool",
-        "required": false
-      },
-      {
-        "name": "ipHash",
-        "type": "text",
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text4224597626",
+        "max": 200,
+        "min": 0,
+        "name": "subject",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
         "required": false,
-        "options": {
-          "max": 128
-        }
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text3685223346",
+        "max": 5000,
+        "min": 0,
+        "name": "body",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "bool2555855207",
+        "name": "read",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text925175140",
+        "max": 128,
+        "min": 0,
+        "name": "ipHash",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
       }
-    ]
+    ],
+    "indexes": [],
+    "created": "2026-06-30 16:35:24.363Z",
+    "updated": "2026-06-30 16:35:24.363Z",
+    "system": false
   },
   {
+    "id": "pbc_2770218334",
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
     "name": "recruiter_content",
     "type": "base",
-    "listRule": null,
-    "viewRule": null,
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "schema": [
+    "fields": [
       {
-        "name": "section",
-        "type": "select",
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
         "required": true,
-        "options": {
-          "maxSelect": 1,
-          "values": [
-            "cv",
-            "salary",
-            "references",
-            "availability"
-          ]
-        }
+        "system": true,
+        "type": "text"
       },
       {
+        "hidden": false,
+        "id": "select762542831",
+        "maxSelect": 1,
+        "name": "section",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "select",
+        "values": [
+          "cv",
+          "salary",
+          "references",
+          "availability"
+        ]
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text724990059",
+        "max": 0,
+        "min": 0,
         "name": "title",
-        "type": "text",
-        "required": true
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
       },
       {
+        "convertURLs": false,
+        "hidden": false,
+        "id": "editor3685223346",
+        "maxSize": 0,
         "name": "body",
-        "type": "editor",
-        "required": false
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "editor"
       },
       {
+        "hidden": false,
+        "id": "number4113142680",
+        "max": null,
+        "min": null,
         "name": "order",
-        "type": "number",
-        "required": false
+        "onlyInt": false,
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "number"
       },
       {
+        "hidden": false,
+        "id": "bool2058414169",
         "name": "visible",
-        "type": "bool",
-        "required": false
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
       }
-    ]
+    ],
+    "indexes": [],
+    "created": "2026-06-30 16:35:24.369Z",
+    "updated": "2026-06-30 16:35:24.369Z",
+    "system": false
   },
   {
-    "name": "recruiter_unlocks",
-    "type": "base",
+    "id": "pbc_1879755173",
     "listRule": null,
     "viewRule": null,
     "createRule": null,
     "updateRule": null,
     "deleteRule": null,
-    "schema": [
+    "name": "recruiter_unlocks",
+    "type": "base",
+    "fields": [
       {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text925175140",
+        "max": 0,
+        "min": 0,
         "name": "ipHash",
-        "type": "text",
-        "required": false
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
       },
       {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text3236859723",
+        "max": 0,
+        "min": 0,
         "name": "userAgent",
-        "type": "text",
-        "required": false
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
       },
       {
+        "hidden": false,
+        "id": "date6250848",
+        "max": "",
+        "min": "",
         "name": "unlockedAt",
-        "type": "date",
-        "required": false
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "date"
       }
-    ]
+    ],
+    "indexes": [],
+    "created": "2026-06-30 16:35:24.374Z",
+    "updated": "2026-06-30 16:35:24.374Z",
+    "system": false
   }
 ]

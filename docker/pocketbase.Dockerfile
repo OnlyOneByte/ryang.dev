@@ -7,12 +7,19 @@
 #
 #   docker build -f docker/pocketbase.Dockerfile -t ryangdev-pocketbase .
 #
-# Pin a real version tag in production instead of `latest`.
-FROM ghcr.io/muchobien/pocketbase:latest
+# Pinned (not :latest): the pb_hooks REQUIRE the v0.23+ JSVM API, and a floating
+# tag could silently drift BELOW that floor and break moderation. Keep this in
+# lockstep with POCKETBASE_TAG in infra/.env.example.
+FROM ghcr.io/muchobien/pocketbase:0.28.4
 
-# Bake hooks + schema into the image.
-COPY services/pocketbase/pb_hooks/ /pb/pb_hooks/
-COPY services/pocketbase/pb_migrations/ /pb/pb_migrations/
+# Bake hooks + migrations into the image. Paths MUST match this image's
+# entrypoint, which serves with --dir=/pb_data --hooksDir=/pb_hooks
+# (root-level, NOT /pb/...). Copying to /pb/pb_hooks would mean the server's
+# --hooksDir=/pb_hooks finds nothing → moderation hook silently never registers
+# → public self-approve. (Verified: probe returned approved:true with the old
+# /pb/ paths.) Keep these aligned with infra/docker-compose.yml mounts.
+COPY services/pocketbase/pb_hooks/ /pb_hooks/
+COPY services/pocketbase/pb_migrations/ /pb_migrations/
 
 EXPOSE 8090
 # Entry/cmd inherited from the base image (serves on 0.0.0.0:8090).
