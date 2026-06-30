@@ -1,4 +1,4 @@
-# angryang.dev — self-hosted stack (9 services).
+# ryang.dev — self-hosted stack (9 services).
 # TLS terminates at the EXTERNAL router Caddy; these services bind plain HTTP on
 # the LAN. The router lives on a DIFFERENT machine, so host ports must be
 # reachable over the LAN (bind addr defaults to all interfaces). Override
@@ -18,7 +18,7 @@
 #   POCKETBASE_TAG=sha256:<digest>   (see docs/CHEATSHEET.md "pin images").
 # Build context for the web image is the repo root (..) for the Bun workspace.
 
-name: angryang-dev
+name: ryang-dev
 
 x-hardening: &hardening
   restart: unless-stopped

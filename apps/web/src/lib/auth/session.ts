@@ -43,6 +43,29 @@ export function verifySession(token: string | undefined | null): boolean {
   return Number.isFinite(ts) && ts > Date.now();
 }
 
+/**
+ * Generic HMAC sign/verify for NON-recruiter tokens (e.g. the scavenger-hunt
+ * completion cookie). Same secret + constant-time compare as the session, but a
+ * distinct payload tag so an egg cookie can never be mistaken for a gate cookie.
+ * NOTE: this is whimsy, not a security boundary — it just stops the /secret page
+ * from being trivially spoofed by editing localStorage.
+ */
+export function signValue(value: string): string {
+  return `${value}.${sign(value)}`;
+}
+
+export function verifyValue(token: string | undefined | null, expected: string): boolean {
+  if (!token) return false;
+  const dot = token.lastIndexOf('.');
+  if (dot < 1) return false;
+  const value = token.slice(0, dot);
+  const mac = token.slice(dot + 1);
+  if (value !== expected) return false;
+  const want = sign(value);
+  if (mac.length !== want.length) return false;
+  return timingSafeEqual(Buffer.from(mac), Buffer.from(want));
+}
+
 /** Cookie attributes. Secure is set based on the public origin (router TLS). */
 export function sessionCookieOptions(secure: boolean) {
   return {

@@ -2,7 +2,7 @@
 
 ## Overview
 
-`angryang.dev` is a self-hosted personal portfolio. Everything runs on one
+`ryang.dev` is a self-hosted personal portfolio. Everything runs on one
 Docker box on the LAN; TLS terminates at an **external router Caddy**, which
 reverse-proxies to plain-HTTP services on the box.
 

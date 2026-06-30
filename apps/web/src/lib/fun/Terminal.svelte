@@ -10,6 +10,8 @@
    */
   import { onMount } from 'svelte';
   import { setTheme } from '@/lib/theme/store';
+  import { findFragment } from '@/lib/eggs/store';
+  import { CLAIM_TOKENS } from '@/lib/eggs/fragments';
 
   let open = $state(false);
   let input = $state('');
@@ -79,7 +81,7 @@
 
   const COMMANDS: Record<string, (arg?: string) => string | void> = {
     help: () =>
-      'commands: ls [-a] · cd <dir> · cat <file> · pwd · whoami · find <name> · theme <id> · sudo · vim <file> · clear · exit',
+      'commands: ls [-a] · cd <dir> · cat <file> · pwd · whoami · find <name> · theme <id> · sudo · vim <file> · egg <token> · clear · exit',
     whoami: () => 'Angelo Yang — software engineer & self-hoster (Rengang "Angelo" Yang)',
     pwd: () => cwd,
     ls: (arg) => {
@@ -106,13 +108,23 @@
       const node = resolve(arg);
       if (node === undefined) return `cat: ${arg}: No such file or directory`;
       if (isDir(node)) return `cat: ${arg}: Is a directory`;
+      if (arg === '/flag' || arg.endsWith('flag')) findFragment('terminal'); // 🧩 auto-claim
       return node;
     },
     find: (arg) => {
       if (!arg) return 'usage: find <name>';
       const hits: string[] = [];
       findIn(FS as Node, arg, '', hits);
+      if (arg === 'flag' && hits.length) findFragment('terminal'); // 🧩 auto-claim
       return hits.length ? hits.join('\n') : `find: '${arg}': nothing found`;
+    },
+    // 🧩 scavenger hunt: claim a passive-discovery fragment by its token.
+    egg: (arg) => {
+      if (!arg) return 'usage: egg <token>   (tokens hide in plain sight — try the console, or a response header)';
+      const id = CLAIM_TOKENS[arg.trim().toLowerCase()];
+      if (!id) return `egg: '${arg}' is not a fragment token`;
+      findFragment(id);
+      return `🧩 fragment claimed: ${id}`;
     },
     theme: (arg) => { if (arg) { setTheme(arg); return `theme → ${arg}`; } return 'usage: theme <id>'; },
     // #2 sudo escalation arc — drops a fake incident report into the VFS.

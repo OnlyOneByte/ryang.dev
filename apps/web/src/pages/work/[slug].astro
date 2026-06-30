@@ -4,6 +4,11 @@ import { publicClient } from '@/lib/pb/client';
 
 const { slug } = Astro.params;
 
+// Old slug → new, after the angryang.dev → ryang.dev rename. Keeps any existing
+// /work/angryang-dev links (shared, indexed) working with a clean 301.
+const SLUG_ALIASES: Record<string, string> = { 'angryang-dev': 'ryang-dev' };
+if (slug && SLUG_ALIASES[slug]) return Astro.redirect(`/work/${SLUG_ALIASES[slug]}`, 301);
+
 type Project = {
   title: string; summary: string; description?: string;
   tech: string[]; repoUrl?: string; liveUrl?: string; status?: string;
@@ -22,7 +27,7 @@ try {
   // dev fallback for the seeded slugs
   const fixtures: Record<string, Project> = {
     'vroom': { title: 'VROOM', summary: 'Self-hosted vehicle cost tracker.', description: '<p>Fuel economy, maintenance schedules, financing/lease math, insurance, and a TCO analytics engine. Offline-first with conflict-resolving sync, money-as-integer-cents, multi-vehicle sharing, and import from Fuelly/Fuelio/Drivvo. 1700+ backend tests.</p>', tech: ['Svelte', 'TypeScript', 'SQLite'], repoUrl: 'https://github.com/OnlyOneByte/VROOM', status: 'active' },
-    'angryang-dev': { title: 'angryang.dev', summary: 'This site.', description: '<p>Astro SSR on Bun, Pocketbase backend, a 15-theme CSS-variable engine with a Konami-code unlock, a shared-password recruiter gate, dynamic OG cards, and a 9-container self-hosted companion stack.</p>', tech: ['Astro', 'Bun', 'Pocketbase'], repoUrl: 'https://github.com/OnlyOneByte/angryang.dev', liveUrl: 'https://ryang.dev', status: 'wip' },
+    'ryang-dev': { title: 'ryang.dev', summary: 'This site.', description: '<p>Astro SSR on Bun, Pocketbase backend, a 15-theme CSS-variable engine with a Konami-code unlock, a shared-password recruiter gate, dynamic OG cards, and a 9-container self-hosted companion stack.</p>', tech: ['Astro', 'Bun', 'Pocketbase'], repoUrl: 'https://github.com/OnlyOneByte/ryang.dev', liveUrl: 'https://ryang.dev', status: 'wip' },
     'homelab': { title: 'Homelab', summary: 'Self-hosted services on Docker.', description: '<p>The infrastructure everything runs on: a Docker host with Caddy at the router terminating TLS, privacy-first analytics, self-hosted coding stats, status monitoring, and automated backups. Reproducible via docker compose.</p>', tech: ['Docker', 'Caddy', 'Linux'], status: 'active' },
   };
   project = (slug && fixtures[slug]) || null;

@@ -1,4 +1,4 @@
-# angryang.dev
+# ryang.dev
 
 Personal portfolio + homelab showcase for **Angelo Yang** — a self-hosted,
 blazing-fast Astro site backed by Pocketbase, with a 15-theme switching engine
@@ -8,7 +8,7 @@ This is a **monorepo**. Application code, Docker build recipes, and orchestratio
 config live in separate top-level folders.
 
 ```
-angryang.dev/
+ryang.dev/
 ├── docs/        ← design docs (architecture, theme engine, schema, gate, deploy)
 ├── apps/        ← application code (apps/web = the Astro SSR site)
 ├── services/    ← service-owned config/data (Pocketbase schema, hooks, migrations)

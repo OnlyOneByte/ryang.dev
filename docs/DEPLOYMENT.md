@@ -17,8 +17,8 @@ the router.
 ## 1. First-time setup
 
 ```bash
-git clone git@github.com:OnlyOneByte/angryang.dev.git
-cd angryang.dev
+git clone git@github.com:OnlyOneByte/ryang.dev.git
+cd ryang.dev
 cp infra/.env.example infra/.env
 # fill in every secret in infra/.env (see table below)
 docker compose -f infra/docker-compose.yml up -d

@@ -5,10 +5,12 @@
    * a static message + link instead of animating).
    */
   import { onMount } from 'svelte';
+  import { findFragment } from '@/lib/eggs/store';
 
   let canvas: HTMLCanvasElement;
   let score = $state(0);
   let reduced = false;
+  const EGG_SCORE = 10; // 🧩 catch this many bytes → claim the game404 fragment
 
   onMount(() => {
     reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -51,7 +53,7 @@
         ctx.fillStyle = accent2;
         ctx.font = '14px monospace';
         ctx.fillText('01', d.x, d.y);
-        if (d.y > H - 18 && d.y < H && Math.abs(d.x - paddle) < 34) { score += 1; drops.splice(i, 1); }
+        if (d.y > H - 18 && d.y < H && Math.abs(d.x - paddle) < 34) { score += 1; if (score === EGG_SCORE) findFragment('game404'); drops.splice(i, 1); }
         else if (d.y > H) { drops.splice(i, 1); }
       }
       ctx.fillStyle = text;

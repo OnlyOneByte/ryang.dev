@@ -1,6 +1,6 @@
 # Launch Runbook (M10)
 
-Everything to take `angryang.dev` from "builds locally" to "live on the Arcane
+Everything to take `ryang.dev` from "builds locally" to "live on the Arcane
 box behind the router". Steps marked **[you]** require your box / DNS / domain
 and can't be done from the dev desktop.
 
@@ -14,8 +14,8 @@ and can't be done from the dev desktop.
 ## 1. Provision the box **[you]**
 
 ```bash
-git clone git@github.com:OnlyOneByte/angryang.dev.git
-cd angryang.dev
+git clone git@github.com:OnlyOneByte/ryang.dev.git
+cd ryang.dev
 cp infra/.env.example infra/.env
 # fill EVERY secret in infra/.env — see the table in docs/DEPLOYMENT.md
 #   RECRUITER_HASH:  bun run apps/web/scripts/hash-passphrase.ts "<passphrase>"

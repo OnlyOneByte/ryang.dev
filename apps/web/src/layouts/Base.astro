@@ -13,6 +13,7 @@ import UnlockToast from '@/lib/theme/UnlockToast.svelte';
 import Analytics from '@/components/Analytics.astro';
 import Terminal from '@/lib/fun/Terminal.svelte';
 import EmojiRain from '@/lib/fun/EmojiRain.svelte';
+import EggToast from '@/lib/eggs/EggToast.svelte';
 import { ViewTransitions } from 'astro:transitions';
 
 interface Props {
@@ -102,12 +103,13 @@ const ogUrl =
     <UnlockToast client:idle />
     <Terminal client:idle />
     <EmojiRain client:idle />
+    <EggToast client:idle />
     {/* #10 — a hello for anyone who opens devtools (recruiters who inspect will
         see it), plus a scavenger-hunt breadcrumb. Runs once, fail-silent. */}
     <script is:inline>
       try {
         console.log(
-          '%cryang.dev%c\n> you read the source. respect.\n> type `~` anywhere for a shell. ↑↑↓↓←→←→BA unlocks themes.\n> hiring? /contact or /cal — let\'s build something.\n> egg: 1 of the fragments is closer than you think. 🧩',
+          '%cryang.dev%c\n> you read the source. respect.\n> type ` (backtick) anywhere for a shell. ↑↑↓↓←→←→BA unlocks themes.\n> hiring? /contact or /cal — let\'s build something.\n> 🧩 scavenger hunt: claim this fragment in the shell with  egg inspect',
           'color:#0ff;font-weight:700;font-size:18px',
           'color:#888;font-family:monospace'
         );

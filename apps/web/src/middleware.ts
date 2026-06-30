@@ -30,5 +30,8 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
     res.headers.set('Cache-Control', 'private, no-store, max-age=0');
     res.headers.set('X-Robots-Tag', 'noindex'); // keep gated pages out of search
   }
+  // Scavenger-hunt fragment for the network-tab-curious: the value is a claim
+  // token (`egg forwarded` in the shell). Whimsy only; harmless to expose.
+  res.headers.set('X-Egg', 'forwarded');
   return res;
 });

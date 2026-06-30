@@ -62,7 +62,7 @@ export const GET: APIRoute = async () => {
   if (sections.length === 0) {
     sections = [
       { title: 'Summary', body: '<p>Software engineer focused on fast, durable, self-hosted systems.</p>' },
-      { title: 'Selected Work', body: '<p>Homelab Mesh — 3-node self-hosted orchestration. VROOM — vehicle cost tracker (1700+ tests). angryang.dev — this site.</p>' },
+      { title: 'Selected Work', body: '<p>Homelab Mesh — 3-node self-hosted orchestration. VROOM — vehicle cost tracker (1700+ tests). ryang.dev — this site.</p>' },
       { title: 'Contact', body: '<p>ryang.dev/contact</p>' },
     ];
   }

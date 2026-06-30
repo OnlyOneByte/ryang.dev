@@ -1,6 +1,6 @@
 # Deploy Cheat-Sheet (paste-on-the-box)
 
-One-screen reference for deploying `angryang.dev` on the Arcane Docker box.
+One-screen reference for deploying `ryang.dev` on the Arcane Docker box.
 Full detail in `DEPLOYMENT.md` / `LAUNCH.md`; this is the fast path.
 
 > **Finch / other tool?** Commands below say `docker`, but the container tool is
@@ -12,7 +12,7 @@ Full detail in `DEPLOYMENT.md` / `LAUNCH.md`; this is the fast path.
 ## First deploy
 
 ```bash
-git clone git@github.com:OnlyOneByte/angryang.dev.git && cd angryang.dev
+git clone git@github.com:OnlyOneByte/ryang.dev.git && cd ryang.dev
 cp infra/.env.example infra/.env
 
 # generate the two secrets you can't fake:

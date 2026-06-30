@@ -71,6 +71,9 @@ const pos = (id: string) => NODES.find((n) => n.id === id)!;
                 font-size="12" font-family="var(--font-mono)" fill="var(--text)">{n.label}</text>
         </g>
       ))}
+      {/* 🧩 hidden scavenger node — faint, in the corner; claims the fragment on click. */}
+      <text id="egg-node" x="606" y="262" text-anchor="end" font-size="11"
+            style="cursor:pointer;opacity:.18" aria-hidden="true">🧩</text>
     </svg>
 
     <div id="node-detail" class="mt-4 rounded-theme border p-4 text-sm"
@@ -104,7 +107,7 @@ const pos = (id: string) => NODES.find((n) => n.id === id)!;
     </section>
 
     <p class="mt-16 text-xs" style="color:var(--muted)">
-      Source: <a href="https://github.com/OnlyOneByte/angryang.dev" style="color:var(--accent)">OnlyOneByte/angryang.dev</a>
+      Source: <a href="https://github.com/OnlyOneByte/ryang.dev" style="color:var(--accent)">OnlyOneByte/ryang.dev</a>
       · built with Astro, Pocketbase, Bun · 15-theme engine
     </p>
   </main>
@@ -117,5 +120,11 @@ const pos = (id: string) => NODES.find((n) => n.id === id)!;
         detail.style.color = 'var(--text)';
       });
     });
+  </script>
+
+  {/* 🧩 module script (bundled, so it can import) — claims the colophon fragment. */}
+  <script>
+    import { findFragment } from '@/lib/eggs/store';
+    document.getElementById('egg-node')?.addEventListener('click', () => findFragment('colophon'));
   </script>
 </Base>
