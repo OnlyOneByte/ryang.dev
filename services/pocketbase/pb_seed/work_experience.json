@@ -4,13 +4,15 @@
     "role": "Software Engineer",
     "startDate": "2022",
     "endDate": "",
-    "summary": "Building and operating large-scale video streaming and playback systems for a global audience.",
+    "summary": "Building and operating large-scale, AWS-native systems for live video streaming at global scale — on an orchestration team that manages thousands of live streams a day.",
     "highlights": [
-      "REPLACE_ME — public-level bullets only. NO internal service/package codenames, CR details, metrics, or confidential architecture. Think: what you'd put on a public LinkedIn or conference bio.",
-      "e.g. 'Worked on high-availability backend services in the playback path.'",
-      "e.g. 'Improved reliability/observability of streaming infrastructure.'"
+      "Build and operate distributed backend services on AWS (ECS, Lambda, event-driven pipelines), with infrastructure managed as code via AWS CDK.",
+      "Work on stream orchestration systems that coordinate thousands of live streams per day across a global audience.",
+      "Build LLM-powered internal tooling — including prompt management and safety/guardrail layers — to automate and accelerate engineering and operational workflows.",
+      "Develop services across the stack in TypeScript and Rust, emphasizing reliability and observability in the live-event path.",
+      "Work on experimentation and analytics tooling that informs product and operational decisions."
     ],
-    "tech": ["TypeScript", "Java", "AWS", "Distributed Systems"],
+    "tech": ["TypeScript", "Rust", "AWS", "AWS CDK", "Distributed Systems", "LLM tooling"],
     "order": 1,
     "visible": true
   },
@@ -22,8 +24,8 @@
     "summary": "Built and operated internal developer platform and observability tooling for engineering teams.",
     "highlights": [
       "Stood up and maintained observability with Datadog (dashboards, monitors, SLOs) across services.",
-      "REPLACE_ME — add the specific platform/CI/infra work you want public.",
-      "REPLACE_ME — e.g. tooling, automation, on-call/reliability improvements."
+      "Built and maintained internal developer-platform and CI/CD tooling to streamline how engineering teams ship and operate services.",
+      "Improved service reliability through automation and operational tooling."
     ],
     "tech": ["Datadog", "CI/CD", "Cloud", "Observability"],
     "order": 2,
