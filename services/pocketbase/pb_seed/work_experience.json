@@ -1,33 +1,33 @@
 [
   {
-    "company": "Amazon — Prime Video",
-    "role": "Software Engineer",
+    "company": "Amazon — Prime Video Sports",
+    "role": "Software Engineer II",
     "startDate": "2022",
     "endDate": "",
-    "summary": "Building and operating large-scale, AWS-native systems for live video streaming at global scale — on an orchestration team that manages thousands of live streams a day.",
+    "summary": "Build and operate large-scale, AWS-native systems for live sports streaming at global scale — from ML-driven event monitoring to developer self-service tooling.",
     "highlights": [
-      "Build and operate distributed backend services on AWS (ECS, Lambda, event-driven pipelines), with infrastructure managed as code via AWS CDK.",
-      "Work on stream orchestration systems that coordinate thousands of live streams per day across a global audience.",
-      "Build LLM-powered internal tooling — including prompt management and safety/guardrail layers — to automate and accelerate engineering and operational workflows.",
-      "Develop services across the stack in TypeScript and Rust, emphasizing reliability and observability in the live-event path.",
-      "Work on experimentation and analytics tooling that informs product and operational decisions."
+      "Built a scalable VLM-based recognition system for automated event monitoring, deployed across the Prime Video Sports catalog and stress-tested live during Black Friday Football.",
+      "Drove a cost-optimization effort that identified and reclaimed over $350K in underutilized AWS resources in the first year.",
+      "Designed and shipped a self-service portal for image slates, cutting manual onboarding from two developer-days to none.",
+      "Championed AI-assisted log diagnosis for internal logs, enabling self-service root-causing for other teams."
     ],
-    "tech": ["TypeScript", "Rust", "AWS", "AWS CDK", "Distributed Systems", "LLM tooling"],
+    "tech": ["TypeScript", "Rust", "AWS", "ECS/Fargate", "Lambda", "DynamoDB", "VLM / LLM tooling"],
     "order": 1,
     "visible": true
   },
   {
     "company": "PIMCO — Platform Engineering",
-    "role": "Platform Engineer",
+    "role": "Software Engineer",
     "startDate": "2020",
     "endDate": "2022",
-    "summary": "Built and operated internal developer platform and observability tooling for engineering teams.",
+    "summary": "Built the internal developer platform — identity, observability, and CI/CD — and led the on-prem to AWS migration for engineering teams firm-wide.",
     "highlights": [
-      "Stood up and maintained observability with Datadog (dashboards, monitors, SLOs) across services.",
-      "Built and maintained internal developer-platform and CI/CD tooling to streamline how engineering teams ship and operate services.",
-      "Improved service reliability through automation and operational tooling."
+      "Architected the firm's transition to Okta with in-house abstractions for other developers, reducing onboarding from several weeks to two days.",
+      "Onboarded Datadog and built migration tooling from legacy monitoring platforms, cutting mean-time-to-root-cause from 9 days to 2.",
+      "Created CI/CD pipelines that made full Okta and Datadog adoption a one-commit change for most applications in the firm.",
+      "Drove planning and execution of the on-premise to AWS migration, architecting bespoke solutions for internal teams as needed."
     ],
-    "tech": ["Datadog", "CI/CD", "Cloud", "Observability"],
+    "tech": ["Java", "Okta", "Datadog", "CI/CD", "AWS", "Observability"],
     "order": 2,
     "visible": true
   }

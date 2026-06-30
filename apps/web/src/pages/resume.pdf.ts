@@ -61,9 +61,40 @@ export const GET: APIRoute = async () => {
   }
   if (sections.length === 0) {
     sections = [
-      { title: 'Summary', body: '<p>Software engineer focused on fast, durable, self-hosted systems.</p>' },
-      { title: 'Selected Work', body: '<p>Homelab Mesh — 3-node self-hosted orchestration. VROOM — vehicle cost tracker (1700+ tests). ryang.dev — this site.</p>' },
-      { title: 'Contact', body: '<p>ryang.dev/contact</p>' },
+      {
+        title: 'Summary',
+        body: '<p>Software engineer focused on fast, durable, AWS-native and self-hosted systems. Currently building live-sports streaming infrastructure and ML-driven tooling at Amazon Prime Video.</p>',
+      },
+      {
+        title: 'Experience',
+        body:
+          '<p><strong>Amazon — Prime Video Sports</strong> · Software Engineer II · 2022–present</p>' +
+          '<ul>' +
+          '<li>Built a scalable VLM-based recognition system for automated event monitoring, deployed across the Prime Video Sports catalog and stress-tested live during Black Friday Football.</li>' +
+          '<li>Reclaimed over $350K in underutilized AWS resources in the first year through a targeted cost-optimization effort.</li>' +
+          '<li>Shipped a self-service image-slate portal, cutting manual onboarding from two developer-days to none.</li>' +
+          '<li>Championed AI-assisted log diagnosis, enabling self-service root-causing for other teams.</li>' +
+          '</ul>' +
+          '<p><strong>PIMCO — Platform Engineering</strong> · Software Engineer · 2020–2022</p>' +
+          '<ul>' +
+          '<li>Architected the firm\'s Okta transition with developer-facing abstractions, reducing onboarding from weeks to two days.</li>' +
+          '<li>Onboarded Datadog and built migration tooling, cutting mean-time-to-root-cause from 9 days to 2.</li>' +
+          '<li>Built CI/CD pipelines that made full Okta + Datadog adoption a one-commit change for most apps firm-wide.</li>' +
+          '<li>Drove the on-premise to AWS migration, architecting bespoke solutions for internal teams.</li>' +
+          '</ul>',
+      },
+      {
+        title: 'Education',
+        body: '<p><strong>Texas A&amp;M University</strong>, College Station — B.S. Computer Science (AI/ML focus), minors in Mathematics &amp; Cybersecurity. <em>Summa Cum Laude.</em></p>',
+      },
+      {
+        title: 'Skills',
+        body:
+          '<p>Java, Python, TypeScript/JavaScript (React, Angular) · Rust. ' +
+          'AWS Certified Developer — Lambda, ECS/Fargate, DynamoDB; Azure familiar. ' +
+          'Git, CI/CD (GitHub Actions, GitLab Runners). Microservice &amp; cloud-native architecture.</p>',
+      },
+      { title: 'Contact', body: '<p>ryang.dev/contact · linkedin.com/in/ryang42</p>' },
     ];
   }
 

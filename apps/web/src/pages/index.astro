@@ -3,39 +3,72 @@ import Base from '@/layouts/Base.astro';
 import { publicClient } from '@/lib/pb/client';
 import { getCurrently } from '@/lib/widgets/wakapi';
 import { getGithubSummary } from '@/lib/widgets/github';
+import { getProjects } from '@/lib/widgets/projects';
 
 /**
- * Home. Featured projects from Pocketbase (static fallback in dev). The three
- * server-side data sources (Wakapi, GitHub, PB projects) run in PARALLEL — they
- * were serial awaits before, stacking up to 3 round-trips of latency.
+ * "Me" — the single unified page: intro, projects (from GitHub), and experience
+ * (professional history) on one scroll, in #projects / #experience sections.
+ *
+ * The four server-side sources (Wakapi, GitHub summary, projects, PB experience)
+ * run in PARALLEL — all fail-soft (null / fallback), so the page always renders.
  */
-type Project = { title: string; summary: string; tech: string[]; slug?: string };
+type Exp = {
+  company: string; role: string; startDate: string; endDate?: string;
+  summary?: string; highlights: string[]; tech: string[];
+};
 
-async function featuredProjects(): Promise<Project[]> {
+async function getExperience(): Promise<Exp[]> {
   try {
     const pb = publicClient();
-    const rows = await pb.collection('projects').getList(1, 2, {
-      filter: pb.filter('featured = true && status = {:s}', { s: 'active' }),
-      sort: 'order',
+    const rows = await pb.collection('work_experience').getFullList({
+      filter: 'visible = true', sort: 'order',
     });
-    return rows.items.map((r: any) => ({
-      title: r.title, summary: r.summary, tech: r.tech ?? [], slug: r.slug,
+    return rows.map((r: any) => ({
+      company: r.company, role: r.role, startDate: r.startDate, endDate: r.endDate,
+      summary: r.summary, highlights: r.highlights ?? [], tech: r.tech ?? [],
     }));
   } catch {
-    return FALLBACK;
+    return EXPERIENCE_FALLBACK;
   }
 }
 
-const FALLBACK: Project[] = [
-  { title: 'VROOM', summary: 'Self-hosted vehicle cost tracker — fuel, maintenance, financing, analytics. 1700+ tests, offline-first sync.', tech: ['Svelte', 'TypeScript'], slug: 'vroom' },
-  { title: 'ryang.dev', summary: 'This site — self-hosted Astro portfolio with a 15-theme engine + Konami unlock.', tech: ['Astro', 'Bun'], slug: 'ryang-dev' },
+// PUBLIC content only: no internal service/package codenames, CR details, or
+// confidential architecture (this site is public).
+const EXPERIENCE_FALLBACK: Exp[] = [
+  {
+    company: 'Amazon — Prime Video Sports', role: 'Software Engineer II',
+    startDate: '2022', endDate: '',
+    summary: 'Build and operate large-scale, AWS-native systems for live sports streaming at global scale — from ML-driven event monitoring to developer self-service tooling.',
+    highlights: [
+      'Built a scalable VLM-based recognition system for automated event monitoring, deployed across the Prime Video Sports catalog and stress-tested live during Black Friday Football.',
+      'Drove a cost-optimization effort that identified and reclaimed over $350K in underutilized AWS resources in the first year.',
+      'Designed and shipped a self-service portal for image slates, cutting manual onboarding from two developer-days to none.',
+      'Championed AI-assisted log diagnosis for internal logs, enabling self-service root-causing for other teams.',
+    ],
+    tech: ['TypeScript', 'Rust', 'AWS', 'ECS/Fargate', 'Lambda', 'DynamoDB', 'VLM / LLM tooling'],
+  },
+  {
+    company: 'PIMCO — Platform Engineering', role: 'Software Engineer',
+    startDate: '2020', endDate: '2022',
+    summary: 'Built the internal developer platform — identity, observability, and CI/CD — and led the on-prem to AWS migration for engineering teams firm-wide.',
+    highlights: [
+      'Architected the firm\'s transition to Okta with in-house abstractions for other developers, reducing onboarding from several weeks to two days.',
+      'Onboarded Datadog and built migration tooling from legacy monitoring platforms, cutting mean-time-to-root-cause from 9 days to 2.',
+      'Created CI/CD pipelines that made full Okta and Datadog adoption a one-commit change for most applications in the firm.',
+      'Drove planning and execution of the on-premise to AWS migration, architecting bespoke solutions for internal teams as needed.',
+    ],
+    tech: ['Java', 'Okta', 'Datadog', 'CI/CD', 'AWS', 'Observability'],
+  },
 ];
 
-// Parallel — independent sources, all fail-soft (return null / fallback).
-const [currently, github, featured] = await Promise.all([
+const period = (e: Exp) => `${e.startDate} – ${e.endDate || 'present'}`;
+
+// Parallel — independent sources, all fail-soft.
+const [currently, github, projects, experience] = await Promise.all([
   getCurrently(),
   getGithubSummary(),
-  featuredProjects(),
+  getProjects(),
+  getExperience(),
 ]);
 ---
 
@@ -71,33 +104,83 @@ const [currently, github, featured] = await Promise.all([
          style="border-color:var(--border);color:var(--text)">🔒 Recruiter mode</a>
     </div>
 
-    <section class="mt-14">
-      <p class="text-sm" style="color:var(--accent)">$ ls ~/work --featured</p>
-      <div class="mt-4 grid gap-4 sm:grid-cols-2">
-        {featured.map((p) => (
+    <!-- Projects (pulled from GitHub) -->
+    <section id="projects" class="mt-16 scroll-mt-20">
+      <p class="text-sm" style="color:var(--accent)">$ ls ~/projects</p>
+      <h2 class="mt-2 text-2xl font-extrabold" style="color:var(--text-strong)">Projects</h2>
+      <div class="mt-6 grid gap-4 sm:grid-cols-2">
+        {projects.map((p) => (
           <a
-            href={p.slug ? `/work/${p.slug}` : '/work'}
+            href={p.repoUrl} rel="noopener" target="_blank"
             class="block rounded-theme border p-4 transition hover:opacity-90"
             style="background:var(--panel);border-color:var(--border)"
           >
-            <div class="font-bold" style="color:var(--text-strong)">{p.title}</div>
-            <div class="mt-1.5 text-sm" style="color:var(--muted)">{p.summary}</div>
-            <div class="mt-3 flex gap-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="font-bold" style="color:var(--text-strong)">{p.name}</span>
+              {p.stars > 0 && (
+                <span class="text-xs" style="color:var(--muted)">★ {p.stars}</span>
+              )}
+            </div>
+            {p.summary && (
+              <div class="mt-1.5 text-sm" style="color:var(--muted)">{p.summary}</div>
+            )}
+            <div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
               {p.tech.map((t) => (
                 <span class="rounded-theme border px-2 py-0.5"
                       style="border-color:var(--border);color:var(--accent)">{t}</span>
               ))}
             </div>
+            <div class="mt-3 text-xs" style="color:var(--accent)">
+              {p.homepage ? 'live ↗ · code ↗' : 'code ↗'}
+            </div>
           </a>
         ))}
       </div>
-      <a href="/work" class="mt-4 inline-block text-sm" style="color:var(--accent)">
-        all work →
+      <a href={`https://github.com/${github?.user ?? 'OnlyOneByte'}`} rel="noopener" target="_blank"
+         class="mt-4 inline-block text-sm" style="color:var(--accent)">
+        more on GitHub →
       </a>
     </section>
 
+    <!-- Experience (professional history) -->
+    <section id="experience" class="mt-16 scroll-mt-20">
+      <p class="text-sm" style="color:var(--accent)">$ cat ~/.experience</p>
+      <h2 class="mt-2 text-2xl font-extrabold" style="color:var(--text-strong)">Experience</h2>
+      <ol class="mt-8 space-y-10 border-l pl-6" style="border-color:var(--border)">
+        {experience.map((e) => (
+          <li class="relative">
+            <span class="absolute -left-[1.7rem] top-1.5 h-3 w-3 rounded-full"
+                  style="background:var(--accent)"></span>
+            <div class="flex flex-wrap items-baseline justify-between gap-x-4">
+              <h3 class="text-lg font-bold" style="color:var(--text-strong)">{e.company}</h3>
+              <span class="text-xs" style="color:var(--muted)">{period(e)}</span>
+            </div>
+            <p class="text-sm" style="color:var(--accent)">{e.role}</p>
+            {e.summary && <p class="mt-2 text-sm" style="color:var(--muted)">{e.summary}</p>}
+            {e.highlights.length > 0 && (
+              <ul class="mt-3 space-y-1 text-sm" style="color:var(--text)">
+                {e.highlights.map((h) => (
+                  <li class="flex gap-2">
+                    <span style="color:var(--accent)">▸</span><span>{h}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {e.tech.length > 0 && (
+              <div class="mt-3 flex flex-wrap gap-2 text-xs">
+                {e.tech.map((t) => (
+                  <span class="rounded-theme border px-2 py-0.5"
+                        style="border-color:var(--border);color:var(--accent)">{t}</span>
+                ))}
+              </div>
+            )}
+          </li>
+        ))}
+      </ol>
+    </section>
+
     {github && (
-      <section class="mt-14">
+      <section class="mt-16">
         <p class="text-sm" style="color:var(--accent)">$ gh activity</p>
         <div class="mt-4 flex flex-wrap gap-4 text-sm" style="color:var(--muted)">
           <span><span style="color:var(--text-strong)">{github.publicRepos}</span> repos</span>
@@ -105,20 +188,6 @@ const [currently, github, featured] = await Promise.all([
           {github.recentPushes[0] && (
             <span>last push → <span style="color:var(--text)">{github.recentPushes[0].repo}</span></span>
           )}
-        </div>
-        <div class="mt-4 grid gap-3 sm:grid-cols-2">
-          {github.topRepos.map((r) => (
-            <a href={`https://github.com/${github.user}/${r.name}`} rel="noopener"
-               class="block rounded-theme border p-3 transition hover:opacity-90"
-               style="background:var(--panel);border-color:var(--border)">
-              <div class="flex items-center justify-between">
-                <span class="font-bold" style="color:var(--text-strong)">{r.name}</span>
-                <span class="text-xs" style="color:var(--muted)">★ {r.stars}</span>
-              </div>
-              {r.description && <div class="mt-1 text-xs" style="color:var(--muted)">{r.description}</div>}
-              {r.language && <div class="mt-2 text-xs" style="color:var(--accent)">{r.language}</div>}
-            </a>
-          ))}
         </div>
       </section>
     )}

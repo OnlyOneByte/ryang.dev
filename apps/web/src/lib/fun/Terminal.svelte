@@ -24,9 +24,9 @@
   const FS: { [k: string]: Node } = {
     home: {
       angelo: {
-        'readme.txt': 'You found the shell. Try: ls -a · cd work · cat .secret · find flag · help',
-        'work': {
-          'prime-video.md': 'Orchestration @ Prime Video — thousands of live streams a day. (see /experience)',
+        'readme.txt': 'You found the shell. Try: ls -a · cd projects · cat .secret · find flag · help',
+        'projects': {
+          'prime-video.md': 'Orchestration @ Prime Video — thousands of live streams a day. (see /#experience)',
           'homelab.md': 'A Docker box + a router running Caddy. The whole stack is self-hosted.',
         },
         'blog': { 'drafts.md': 'half-written posts live here. someday™.' },

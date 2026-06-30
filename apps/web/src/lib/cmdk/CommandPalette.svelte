@@ -24,8 +24,8 @@
 
   const NAV: Cmd[] = [
     { id: 'nav-home', label: 'Home', hint: '/', run: () => go('/') },
-    { id: 'nav-work', label: 'Work', hint: '/work', run: () => go('/work') },
-    { id: 'nav-experience', label: 'Experience', hint: '/experience', run: () => go('/experience') },
+    { id: 'nav-projects', label: 'Projects', hint: '/#projects', run: () => go('/#projects') },
+    { id: 'nav-experience', label: 'Experience', hint: '/#experience', run: () => go('/#experience') },
     { id: 'nav-blog', label: 'Blog', hint: '/blog', run: () => go('/blog') },
     { id: 'nav-uses', label: 'Uses', hint: '/colophon#uses', run: () => go('/colophon#uses') },
     { id: 'nav-colophon', label: 'Colophon', hint: '/colophon', run: () => go('/colophon') },
