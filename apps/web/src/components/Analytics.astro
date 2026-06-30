@@ -1,10 +1,23 @@
 ---
 /**
- * Umami analytics snippet — cookieless, privacy-first. Only emitted when both
- * PUBLIC_UMAMI_URL + PUBLIC_UMAMI_ID are set (so dev/preview stay clean).
- * Loaded with Astro's `is:inline` + defer so it never blocks paint.
+ * Umami analytics snippet — cookieless, privacy-first. Injected at RUNTIME from
+ * globalThis.__PUBLIC_ENV (served by /env.js from container env) so a single
+ * published image can be pointed at any Umami instance — and so this works on
+ * prerendered pages (the blog), whose frontmatter is frozen at build time.
+ * Emits the <script> only when both PUBLIC_UMAMI_URL + PUBLIC_UMAMI_ID are set.
+ * Relies on /env.js having loaded first (it's earlier in <head> in Base.astro).
  */
-const url = import.meta.env.PUBLIC_UMAMI_URL;   // e.g. https://stats.ryang.dev/script.js
-const id = import.meta.env.PUBLIC_UMAMI_ID;     // website UUID from Umami
 ---
-{url && id && <script is:inline defer data-website-id={id} src={url}></script>}
+<script is:inline>
+  (() => {
+    const env = globalThis.__PUBLIC_ENV || {};
+    const url = env.PUBLIC_UMAMI_URL;
+    const id = env.PUBLIC_UMAMI_ID;
+    if (!url || !id) return; // analytics optional — stay clean when unconfigured
+    const s = document.createElement('script');
+    s.defer = true;
+    s.src = url;
+    s.setAttribute('data-website-id', id);
+    document.head.appendChild(s);
+  })();
+</script>

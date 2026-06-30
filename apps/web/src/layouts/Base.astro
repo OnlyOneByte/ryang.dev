@@ -75,6 +75,10 @@ const ogUrl =
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogUrl} />
     <ViewTransitions />
+    {/* Runtime public config (PB/Umami URLs) from container env — see /env.js.
+        Loaded before islands hydrate so globalThis.__PUBLIC_ENV is set. Not
+        is:inline (it's a live SSR endpoint) and not deferred (must run first). */}
+    <script is:inline src="/env.js"></script>
     <Analytics />
     {/* No-flash: reconcile data-theme before any CSS paints. Skipped when the
         page pins a theme (gate pages) so the cookie can't override it. */}

@@ -1,7 +1,10 @@
 ---
 import Base from '@/layouts/Base.astro';
 // Cal.com booking. Embed the self-hosted instance when configured, else link out.
-const CAL = import.meta.env.PUBLIC_CAL_URL; // e.g. https://cal.ryang.dev/angelo/intro
+// This page is SSR (prerender=false), so read container env at REQUEST time —
+// no rebuild needed to point at a different Cal instance. Build-time value is a
+// dev/preview fallback.
+const CAL = process.env.PUBLIC_CAL_URL || import.meta.env.PUBLIC_CAL_URL;
 ---
 
 <Base title="Book a call — Angelo Yang" description="Grab time on my calendar.">

@@ -7,11 +7,12 @@
    */
   import { onMount } from 'svelte';
   import PocketBase from 'pocketbase';
+  import { publicEnv } from '@/lib/runtime-env';
 
   let { postSlug } = $props<{ postSlug: string }>();
 
-  // public PB URL (browser-side); falls back to same-origin /pb proxy if unset
-  const PB = (import.meta.env.PUBLIC_PB_URL as string) || 'https://pb.ryang.dev';
+  // public PB URL — runtime config (/env.js → container env); build-time fallback.
+  const PB = publicEnv('PUBLIC_PB_URL', 'https://pb.ryang.dev');
 
   type Comment = { id: string; author: string; body: string; created: string };
   let comments = $state<Comment[]>([]);

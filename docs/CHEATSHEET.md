@@ -46,7 +46,8 @@ docker compose -f infra/docker-compose.yml exec pocketbase \
 
 ## Public env (lights up integrations — all fail-soft if unset)
 
-Set in `infra/.env`, then `docker compose ... build web && up -d`:
+Set in `infra/.env`, then just `docker compose ... up -d` (read at RUNTIME via
+the `/env.js` endpoint + SSR — no `build web` needed; one image, any backend):
 
 ```
 PUBLIC_PB_URL=https://pb.ryang.dev        # guestbook/comments/reactions

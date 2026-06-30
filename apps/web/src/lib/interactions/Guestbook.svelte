@@ -6,8 +6,10 @@
    */
   import { onMount } from 'svelte';
   import PocketBase from 'pocketbase';
+  import { publicEnv } from '@/lib/runtime-env';
 
-  const PB = (import.meta.env.PUBLIC_PB_URL as string) || 'https://pb.ryang.dev';
+  // Runtime config (from /env.js → container env); build-time + hardcoded fallback.
+  const PB = publicEnv('PUBLIC_PB_URL', 'https://pb.ryang.dev');
   const pb = new PocketBase(PB);
 
   type Entry = { id: string; name: string; message: string; website?: string; created: string };

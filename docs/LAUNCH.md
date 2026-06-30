@@ -50,10 +50,10 @@ PB_SUPERUSER_EMAIL="$PB_SERVICE_EMAIL" PB_SUPERUSER_PASSWORD="$PB_SERVICE_PASSWO
 import it via the admin UI — only `cv` + `availability` ever reach the public
 `/resume.pdf`; `salary`/`references` stay on `/private`.
 
-## 3. Wire the public env into the web build **[you]**
+## 3. Wire the public env into the web container **[you]**
 
-These `PUBLIC_*` vars are read at build/SSR and light up the integrations
-(they're all fail-soft, so the site works without them — but this is launch):
+These `PUBLIC_*` vars light up the integrations (all fail-soft, so the site
+works without them — but this is launch):
 
 | var | turns on |
 |---|---|
@@ -64,7 +64,12 @@ These `PUBLIC_*` vars are read at build/SSR and light up the integrations
 | `WAKAPI_API_URL` + `WAKAPI_API_KEY` | "Currently" coding stats |
 | `GITHUB_TOKEN` + `GITHUB_USER` | higher-rate GitHub widget |
 
-Rebuild the web image after setting them: `docker compose ... build web && up -d`.
+**These are read at RUNTIME from container env — no rebuild needed.** Just set
+them in `infra/.env` and restart: `docker compose ... up -d` (or `restart web`).
+The browser-facing ones (`PUBLIC_PB_URL`, `PUBLIC_UMAMI_*`) are served to the
+client by the `/env.js` endpoint at request time; `PUBLIC_CAL_URL` is read in
+SSR. This is what lets one published image be pointed at any backend via env.
+(Only `PUBLIC_BUILD_SHA`, the deploy stamp in the footer, is baked at build.)
 
 ## 4. DNS + router Caddy **[you]**
 

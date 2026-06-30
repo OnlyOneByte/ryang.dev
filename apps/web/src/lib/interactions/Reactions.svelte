@@ -7,10 +7,12 @@
    */
   import { onMount } from 'svelte';
   import PocketBase from 'pocketbase';
+  import { publicEnv } from '@/lib/runtime-env';
 
   let { targetType = 'post', targetId } = $props<{ targetType?: string; targetId: string }>();
 
-  const PB = (import.meta.env.PUBLIC_PB_URL as string) || 'https://pb.ryang.dev';
+  // Runtime config (from /env.js → container env); build-time + hardcoded fallback.
+  const PB = publicEnv('PUBLIC_PB_URL', 'https://pb.ryang.dev');
   const pb = new PocketBase(PB);
   const EMOJIS = [
     { key: 'thumbsup', char: '👍', label: 'thumbs up' },
