@@ -1234,5 +1234,79 @@
     "created": "2026-06-30 19:01:44.420Z",
     "updated": "2026-06-30 19:01:44.420Z",
     "system": false
+  },
+  {
+    "id": "pbc_666436957",
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "name": "egg_finds",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1094208582",
+        "max": 128,
+        "min": 0,
+        "name": "sessionHash",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text3417118188",
+        "max": 64,
+        "min": 0,
+        "name": "fragment",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1718663312",
+        "max": 0,
+        "min": 0,
+        "name": "completedAt",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_egg_finds_dedup ON egg_finds (sessionHash, fragment)"
+    ],
+    "created": "2026-06-30 19:11:22.174Z",
+    "updated": "2026-06-30 19:11:22.174Z",
+    "system": false
   }
 ]

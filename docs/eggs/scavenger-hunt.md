@@ -1,8 +1,15 @@
 # Spec — Cross-Site Scavenger Hunt (egg #5)
 
-> Status: SPEC (not built). The centerpiece egg: fragments hidden across the
-> site; collecting all of them unlocks a secret page. Optional server-side
-> counter so Angelo can watch people hunt. Public-safe, all whimsy.
+> Status: ✅ BUILT (all 4 phases). Fragments hidden across the site; collecting
+> all 7 unlocks /secret (signed-cookie gate); a PB-backed live counter shows how
+> many distinct people have finished. Public-safe, all whimsy.
+>
+> Phase-4 deviation (intentional): egg_finds is `createRule:null` (service-token
+> only), NOT public-create-with-realIP-hook as originally specced — a public
+> create would stamp the web container's IP on service-token writes and collapse
+> every completion to one hash. The route is the sole writer and derives the
+> end-user ipHash from X-Forwarded-For; a unique (sessionHash, fragment) index
+> dedupes. Verified: 2 distinct IPs → count 2; same IP twice → no double-count.
 
 ## Goal
 

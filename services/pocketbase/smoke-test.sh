@@ -96,4 +96,12 @@ SCOUNT="$(curl -fsS "$PB_URL/api/collections/scores/records?perPage=50" | grep -
 [ "$SCOUNT" = "0" ] || fail "spoofed score is publicly listable ($SCOUNT) — would let a forged 999999 top the board"
 pass "scores: spoofed self-approve forced false + not listed"
 
+# ---- 7. egg_finds is null-ruled: public create AND public list must both fail ----
+EFCREATE="$(curl -fsS -o /dev/null -w '%{http_code}' -X POST "$PB_URL/api/collections/egg_finds/records" \
+  -H 'Content-Type: application/json' -d '{"sessionHash":"x","fragment":"__complete__"}' || true)"
+[ "$EFCREATE" != "200" ] || fail "egg_finds public create succeeded (expected blocked) — counter is spoofable"
+EFLIST="$(curl -fsS -o /dev/null -w '%{http_code}' "$PB_URL/api/collections/egg_finds/records" || true)"
+[ "$EFLIST" != "200" ] || fail "egg_finds is publicly listable (expected blocked) — completer hashes would leak"
+pass "egg_finds: public create + list both blocked (service-token only)"
+
 echo "✓✓ Pocketbase smoke test PASSED"
