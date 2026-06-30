@@ -204,8 +204,18 @@
       <!-- svelte-ignore a11y_autofocus -->
       <input autofocus bind:value={input}
              onkeydown={(e) => e.key === 'Enter' && run(input)}
-             class="flex-1 bg-transparent outline-none" style="color:var(--text)"
+             class="terminal-input flex-1 bg-transparent" style="color:var(--text)"
              aria-label="terminal input" />
     </div>
   </div>
 {/if}
+
+<style>
+  /* The terminal input is borderless by design — focus is already conveyed by
+     the prompt + caret. Override the global :focus-visible accent outline
+     (styles/global.css) here; the scoped class out-specifies it. */
+  .terminal-input:focus,
+  .terminal-input:focus-visible {
+    outline: none;
+  }
+</style>

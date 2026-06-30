@@ -48,7 +48,7 @@
   <div
     role="status"
     aria-live="polite"
-    class="fixed bottom-6 left-1/2 z-[201] -translate-x-1/2 rounded-theme border px-4 py-3 font-mono text-sm shadow-lg"
+    class="fixed bottom-24 left-1/2 z-[201] -translate-x-1/2 rounded-theme border px-4 py-3 font-mono text-sm shadow-lg"
     style="background:var(--panel);border-color:var(--accent);color:var(--text);box-shadow:0 0 24px color-mix(in srgb, var(--accent) 40%, transparent)"
   >
     🎉 Secret themes unlocked! Open the theme switcher
