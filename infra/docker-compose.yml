@@ -42,10 +42,14 @@ services:
     image: ghcr.io/muchobien/pocketbase:${POCKETBASE_TAG:-0.28.4}
     # Volume-mount hooks for fast iteration (edit → restart, no rebuild).
     # For a baked image instead, build docker/pocketbase.Dockerfile.
+    # Paths MUST match this image's entrypoint: it serves with
+    # --dir=/pb_data --hooksDir=/pb_hooks (root-level, NOT /pb/...). The old
+    # /pb/... paths meant hooks never loaded (public self-approve) AND pb_data
+    # persisted to the wrong path (data lost on recreate). Verified against 0.28.4.
     volumes:
-      - ../services/pocketbase/pb_hooks:/pb/pb_hooks
-      - ../services/pocketbase/pb_migrations:/pb/pb_migrations
-      - pb_data:/pb/pb_data
+      - ../services/pocketbase/pb_hooks:/pb_hooks
+      - ../services/pocketbase/pb_migrations:/pb_migrations
+      - pb_data:/pb_data
     environment:
       NTFY_URL: http://ntfy:80
       NTFY_TOPIC: ${NTFY_TOPIC}
@@ -55,7 +59,7 @@ services:
 
   umami:
     <<: *hardening
-    image: ghcr.io/umami-software/umami:${UMAMI_TAG:-postgresql-latest}
+    image: ghcr.io/umami-software/umami:${UMAMI_TAG:-postgresql-v2.16}
     environment:
       DATABASE_URL: postgresql://${UMAMI_DB_USER}:${UMAMI_DB_PASSWORD}@umami-db:5432/${UMAMI_DB_NAME}
       DATABASE_TYPE: postgresql
@@ -63,7 +67,8 @@ services:
     ports:
       - "${BIND_ADDR:-0.0.0.0}:3000:3000"
     depends_on:
-      - umami-db
+      umami-db:
+        condition: service_healthy
     networks: [web, internal]
 
   umami-db:
@@ -75,6 +80,13 @@ services:
       POSTGRES_DB: ${UMAMI_DB_NAME}
     volumes:
       - umami_db_data:/var/lib/postgresql/data
+    # Gate dependents on real readiness — Postgres logs "ready" once during init
+    # while it restarts internally, so an unguarded app loses the first-boot race.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${UMAMI_DB_USER} -d ${UMAMI_DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks: [internal]
 
   wakapi:
@@ -98,10 +110,13 @@ services:
       NEXTAUTH_SECRET: ${CAL_NEXTAUTH_SECRET}
       CALENDSO_ENCRYPTION_KEY: ${CAL_ENCRYPTION_KEY}
       NEXT_PUBLIC_WEBAPP_URL: https://cal.ryang.dev
+      # NextAuth needs its canonical URL or callback/session cookies break.
+      NEXTAUTH_URL: https://cal.ryang.dev
     ports:
       - "${BIND_ADDR:-0.0.0.0}:3002:3000"
     depends_on:
-      - cal-db
+      cal-db:
+        condition: service_healthy
     networks: [web, internal]
 
   cal-db:
@@ -113,6 +128,11 @@ services:
       POSTGRES_DB: ${CAL_DB_NAME}
     volumes:
       - cal_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${CAL_DB_USER} -d ${CAL_DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     networks: [internal]
 
   ntfy:
