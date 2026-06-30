@@ -1,0 +1,12 @@
+[
+  {
+    "slug": "example-injected-post",
+    "title": "An injected post",
+    "description": "Example PB-backed post — author these in your PRIVATE repo and seed them.",
+    "body": "# Hello from PocketBase\n\nThis post lives in the `posts` collection, not in git. Author it in your private repo and seed it with `seed.ts` (no rebuild).\n\n- Markdown is rendered at runtime with `marked`.\n- Code blocks are plain `<pre>` (no Shiki highlighting — that's build-time MDX only).\n\n```js\nconsole.log('runtime-rendered');\n```\n\nSet `gated: true` to require the recruiter session to read it.",
+    "pubDate": "2026-06-30",
+    "tags": ["meta"],
+    "published": true,
+    "gated": false
+  }
+]

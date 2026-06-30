@@ -1,0 +1,32 @@
+[
+  {
+    "company": "Amazon — Prime Video",
+    "role": "Software Engineer",
+    "startDate": "2022",
+    "endDate": "",
+    "summary": "Building and operating large-scale video streaming and playback systems for a global audience.",
+    "highlights": [
+      "REPLACE_ME — public-level bullets only. NO internal service/package codenames, CR details, metrics, or confidential architecture. Think: what you'd put on a public LinkedIn or conference bio.",
+      "e.g. 'Worked on high-availability backend services in the playback path.'",
+      "e.g. 'Improved reliability/observability of streaming infrastructure.'"
+    ],
+    "tech": ["TypeScript", "Java", "AWS", "Distributed Systems"],
+    "order": 1,
+    "visible": true
+  },
+  {
+    "company": "PIMCO — Platform Engineering",
+    "role": "Platform Engineer",
+    "startDate": "2020",
+    "endDate": "2022",
+    "summary": "Built and operated internal developer platform and observability tooling for engineering teams.",
+    "highlights": [
+      "Stood up and maintained observability with Datadog (dashboards, monitors, SLOs) across services.",
+      "REPLACE_ME — add the specific platform/CI/infra work you want public.",
+      "REPLACE_ME — e.g. tooling, automation, on-call/reliability improvements."
+    ],
+    "tech": ["Datadog", "CI/CD", "Cloud", "Observability"],
+    "order": 2,
+    "visible": true
+  }
+]

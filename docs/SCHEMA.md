@@ -1,6 +1,6 @@
 # Pocketbase Schema
 
-9 collections across 3 privacy tiers. Importable via `services/pocketbase/pb_schema.json`
+11 collections across 3 privacy tiers. Importable via `services/pocketbase/pb_schema.json`
 (0.28-format `fields`; verified import-clean against the pinned image by the
 `pocketbase-smoke` CI job). Public-safe content seeds from
 `services/pocketbase/pb_seed/<collection>.json` via `bun run services/pocketbase/seed.ts`;

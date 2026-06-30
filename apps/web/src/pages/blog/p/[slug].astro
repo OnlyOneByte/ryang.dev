@@ -1,0 +1,103 @@
+---
+import Base from '@/layouts/Base.astro';
+import { publicClient, withServerClient } from '@/lib/pb/client';
+import { SESSION_COOKIE, verifySession } from '@/lib/auth/session';
+import { marked } from 'marked';
+
+/**
+ * PocketBase-backed blog post (the "injected" half of the hybrid blog — git MDX
+ * posts live at /blog/[slug], these come from the `posts` collection so they
+ * can be added from the private repo via a DB seed with no rebuild).
+ *
+ * SSR (prerender=false): content is read at request time. GATED posts
+ * (gated=true) require a valid recruiter session, exactly like /private.
+ * Markdown is rendered server-side with `marked` (no build-time MDX/Shiki here;
+ * see docs — code blocks are plain <pre>, not Shiki-highlighted).
+ */
+export const prerender = false;
+
+const { slug } = Astro.params;
+
+type Post = {
+  slug: string; title: string; description?: string; body: string;
+  pubDate?: string; tags: string[]; gated: boolean;
+};
+
+let post: Post | null = null;
+let gatedAndLocked = false;
+
+try {
+  // First try the PUBLIC client (sees only published && !gated per listRule).
+  const pb = publicClient();
+  const r = await pb.collection('posts').getFirstListItem(pb.filter('slug = {:slug}', { slug }));
+  post = normalize(r);
+} catch {
+  // Not publicly visible — it may be a GATED post. Check the recruiter session;
+  // only then read it with the service token. Otherwise treat as locked/missing.
+  const token = Astro.cookies.get(SESSION_COOKIE)?.value;
+  if (verifySession(token)) {
+    try {
+      const r = await withServerClient((pb) =>
+        pb.collection('posts').getFirstListItem(pb.filter('slug = {:slug} && published = true', { slug }))
+      );
+      post = normalize(r);
+    } catch {
+      post = null;
+    }
+  } else {
+    // Probe (service token) only to decide redirect-vs-404 — never render.
+    try {
+      const exists = await withServerClient((pb) =>
+        pb.collection('posts').getFirstListItem(pb.filter('slug = {:slug} && published = true && gated = true', { slug }))
+      );
+      if (exists) gatedAndLocked = true;
+    } catch { /* truly missing */ }
+  }
+}
+
+function normalize(r: any): Post {
+  return {
+    slug: r.slug, title: r.title, description: r.description, body: r.body ?? '',
+    pubDate: r.pubDate, tags: r.tags ?? [], gated: !!r.gated,
+  };
+}
+
+// A gated post with no valid session → send to the unlock gate.
+if (gatedAndLocked) {
+  return Astro.redirect(`/unlock?from=/blog/p/${slug}`, 302);
+}
+// Genuinely missing → 404.
+if (!post) {
+  return Astro.redirect('/404', 302);
+}
+
+const html = await marked.parse(post.body);
+const fmt = (s?: string) => (s ? new Date(s).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '');
+---
+
+<Base title={`${post.title} — Angelo Yang`} description={post.description ?? post.title} ogTitle={post.title}>
+  <main class="mx-auto max-w-2xl px-6 py-16">
+    <a href="/blog" class="font-mono text-sm" style="color:var(--accent)">← all posts</a>
+    <h1 class="mt-3 text-3xl font-extrabold leading-tight" style="color:var(--text-strong)">{post.title}</h1>
+    <div class="mt-2 flex flex-wrap items-center gap-2 font-mono text-xs" style="color:var(--muted)">
+      {post.pubDate && <time>{fmt(post.pubDate)}</time>}
+      {post.gated && <span class="rounded-theme border px-2 py-0.5" style="border-color:var(--warn);color:var(--warn)">gated</span>}
+      {post.tags.map((t) => (
+        <span class="rounded-theme border px-2 py-0.5" style="border-color:var(--border);color:var(--accent)">{t}</span>
+      ))}
+    </div>
+    <article class="post mt-8 leading-relaxed" style="color:var(--text)" set:html={html}></article>
+  </main>
+</Base>
+
+<style is:global>
+  .post h2 { font-size: 1.35rem; font-weight: 700; margin: 2rem 0 0.75rem; color: var(--text-strong); }
+  .post h3 { font-size: 1.1rem; font-weight: 700; margin: 1.5rem 0 0.5rem; color: var(--text-strong); }
+  .post p { margin: 0.9rem 0; }
+  .post ul { margin: 0.9rem 0; padding-left: 1.25rem; list-style: disc; }
+  .post li { margin: 0.3rem 0; }
+  .post a { color: var(--accent); text-decoration: underline; }
+  .post code { font-family: var(--font-mono); background: var(--panel-2); padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.9em; }
+  .post pre { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; overflow-x: auto; margin: 1.2rem 0; }
+  .post pre code { background: none; padding: 0; }
+</style>

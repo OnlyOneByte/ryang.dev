@@ -1,11 +1,36 @@
 ---
 import Base from '@/layouts/Base.astro';
+import { publicClient } from '@/lib/pb/client';
 
 /**
- * Colophon — an interactive architecture diagram of THIS site's own stack.
- * Click a node to read what it does. Pure SVG + a tiny inline script (no deps),
- * styled entirely through theme tokens so it re-skins with the active theme.
+ * Colophon — an interactive architecture diagram of THIS site's own stack,
+ * plus the "uses" list (hardware/software/tools). Click a node to read what it
+ * does. Pure SVG + a tiny inline script (no deps), styled entirely through
+ * theme tokens so it re-skins with the active theme.
  */
+
+// --- uses list (merged in from the former /uses page; PB with static fallback) ---
+type UsesItem = { category: string; name: string; description?: string; url?: string };
+const CATS = ['hardware', 'software', 'dev-tools', 'desk'] as const;
+let usesItems: UsesItem[] = [];
+try {
+  const pb = publicClient();
+  const rows = await pb.collection('uses_items').getFullList({ sort: 'order' });
+  usesItems = rows.map((r: any) => ({ category: r.category, name: r.name, description: r.description, url: r.url }));
+} catch {
+  usesItems = [
+    { category: 'hardware', name: 'Homelab box', description: 'Docker host running the whole self-hosted stack' },
+    { category: 'hardware', name: 'Router w/ Caddy', description: 'TLS termination + reverse proxy' },
+    { category: 'software', name: 'Pocketbase', description: 'Auth, SQLite, file storage, realtime' },
+    { category: 'software', name: 'Umami', description: 'Cookieless analytics' },
+    { category: 'dev-tools', name: 'Bun', description: 'Runtime, package manager, bundler, test runner' },
+    { category: 'dev-tools', name: 'Astro', description: 'Zero-JS-by-default SSR framework' },
+    { category: 'desk', name: 'Mechanical keyboard', description: 'Where the 4h12m/day happens' },
+  ];
+}
+const usesGrouped = CATS.map((c) => ({ cat: c, list: usesItems.filter((i) => i.category === c) }))
+  .filter((g) => g.list.length > 0);
+
 const NODES = [
   { id: 'router', label: 'Router Caddy', x: 40, y: 30, role: 'TLS termination + reverse proxy (external box). The only public entry point.' },
   { id: 'web', label: 'web (Astro)', x: 250, y: 30, role: 'Astro SSR on Bun. Zero-JS-by-default; islands hydrate only where needed.' },
@@ -53,7 +78,32 @@ const pos = (id: string) => NODES.find((n) => n.id === id)!;
       Click a node above to read its role.
     </div>
 
-    <p class="mt-8 text-xs" style="color:var(--muted)">
+    {/* Uses — moved here from the former /uses page (/uses now redirects to #uses). */}
+    <section id="uses" class="mt-16 scroll-mt-8">
+      <p class="text-sm" style="color:var(--accent)">$ cat ~/.uses</p>
+      <h2 class="mt-2 text-2xl font-extrabold" style="color:var(--text-strong)">Uses</h2>
+      <p class="mt-2 text-sm" style="color:var(--muted)">Hardware, software, and tools I actually use.</p>
+
+      {usesGrouped.map((g) => (
+        <section class="mt-8">
+          <h3 class="text-sm uppercase tracking-wider" style="color:var(--accent)">{g.cat}</h3>
+          <ul class="mt-3 divide-y" style="border-color:var(--border)">
+            {g.list.map((i) => (
+              <li class="flex items-baseline justify-between gap-4 py-2">
+                <div>
+                  <span class="font-bold" style="color:var(--text-strong)">
+                    {i.url ? <a href={i.url} style="color:var(--accent)">{i.name} ↗</a> : i.name}
+                  </span>
+                  {i.description && <span class="ml-2 text-sm" style="color:var(--muted)">— {i.description}</span>}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </section>
+
+    <p class="mt-16 text-xs" style="color:var(--muted)">
       Source: <a href="https://github.com/OnlyOneByte/angryang.dev" style="color:var(--accent)">OnlyOneByte/angryang.dev</a>
       · built with Astro, Pocketbase, Bun · 15-theme engine
     </p>
