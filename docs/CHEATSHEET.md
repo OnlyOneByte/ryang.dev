@@ -32,10 +32,10 @@ docker compose -f infra/docker-compose.yml up -d        # bring up all 9 service
 # never reads → auth fails).
 docker compose -f infra/docker-compose.yml exec pocketbase \
   /usr/local/bin/pocketbase superuser create "$PB_SERVICE_EMAIL" "$PB_SERVICE_PASSWORD" --dir=/pb_data
-# then: pb.ryang.dev/_/  →  Settings → Import collections →
+# then: http://<box-ip>:8090/_/  (LAN admin)  →  Settings → Import collections →
 #       paste services/pocketbase/pb_schema.json
 # seed public-safe content (idempotent; skips non-empty collections):
-#   PB_URL=https://pb.ryang.dev PB_SUPERUSER_EMAIL=$PB_SERVICE_EMAIL \
+#   PB_URL=http://<box-ip>:8090 PB_SUPERUSER_EMAIL=$PB_SERVICE_EMAIL \
 #   PB_SUPERUSER_PASSWORD=$PB_SERVICE_PASSWORD bun run services/pocketbase/seed.ts
 # recruiter_content is GATED → fill pb_seed/recruiter_content.template.json + import privately
 ```
@@ -50,7 +50,6 @@ Set in `infra/.env`, then just `docker compose ... up -d` (read at RUNTIME via
 the `/env.js` endpoint + SSR — no `build web` needed; one image, any backend):
 
 ```
-PUBLIC_PB_URL=https://pb.ryang.dev        # guestbook/comments/reactions
 PUBLIC_UMAMI_URL=https://stats.ryang.dev/script.js
 PUBLIC_UMAMI_ID=<uuid>                     # analytics
 PUBLIC_CAL_URL=https://cal.ryang.dev/angelo/intro
@@ -62,8 +61,9 @@ GITHUB_USER=OnlyOneByte ; GITHUB_TOKEN=<pat>   # token optional
 ## Router Caddy (on the router, not the box)
 
 Add `infra/caddy/ryang.dev.Caddyfile` (replace `BOX_LAN_IP`), reload Caddy.
-Maps: `ryang.dev`→4321 · `pb.`→8090 · `stats.`→3000 · `wakapi.`→3001 ·
-`cal.`→3002 · `status.`→3010.
+Maps: `ryang.dev`→4321 · `stats.`→3000 · `wakapi.`→3001 ·
+`cal.`→3002 · `status.`→3010. (PB is internal-only — not routed; admin UI is
+LAN at `<box-ip>:8090/_/`.)
 
 ## Day-2 ops
 

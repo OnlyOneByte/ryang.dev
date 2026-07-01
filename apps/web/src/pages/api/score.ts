@@ -10,17 +10,11 @@
 import type { APIRoute } from 'astro';
 import { checkRate } from '@/lib/auth/ratelimit';
 import { withServerClient } from '@/lib/pb/client';
-import { createHash } from 'node:crypto';
+import { clientHash } from '@/lib/auth/client-hash';
 
 export const prerender = false;
 
 const SCORE_CAP = 1000; // a real run tops out well under this; reject absurd values
-
-function ipHash(req: Request): string {
-  const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'unknown';
-  const day = new Date().toISOString().slice(0, 10);
-  return createHash('sha256').update(`${ip}|${day}|ryang`).digest('hex');
-}
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -30,8 +24,8 @@ function json(body: unknown, status = 200): Response {
 }
 
 export const POST: APIRoute = async ({ request }) => {
-  const hash = ipHash(request);
-  if (!checkRate(hash).allowed) return json({ ok: false, error: 'rate' }, 429);
+  const hash = clientHash(request);
+  if (!checkRate(`score:${hash}`).allowed) return json({ ok: false, error: 'rate' }, 429);
 
   let initials = '';
   let score = NaN;
@@ -51,10 +45,13 @@ export const POST: APIRoute = async ({ request }) => {
   }
   score = Math.floor(score);
 
-  // Create via service token. The moderation hook forces approved=false +
-  // stamps sessionHash, so the row stays hidden until approved.
+  // Create via service token with approved=false + the per-user sessionHash set
+  // explicitly (the browser can't reach PB, and the hash must be the END USER's,
+  // not the web container's realIP). Stays hidden until approved in admin.
   try {
-    await withServerClient((pb) => pb.collection('scores').create({ initials, score }));
+    await withServerClient((pb) =>
+      pb.collection('scores').create({ initials, score, approved: false, sessionHash: hash })
+    );
   } catch {
     return json({ ok: false, error: 'backend' }, 502);
   }

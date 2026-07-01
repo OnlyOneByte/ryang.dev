@@ -9,21 +9,12 @@
 import type { APIRoute } from 'astro';
 import { signValue } from '@/lib/auth/session';
 import { withServerClient } from '@/lib/pb/client';
-import { createHash } from 'node:crypto';
+import { clientHash } from '@/lib/auth/client-hash';
 
 export const prerender = false;
 
 export const EGG_COOKIE = 'rg_egg';
 export const EGG_VALUE = 'complete';
-
-// Per-completer id derived from the END-USER IP (not the service-token writer's).
-// A unique (sessionHash, fragment='__complete__') index dedupes repeat visits so
-// the live counter reflects distinct finishers, not page reloads.
-function completerHash(req: Request): string {
-  const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'unknown';
-  const day = new Date().toISOString().slice(0, 10);
-  return createHash('sha256').update(`${ip}|${day}|ryang-egg`).digest('hex');
-}
 
 export const POST: APIRoute = async ({ cookies, request }) => {
   const secure = (process.env.PUBLIC_SITE_URL || request.url).startsWith('https://');
@@ -41,7 +32,9 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   try {
     await withServerClient((pb) =>
       pb.collection('egg_finds').create({
-        sessionHash: completerHash(request),
+        // per-END-USER hash (not the service-token writer's realIP) so the unique
+        // (sessionHash, fragment) index dedupes distinct finishers, not reloads.
+        sessionHash: clientHash(request, 'ryang-egg'),
         fragment: '__complete__',
         completedAt: new Date().toISOString(),
       })

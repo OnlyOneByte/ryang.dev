@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-# Pocketbase smoke test — proves the moderation hook actually ENFORCES, not just
-# that the build is green. Catches the whole class of bugs that a passing build
-# hides: hooks not loading (wrong --hooksDir path), hooks throwing at runtime
-# (JSVM scoping / wrong API), and a schema that imports as empty-fielded shells.
+# Pocketbase smoke test — proves the write model actually ENFORCES, not just
+# that the build is green. Post-proxy contract: the browser never writes to PB;
+# createRule is null on the moderated collections (service-token-only via the
+# web app's /api/* routes), so a raw public POST must be REJECTED. Catches: a
+# createRule that regressed back to "" (public writes), the schema importing as
+# empty-fielded shells (old format), and public read leaks.
 #
 # Two modes:
 #   1. CI / local: this script creates a superuser + imports the schema itself.
@@ -72,36 +74,41 @@ if [ "${SKIP_BOOTSTRAP:-0}" != "1" ]; then
   pass "guestbook has $NFIELDS custom fields"
 fi
 
-# ---- 4. THE PROBE: public POST trying to self-approve must be forced to approved=false ----
-RESP="$(curl -fsS -X POST "$PB_URL/api/collections/guestbook/records" \
+# ---- 4. THE PROBE: public (unauthenticated) POST must be REJECTED ----
+# Post-proxy model: the browser never writes to PB directly. createRule is null
+# on guestbook/comments/reactions/scores/contact_messages/egg_finds → only the
+# service token (via the web app's /api/* routes) may create. A raw internet
+# POST must be blocked (403/400), NOT accepted-and-moderated.
+gb_code="$(curl -fsS -o /dev/null -w '%{http_code}' -X POST "$PB_URL/api/collections/guestbook/records" \
   -H 'Content-Type: application/json' \
-  -d '{"name":"smoke-probe","message":"self-approve test","approved":true}')"
-APPROVED="$(echo "$RESP" | python3 -c "import sys,json;print(json.load(sys.stdin).get('approved'))" 2>/dev/null || echo "ERR")"
-[ "$APPROVED" = "False" ] || fail "self-approve probe returned approved=$APPROVED (expected False). The moderation hook is NOT enforcing — hooks didn't load or threw at runtime."
-pass "self-approve forced to approved=false"
+  -d '{"name":"smoke-probe","message":"public write should be blocked","approved":true}' || true)"
+[ "$gb_code" != "200" ] || fail "public guestbook create returned 200 (expected blocked). createRule is not null — anyone can write/self-approve."
+pass "public guestbook create blocked ($gb_code)"
 
-# ---- 5. the probe row must NOT be publicly listable (listRule approved=true) ----
+# ---- 5. nothing leaked: the probe row must NOT be publicly listable ----
 COUNT="$(curl -fsS "$PB_URL/api/collections/guestbook/records?perPage=50" \
   | grep -c '"name":"smoke-probe"' || true)"
-[ "$COUNT" = "0" ] || fail "smoke-probe row is publicly listable ($COUNT) — moderation/listRule not enforcing"
+[ "$COUNT" = "0" ] || fail "smoke-probe row is publicly listable ($COUNT) — a public write slipped through"
 pass "probe row not publicly listable"
 
-# ---- 6. scores collection: same moderation contract (404 leaderboard) ----
-SRESP="$(curl -fsS -X POST "$PB_URL/api/collections/scores/records" \
+# ---- 6. scores: public create must be blocked (404 leaderboard integrity) ----
+sc_code="$(curl -fsS -o /dev/null -w '%{http_code}' -X POST "$PB_URL/api/collections/scores/records" \
   -H 'Content-Type: application/json' \
-  -d '{"initials":"HAX","score":999999,"approved":true}')"
-SAPP="$(echo "$SRESP" | python3 -c "import sys,json;print(json.load(sys.stdin).get('approved'))" 2>/dev/null || echo "ERR")"
-[ "$SAPP" = "False" ] || fail "scores self-approve probe returned approved=$SAPP (expected False) — scores hook not enforcing"
-SCOUNT="$(curl -fsS "$PB_URL/api/collections/scores/records?perPage=50" | grep -c '"initials":"HAX"' || true)"
-[ "$SCOUNT" = "0" ] || fail "spoofed score is publicly listable ($SCOUNT) — would let a forged 999999 top the board"
-pass "scores: spoofed self-approve forced false + not listed"
+  -d '{"initials":"HAX","score":999999,"approved":true}' || true)"
+[ "$sc_code" != "200" ] || fail "public scores create returned 200 (expected blocked) — a forged 999999 could reach the board"
+pass "public scores create blocked ($sc_code)"
 
-# ---- 7. egg_finds is null-ruled: public create AND public list must both fail ----
-EFCREATE="$(curl -fsS -o /dev/null -w '%{http_code}' -X POST "$PB_URL/api/collections/egg_finds/records" \
+# ---- 7. reactions + egg_finds: public create AND public list both blocked ----
+re_code="$(curl -fsS -o /dev/null -w '%{http_code}' -X POST "$PB_URL/api/collections/reactions/records" \
+  -H 'Content-Type: application/json' -d '{"targetType":"post","targetId":"x","emoji":"fire","sessionHash":"x"}' || true)"
+[ "$re_code" != "200" ] || fail "public reactions create returned 200 (expected blocked) — tallies would be spoofable"
+re_list="$(curl -fsS -o /dev/null -w '%{http_code}' "$PB_URL/api/collections/reactions/records" || true)"
+[ "$re_list" != "200" ] || fail "reactions is publicly listable (expected blocked) — reads go through /api/reactions now"
+ef_code="$(curl -fsS -o /dev/null -w '%{http_code}' -X POST "$PB_URL/api/collections/egg_finds/records" \
   -H 'Content-Type: application/json' -d '{"sessionHash":"x","fragment":"__complete__"}' || true)"
-[ "$EFCREATE" != "200" ] || fail "egg_finds public create succeeded (expected blocked) — counter is spoofable"
-EFLIST="$(curl -fsS -o /dev/null -w '%{http_code}' "$PB_URL/api/collections/egg_finds/records" || true)"
-[ "$EFLIST" != "200" ] || fail "egg_finds is publicly listable (expected blocked) — completer hashes would leak"
-pass "egg_finds: public create + list both blocked (service-token only)"
+[ "$ef_code" != "200" ] || fail "egg_finds public create succeeded (expected blocked) — counter is spoofable"
+ef_list="$(curl -fsS -o /dev/null -w '%{http_code}' "$PB_URL/api/collections/egg_finds/records" || true)"
+[ "$ef_list" != "200" ] || fail "egg_finds is publicly listable (expected blocked) — completer hashes would leak"
+pass "reactions + egg_finds: public create + list both blocked (service-token only)"
 
 echo "✓✓ Pocketbase smoke test PASSED"

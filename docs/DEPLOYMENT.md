@@ -33,7 +33,8 @@ There are **two** ways to bring up the stack:
 
   The publish jobs (`.github/workflows/ci.yml` → `publish-web` / `publish-pocketbase`)
   are gated on the `build` and `pocketbase-smoke` jobs, so an image ships only when
-  type-check, contrast, tests, and the moderation-hook self-approve probe are green.
+  type-check, contrast, tests, and the PB write-model probe (public writes blocked)
+  are green.
   A consuming compose just references the image instead of `build:`; roll forward with
   `docker compose pull && up -d` (or a tool like Watchtower). Because `PUBLIC_*` config
   is read at runtime (`/env.js`), one published image is repointed at any backend purely
@@ -107,7 +108,6 @@ Caddy. Each block is a `reverse_proxy` to a `host:port` on the box.
 | `RECRUITER_HASH` | web | argon2 hash of the recruiter passphrase |
 | `SESSION_SECRET` | web | signs the recruiter session cookie |
 | `PB_URL` | web | internal Pocketbase URL (`http://pocketbase:8090`) |
-| `PB_PUBLIC_URL` | web | public PB URL (`https://pb.ryang.dev`) |
 | `PB_SERVICE_EMAIL` / `PB_SERVICE_PASSWORD` | web, pocketbase | service-token superuser |
 | `NTFY_URL` / `NTFY_TOPIC` | web, pocketbase | push notifications |
 | `WAKAPI_API_URL` / `WAKAPI_API_KEY` | web | "Currently" coding stats |

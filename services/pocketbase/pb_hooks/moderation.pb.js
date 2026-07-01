@@ -1,79 +1,35 @@
 /// <reference path="../pb_data/types.d.ts" />
 /**
- * Server-side write hardening for public-write collections.
+ * Server-side write hardening (defense-in-depth) for the moderated collections.
  * REQUIRES Pocketbase >= 0.23 (v0.23+ JSVM API: onRecordCreateRequest + e.next).
- * If you downgrade PB below 0.23 these hooks WON'T register and the protections
- * below vanish — guestbook/comments could then be self-approved. Keep PB >= 0.23.
  *
- * Why hooks and not just rules: PB collection rules gate WHO can create, not
- * WHICH FIELDS they may set. A public writer (createRule = "") could otherwise
- * POST approved=true, a forged ipHash, or read=true. We strip/override those
- * privileged fields here so the client can never set them.
+ * TRUST MODEL (post-proxy): the browser NO LONGER writes to PB directly. All
+ * writes come from the Astro web app via the SERVICE TOKEN, through same-origin
+ * /api/* routes. Those routes already set approved=false and stamp the per-USER
+ * hash (ipHash / sessionHash) derived from the forwarded client IP.
  *
- * JSVM SCOPING (critical): each handler callback is serialized and executed in
- * its OWN isolated runtime — module-scope functions are NOT visible inside it
- * (you get "ReferenceError: <fn> is not defined" at runtime, never at build).
- * So every helper MUST be defined INSIDE the handler. Likewise `e.realIP` is a
- * METHOD: call `e.realIP()`, not the bare property (which is a function ref).
- * Both verified against the pinned 0.28.4 image with a live self-approve probe.
+ * So these hooks are now a BACKSTOP, not the primary control: they re-assert
+ * approved=false on the moderated collections so a row can never be created
+ * approved regardless of caller. They intentionally DO NOT touch ipHash /
+ * sessionHash anymore — under the proxy, PB's `e.realIP()` is the WEB
+ * CONTAINER's IP (identical for everyone), so stamping from it would collapse
+ * every per-user dedup key to one value (one reaction per emoji for the whole
+ * internet, an egg counter stuck at 1). The app owns those hashes now.
+ *
+ * The public createRule on these collections is null (service-token only), so
+ * a random internet POST is rejected before these hooks even run.
+ *
+ * JSVM SCOPING: each callback runs in its own isolated runtime — define any
+ * helper INSIDE the handler. (No helpers needed here anymore.)
  */
 
-// Force moderation on append-style public collections: the client can never
-// self-approve, and ipHash is stamped server-side from the real client IP.
-onRecordCreateRequest((e) => {
-  e.record.set('approved', false);
-  try {
-    const ip = (typeof e.realIP === 'function' ? e.realIP() : e.realIP) || '';
-    const day = new Date().toISOString().slice(0, 10);
-    e.record.set('ipHash', $security.sha256(`${ip}|${day}|ryang`));
-  } catch (_) { /* best-effort: never block the write on hashing */ }
-  e.next();
-}, 'guestbook');
+// guestbook / comments / scores: never allow a row to be created approved.
+onRecordCreateRequest((e) => { e.record.set('approved', false); e.next(); }, 'guestbook');
+onRecordCreateRequest((e) => { e.record.set('approved', false); e.next(); }, 'comments');
+onRecordCreateRequest((e) => { e.record.set('approved', false); e.next(); }, 'scores');
 
-onRecordCreateRequest((e) => {
-  e.record.set('approved', false);
-  try {
-    const ip = (typeof e.realIP === 'function' ? e.realIP() : e.realIP) || '';
-    const day = new Date().toISOString().slice(0, 10);
-    e.record.set('ipHash', $security.sha256(`${ip}|${day}|ryang`));
-  } catch (_) { /* best-effort */ }
-  e.next();
-}, 'comments');
+// contact_messages: `read` is an admin-only inbox flag — force it false on create.
+onRecordCreateRequest((e) => { e.record.set('read', false); e.next(); }, 'contact_messages');
 
-// contact_messages: client must not set `read` (admin-only inbox flag) or forge
-// ipHash. Stamp ipHash server-side; force read=false regardless of input.
-onRecordCreateRequest((e) => {
-  e.record.set('read', false);
-  try {
-    const ip = (typeof e.realIP === 'function' ? e.realIP() : e.realIP) || '';
-    const day = new Date().toISOString().slice(0, 10);
-    e.record.set('ipHash', $security.sha256(`${ip}|${day}|ryang`));
-  } catch (_) { /* best-effort */ }
-  e.next();
-}, 'contact_messages');
-
-// reactions: stamp a server-side sessionHash from the hashed IP so vote dedup
-// can't be defeated by a client spoofing a fresh sessionHash each request.
-// (Per-IP/day granularity — good enough for vanity counts; not ballot-grade.)
-onRecordCreateRequest((e) => {
-  try {
-    const ip = (typeof e.realIP === 'function' ? e.realIP() : e.realIP) || '';
-    const day = new Date().toISOString().slice(0, 10);
-    e.record.set('sessionHash', $security.sha256(`${ip}|${day}|ryang`));
-  } catch (_) { /* best-effort */ }
-  e.next();
-}, 'reactions');
-
-// scores (404 game leaderboard): client-submitted + spoofable → force
-// approved=false (you approve in admin UI) and server-stamp sessionHash. A
-// posted score is NOT public until approved, so a forged 9999999 can't top the
-// board on its own.
-onRecordCreateRequest((e) => {
-  e.record.set('approved', false);
-  try {
-    const ip = (typeof e.realIP === 'function' ? e.realIP() : e.realIP) || '';
-    const day = new Date().toISOString().slice(0, 10);
-    e.record.set('sessionHash', $security.sha256(`${ip}|${day}|ryang`));
-  } catch (_) { /* best-effort */ }
-  e.next();
-}, 'scores');
+// reactions: no approved/read fields; dedup is the unique (sessionHash,targetId,
+// emoji) index and the app supplies sessionHash. Nothing to force here.

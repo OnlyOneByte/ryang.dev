@@ -4,23 +4,17 @@
  * create="" / read=null). Redirects back with a status flag. Fail-soft.
  */
 import type { APIRoute } from 'astro';
-import { publicClient } from '@/lib/pb/client';
+import { withServerClient } from '@/lib/pb/client';
 import { checkRate } from '@/lib/auth/ratelimit';
-import { createHash } from 'node:crypto';
+import { clientHash } from '@/lib/auth/client-hash';
 
 export const prerender = false;
-
-function ipHash(req: Request): string {
-  const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'unknown';
-  const day = new Date().toISOString().slice(0, 10);
-  return createHash('sha256').update(`${ip}|${day}|ryang`).digest('hex');
-}
 
 export const POST: APIRoute = async ({ request, redirect }) => {
   const form = await request.formData();
   if (String(form.get('company') ?? '')) return redirect('/contact?sent=1', 303); // honeypot
 
-  const hash = ipHash(request);
+  const hash = clientHash(request);
   if (!checkRate(`contact:${hash}`).allowed) {
     return redirect('/contact?e=rate', 303);
   }
@@ -31,8 +25,9 @@ export const POST: APIRoute = async ({ request, redirect }) => {
   if (!name || !email || !body) return redirect('/contact?e=1', 303);
 
   try {
-    const pb = publicClient();
-    await pb.collection('contact_messages').create({ name, email, body, ipHash: hash });
+    await withServerClient((pb) =>
+      pb.collection('contact_messages').create({ name, email, body, read: false, ipHash: hash })
+    );
   } catch {
     return redirect('/contact?e=down', 303);
   }

@@ -17,7 +17,8 @@ bun install        # installs all workspace deps from the repo root
 
 ## Run the web app alone
 
-Point the app at a Pocketbase you run locally (or the box's `pb.ryang.dev`):
+Point the app at a Pocketbase you run locally (set `PB_URL`) — the box's PB is
+internal-only and not publicly reachable:
 
 ```bash
 cp infra/.env.example infra/.env     # set PB_URL etc. for local dev

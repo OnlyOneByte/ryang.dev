@@ -6,14 +6,13 @@
    * also remember locally so the UI reflects "already reacted". Fail-soft.
    */
   import { onMount } from 'svelte';
-  import PocketBase from 'pocketbase';
-  import { publicEnv } from '@/lib/runtime-env';
 
   let { targetType = 'post', targetId } = $props<{ targetType?: string; targetId: string }>();
 
-  // Runtime config (from /env.js → container env); build-time + hardcoded fallback.
-  const PB = publicEnv('PUBLIC_PB_URL', 'https://pb.ryang.dev');
-  const pb = new PocketBase(PB);
+  // Talks to the same-origin proxy (/api/reactions), NOT Pocketbase directly —
+  // PB is private. The server stamps the real per-user sessionHash (from the
+  // forwarded client IP), so dedup is server-owned; localStorage just reflects
+  // "already reacted" in this browser's UI.
   const EMOJIS = [
     { key: 'thumbsup', char: '👍', label: 'thumbs up' },
     { key: 'fire', char: '🔥', label: 'fire' },
@@ -24,21 +23,13 @@
   let mine = $state<Set<string>>(new Set());
   let ready = $state(false);
 
-  // a stable-ish per-browser id for client dedup + sessionHash
-  function sessionId(): string {
-    let id = localStorage.getItem('ryang.sid');
-    if (!id) { id = crypto.randomUUID(); localStorage.setItem('ryang.sid', id); }
-    return id;
-  }
+  const q = () => `targetType=${encodeURIComponent(targetType)}&targetId=${encodeURIComponent(targetId)}`;
 
   async function load() {
     try {
-      const list = await pb.collection('reactions').getFullList({
-        filter: pb.filter('targetType = {:tt} && targetId = {:tid}', { tt: targetType, tid: targetId }),
-      });
-      const c: Record<string, number> = { thumbsup: 0, fire: 0, heart: 0 };
-      for (const r of list as any[]) c[r.emoji] = (c[r.emoji] ?? 0) + 1;
-      counts = c;
+      const r = await fetch(`/api/reactions?${q()}`);
+      if (!r.ok) throw new Error(`reactions ${r.status}`);
+      counts = (await r.json()).counts as Record<string, number>;
       mine = new Set(JSON.parse(localStorage.getItem(`ryang.react.${targetId}`) || '[]'));
       ready = true;
     } catch { ready = false; }
@@ -50,9 +41,14 @@
     mine = new Set([...mine, emoji]);
     localStorage.setItem(`ryang.react.${targetId}`, JSON.stringify([...mine]));
     try {
-      await pb.collection('reactions').create({ targetType, targetId, emoji, sessionHash: sessionId() });
+      const r = await fetch('/api/reactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetType, targetId, emoji }),
+      });
+      if (!r.ok) throw new Error(`reactions ${r.status}`);
     } catch {
-      // revert on failure (e.g. dedup 400 or offline)
+      // revert optimistic bump on failure (offline/backend)
       counts = { ...counts, [emoji]: Math.max(0, (counts[emoji] ?? 1) - 1) };
     }
   }

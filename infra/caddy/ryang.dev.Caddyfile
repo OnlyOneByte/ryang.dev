@@ -16,11 +16,6 @@ ryang.dev, www.ryang.dev {
 	reverse_proxy BOX_LAN_IP:4321
 }
 
-pb.ryang.dev {
-	encode zstd gzip
-	reverse_proxy BOX_LAN_IP:8090
-}
-
 stats.ryang.dev {
 	encode zstd gzip
 	reverse_proxy BOX_LAN_IP:3000
@@ -41,6 +36,7 @@ status.ryang.dev {
 	reverse_proxy BOX_LAN_IP:3010
 }
 
-# ntfy is intentionally NOT exposed — it's internal-only on the
-# compose network. Add an ntfy.ryang.dev block here only if you want push
-# subscriptions from your phone over the internet.
+# pocketbase + ntfy are intentionally NOT exposed — internal-only on the compose
+# network. The browser hits same-origin /api/* proxies (web → PB via service
+# token over http://pocketbase:8090); PB admin is LAN-only at BOX_LAN_IP:8090/_/.
+# Add an ntfy.ryang.dev block only if you want phone push subscriptions.

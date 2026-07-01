@@ -5,13 +5,9 @@
    * deter low-effort spam. Fail-soft if PB is unreachable.
    */
   import { onMount } from 'svelte';
-  import PocketBase from 'pocketbase';
-  import { publicEnv } from '@/lib/runtime-env';
 
-  // Runtime config (from /env.js → container env); build-time + hardcoded fallback.
-  const PB = publicEnv('PUBLIC_PB_URL', 'https://pb.ryang.dev');
-  const pb = new PocketBase(PB);
-
+  // Talks to the same-origin proxy (/api/guestbook), NOT Pocketbase directly —
+  // PB is private on the compose network. Reads + writes go through the server.
   type Entry = { id: string; name: string; message: string; website?: string; created: string };
   let entries = $state<Entry[]>([]);
   let mode = $state<'loading' | 'ready' | 'offline'>('loading');
@@ -21,10 +17,9 @@
 
   async function load() {
     try {
-      const list = await pb.collection('guestbook').getList(1, 50, {
-        filter: 'approved = true', sort: '-created',
-      });
-      entries = list.items as unknown as Entry[];
+      const r = await fetch('/api/guestbook');
+      if (!r.ok) throw new Error(`guestbook ${r.status}`);
+      entries = (await r.json()).entries as Entry[];
       mode = 'ready';
     } catch { mode = 'offline'; }
   }
@@ -35,7 +30,12 @@
     if (!name.trim() || !message.trim()) return;
     submitting = true;
     try {
-      await pb.collection('guestbook').create({ name, message, website: website || undefined });
+      const r = await fetch('/api/guestbook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, message, website, trap }),
+      });
+      if (!r.ok) throw new Error(`guestbook ${r.status}`);
       done = true; name = ''; message = ''; website = '';
     } catch { mode = 'offline'; }
     finally { submitting = false; }

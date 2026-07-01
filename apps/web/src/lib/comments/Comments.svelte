@@ -6,31 +6,25 @@
    * friendly notice instead of erroring.
    */
   import { onMount } from 'svelte';
-  import PocketBase from 'pocketbase';
-  import { publicEnv } from '@/lib/runtime-env';
 
   let { postSlug } = $props<{ postSlug: string }>();
 
-  // public PB URL — runtime config (/env.js → container env); build-time fallback.
-  const PB = publicEnv('PUBLIC_PB_URL', 'https://pb.ryang.dev');
-
+  // Talks to the same-origin proxy (/api/comments), NOT Pocketbase directly —
+  // PB is private on the compose network.
   type Comment = { id: string; author: string; body: string; created: string };
   let comments = $state<Comment[]>([]);
   let state = $state<'loading' | 'ready' | 'offline'>('loading');
   let author = $state('');
   let body = $state('');
+  let trap = $state(''); // honeypot
   let submitting = $state(false);
   let submitted = $state(false);
 
-  const pb = new PocketBase(PB);
-
   async function load() {
     try {
-      const list = await pb.collection('comments').getList(1, 50, {
-        filter: pb.filter('postSlug = {:slug} && approved = true', { slug: postSlug }),
-        sort: 'created',
-      });
-      comments = list.items as unknown as Comment[];
+      const r = await fetch(`/api/comments?postSlug=${encodeURIComponent(postSlug)}`);
+      if (!r.ok) throw new Error(`comments ${r.status}`);
+      comments = (await r.json()).comments as Comment[];
       state = 'ready';
     } catch {
       state = 'offline';
@@ -39,10 +33,16 @@
 
   async function submit(e: Event) {
     e.preventDefault();
+    if (trap) return; // honeypot
     if (!author.trim() || !body.trim()) return;
     submitting = true;
     try {
-      await pb.collection('comments').create({ postSlug, author, body });
+      const r = await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postSlug, author, body, trap }),
+      });
+      if (!r.ok) throw new Error(`comments ${r.status}`);
       submitted = true; // it's now pending moderation
       author = ''; body = '';
     } catch {
@@ -91,6 +91,9 @@
         <textarea bind:value={body} placeholder="say something…" maxlength="1000" required rows="3"
                   class="rounded-theme border px-3 py-2 text-sm"
                   style="background:var(--bg);border-color:var(--border);color:var(--text)"></textarea>
+        <!-- honeypot: visually hidden, bots fill it -->
+        <input bind:value={trap} tabindex="-1" autocomplete="off" aria-hidden="true"
+               style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
         <button type="submit" disabled={submitting}
                 class="self-start rounded-theme px-4 py-2 text-sm font-semibold"
                 style="background:var(--accent);color:var(--accent-ink)">

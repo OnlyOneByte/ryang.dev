@@ -19,8 +19,10 @@ export const prerender = false; // MUST be runtime — the whole point is per-re
 
 // Literal import.meta.env access so Vite can statically inline the dev/build
 // fallback (dynamic indexing wouldn't be replaced).
+// PUBLIC_PB_URL is intentionally NOT here anymore: the browser no longer talks
+// to Pocketbase directly (guestbook/comments/reactions go through same-origin
+// /api/* proxies). Only the analytics snippet needs runtime public config now.
 const FALLBACK: Record<string, string | undefined> = {
-  PUBLIC_PB_URL: import.meta.env.PUBLIC_PB_URL,
   PUBLIC_UMAMI_URL: import.meta.env.PUBLIC_UMAMI_URL,
   PUBLIC_UMAMI_ID: import.meta.env.PUBLIC_UMAMI_ID,
 };

@@ -10,6 +10,9 @@ reverse-proxies to plain-HTTP services on the box.
 Internet ──▶ Router (Caddy: TLS + reverse proxy) ──▶ Docker box (LAN, plain HTTP)
                                                       ├─ web         :4321  Astro SSR
                                                       ├─ pocketbase  :8090  auth/SQLite/files/realtime
+                                                      │              (internal: no public subdomain;
+                                                      │               browser reaches it via web's /api/* proxies;
+                                                      │               admin UI is LAN-only at :8090/_/)
                                                       ├─ umami       :3000  analytics
                                                       ├─ umami-db     (Postgres, internal)
                                                       ├─ wakapi      :3001  coding stats
@@ -24,7 +27,6 @@ Internet ──▶ Router (Caddy: TLS + reverse proxy) ──▶ Docker box (LAN
 | Subdomain | → box service |
 |---|---|
 | `ryang.dev` | `web:4321` |
-| `pb.ryang.dev` | `pocketbase:8090` |
 | `stats.ryang.dev` | `umami:3000` |
 | `wakapi.ryang.dev` | `wakapi:3001` |
 | `cal.ryang.dev` | `cal:3002` |
@@ -38,7 +40,11 @@ Internet ──▶ Router (Caddy: TLS + reverse proxy) ──▶ Docker box (LAN
   HTTP on the LAN; the router adds TLS.
 - Cookies are issued `Secure` + `SameSite=Lax` + `httpOnly` keyed to the public
   origin. The app trusts the router's `X-Forwarded-Proto` / `X-Forwarded-For`.
-- CORS / CSRF allowlists are pinned to `https://ryang.dev` (+ subdomains).
+- Guestbook/comments/reactions go through **same-origin** `/api/*` proxy routes
+  on `web`; the server forwards to Pocketbase over the internal compose network
+  (`http://pocketbase:8090`) with the service token. Pocketbase is never
+  browser-facing — the browser only ever calls same-origin `https://ryang.dev`,
+  so there are no cross-origin PB calls to allowlist.
 
 ## Data ownership (no duplication)
 
@@ -48,7 +54,9 @@ Internet ──▶ Router (Caddy: TLS + reverse proxy) ──▶ Docker box (LAN
   stores `comments.postSlug` pointing at them.
 - **Structured content + interactions** → Pocketbase (see `SCHEMA.md`).
 - **Visitor accounts** → none. Recruiter mode is a shared password; the only PB
-  auth identity is the superuser admin + the server's service token.
+  auth identity is the superuser admin + the server's service token. PB is
+  internal-only: the browser never talks to it directly — writes and reactions
+  reads flow through `web`'s same-origin `/api/*` proxies (service token).
 
 ## Repo layout
 
