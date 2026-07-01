@@ -11,8 +11,9 @@ import { SESSION_COOKIE, verifySession } from '@/lib/auth/session';
  * recruiter session cookie. Gated responses are marked no-store so neither the
  * router nor any proxy/CDN caches private content.
  *
- * NOTE: /resume.pdf is intentionally PUBLIC and is NOT gated here — it filters
- * recruiter_content to a public-section allowlist itself (see resume.pdf.ts).
+ * NOTE: /resume.pdf is a STATIC public file (apps/web/public/resume.pdf) — it
+ * contains only public-safe content and never reads recruiter_content, so there
+ * is nothing to gate. Salary/references live ONLY behind /private.
  */
 const GATED = [/^\/private(\/|$)/];
 

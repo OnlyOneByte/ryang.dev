@@ -16,8 +16,7 @@ Internet ──▶ Router (Caddy: TLS + reverse proxy) ──▶ Docker box (LAN
                                                       ├─ cal         :3002  scheduling
                                                       ├─ cal-db       (Postgres, internal)
                                                       ├─ ntfy        :8085  push (internal)
-                                                      ├─ uptime-kuma :3010  status page
-                                                      └─ gotenberg   :3020  HTML→PDF (internal)
+                                                      └─ uptime-kuma :3010  status page
 ```
 
 ## Public subdomains (mapped by the router)
@@ -31,7 +30,7 @@ Internet ──▶ Router (Caddy: TLS + reverse proxy) ──▶ Docker box (LAN
 | `cal.ryang.dev` | `cal:3002` |
 | `status.ryang.dev` | `uptime-kuma:3010` |
 
-`ntfy` and `gotenberg` stay internal — only `web` talks to them over the compose network.
+`ntfy` stays internal — only `web` + `pocketbase` talk to it over the compose network.
 
 ## Request / trust model
 

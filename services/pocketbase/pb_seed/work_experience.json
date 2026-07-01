@@ -4,14 +4,15 @@
     "role": "Software Engineer II",
     "startDate": "2022",
     "endDate": "",
-    "summary": "Build and operate large-scale, AWS-native systems for live sports streaming at global scale — from ML-driven event monitoring to developer self-service tooling.",
+    "summary": "Design and operate highly-available, high-throughput services and ETL pipelines for live sports streaming at global scale — from ML-driven event monitoring to developer self-service tooling.",
     "highlights": [
-      "Built a scalable VLM-based recognition system for automated event monitoring, deployed across the Prime Video Sports catalog and stress-tested live during Black Friday Football.",
-      "Drove a cost-optimization effort that identified and reclaimed over $350K in underutilized AWS resources in the first year.",
-      "Designed and shipped a self-service portal for image slates, cutting manual onboarding from two developer-days to none.",
-      "Championed AI-assisted log diagnosis for internal logs, enabling self-service root-causing for other teams."
+      "Engineer highly-available, high-throughput backend services on AWS that hold up under live-event traffic spikes — stress-tested in production during Black Friday Football.",
+      "Design and operate ETL pipelines that ingest, transform, and serve large volumes of catalog and event data across the Prime Video Sports platform.",
+      "Built a scalable VLM-based recognition system for automated event monitoring, deployed catalog-wide.",
+      "Drove a cost-optimization effort that reclaimed over $350K in underutilized AWS resources in the first year.",
+      "Shipped a self-service image-slate portal and championed AI-assisted log diagnosis, cutting onboarding from two developer-days to none and enabling self-service root-causing for other teams."
     ],
-    "tech": ["TypeScript", "Rust", "AWS", "ECS/Fargate", "Lambda", "DynamoDB", "VLM / LLM tooling"],
+    "tech": ["Java", "Kotlin", "Python", "TypeScript", "Rust", "AWS", "MongoDB", "ETL", "Distributed Systems"],
     "order": 1,
     "visible": true
   },

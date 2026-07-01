@@ -37,12 +37,11 @@ const NODES = [
   { id: 'pb', label: 'Pocketbase', x: 250, y: 130, role: 'Auth, SQLite, file storage, realtime, admin UI. Backs projects, guestbook, comments, recruiter content.' },
   { id: 'umami', label: 'Umami', x: 460, y: 30, role: 'Cookieless, privacy-first analytics (+ its own Postgres).' },
   { id: 'wakapi', label: 'Wakapi', x: 460, y: 95, role: 'Self-hosted WakaTime; feeds the "Currently" coding-stats block.' },
-  { id: 'gotenberg', label: 'Gotenberg', x: 460, y: 160, role: 'HTML → PDF; renders the résumé on demand from live data.' },
-  { id: 'ntfy', label: 'Ntfy', x: 460, y: 225, role: 'Phone push on contact-form submit + recruiter unlock.' },
+  { id: 'ntfy', label: 'Ntfy', x: 460, y: 160, role: 'Phone push on contact-form submit + recruiter unlock.' },
 ];
 const EDGES = [
   ['router', 'web'], ['web', 'pb'], ['web', 'umami'],
-  ['web', 'wakapi'], ['web', 'gotenberg'], ['pb', 'ntfy'],
+  ['web', 'wakapi'], ['pb', 'ntfy'],
 ];
 const pos = (id: string) => NODES.find((n) => n.id === id)!;
 ---

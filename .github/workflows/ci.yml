@@ -35,7 +35,7 @@ jobs:
       - name: Contrast gate (WCAG AA across all themes)
         run: bun run --filter web contrast
 
-      - name: Unit tests (incl. resume-leak regression)
+      - name: Unit tests
         run: bun run --filter web test
 
       - name: Build

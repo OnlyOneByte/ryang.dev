@@ -86,7 +86,7 @@ fail-soft (shows a "book via /contact" fallback when `PUBLIC_CAL_URL` is unset),
 bring up everything *except* cal:
 
 ```bash
-CONTAINER_TOOL=finch bun run stack:up:lite   # web + pocketbase + umami(+db) + wakapi + ntfy + kuma + gotenberg
+CONTAINER_TOOL=finch bun run stack:up:lite   # web + pocketbase + umami(+db) + wakapi + ntfy + kuma
 ```
 
 > If umami/cal flake on first boot, your Finch may predate compose
@@ -112,7 +112,6 @@ Caddy. Each block is a `reverse_proxy` to a `host:port` on the box.
 | `NTFY_URL` / `NTFY_TOPIC` | web, pocketbase | push notifications |
 | `WAKAPI_API_URL` / `WAKAPI_API_KEY` | web | "Currently" coding stats |
 | `GITHUB_TOKEN` / `GITHUB_USER` | web | GitHub activity widget |
-| `GOTENBERG_URL` | web | HTML→PDF résumé (`http://gotenberg:3000`) |
 | `UMAMI_*`, `CAL_*` | umami, cal | analytics + scheduling (own DBs) |
 | `POSTGRES_*` (x2) | umami-db, cal-db | Postgres credentials |
 

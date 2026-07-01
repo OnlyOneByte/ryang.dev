@@ -40,9 +40,9 @@ docker compose -f infra/docker-compose.yml exec pocketbase \
 # recruiter_content is GATED → fill pb_seed/recruiter_content.template.json + import privately
 ```
 
-> ⚠️ `recruiter_content` sections: only `cv` + `availability` appear in the
-> PUBLIC /resume.pdf. `salary` / `references` are gated (only shown on /private
-> after unlock). This is enforced in code + a regression test.
+> ⚠️ `/resume.pdf` is a STATIC public file (`apps/web/public/resume.pdf`) with
+> public-safe content only — it never reads `recruiter_content`. `salary` /
+> `references` live ONLY on `/private` (gated, shown after unlock).
 
 ## Public env (lights up integrations — all fail-soft if unset)
 

@@ -47,8 +47,10 @@ PB_SUPERUSER_EMAIL="$PB_SERVICE_EMAIL" PB_SUPERUSER_PASSWORD="$PB_SERVICE_PASSWO
 
 `recruiter_content` is **not** seeded by that script (it's gated). Fill in
 `services/pocketbase/pb_seed/recruiter_content.template.json` privately and
-import it via the admin UI — only `cv` + `availability` ever reach the public
-`/resume.pdf`; `salary`/`references` stay on `/private`.
+import it via the admin UI — all of it (`cv`, `availability`, `salary`,
+`references`) is shown only on the gated `/private`. The public `/resume.pdf` is
+a **static file** (`apps/web/public/resume.pdf`) with public-safe content only;
+regenerate it when your résumé changes (see docs/DEPLOYMENT.md).
 
 ## 3. Wire the public env into the web container **[you]**
 

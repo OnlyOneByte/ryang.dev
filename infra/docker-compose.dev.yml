@@ -19,7 +19,3 @@ services:
   ntfy:
     ports:
       - "8085:80"
-
-  gotenberg:
-    ports:
-      - "3020:3000"

@@ -41,6 +41,6 @@ status.ryang.dev {
 	reverse_proxy BOX_LAN_IP:3010
 }
 
-# ntfy + gotenberg are intentionally NOT exposed — they're internal-only on the
+# ntfy is intentionally NOT exposed — it's internal-only on the
 # compose network. Add an ntfy.ryang.dev block here only if you want push
 # subscriptions from your phone over the internet.

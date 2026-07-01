@@ -27,7 +27,7 @@ ryang.dev/
 | Coding stats | Wakapi (self-hosted WakaTime) |
 | Scheduling | Cal.com (+ Postgres) |
 | Notifications | Ntfy (push on contact / recruiter unlock) |
-| PDF résumé | Gotenberg (HTML → PDF) |
+| PDF résumé | Static file (`apps/web/public/resume.pdf`) |
 | Status page | Uptime Kuma |
 | Package manager / runtime | Bun (workspaces) |
 | TLS / proxy | **External** router Caddy (this box serves plain HTTP on the LAN) |

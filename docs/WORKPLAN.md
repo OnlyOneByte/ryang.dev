@@ -136,8 +136,9 @@ Session = HMAC-SHA256-signed token (SESSION_SECRET), constant-time verify,
       set; cookieless; verified absent without env (clean dev/preview)
 - [x] Cal.com (/cal) — embeds PUBLIC_CAL_URL iframe when set, else a graceful
       "book via /contact" fallback (verified)
-- [x] /resume.pdf — renders print HTML from recruiter_content (fallback résumé)
-      → Gotenberg Chromium → streams PDF; if Gotenberg down, serves the HTML
+- [x] /resume.pdf — static public file (apps/web/public/resume.pdf), public-safe
+      content only. (Was dynamic recruiter_content → Gotenberg; simplified to a
+      static PDF to drop the privileged Chromium container.)
       (browser Print-to-PDF). Fallback path verified (name + sections render)
 - [x] Homelab status (lib/widgets/status.ts) → footer up/total from Uptime Kuma
       status API when KUMA_STATUS_URL set, else static "9/9". Wired into Footer.

@@ -35,7 +35,6 @@ services:
     environment:
       PB_URL: http://pocketbase:8090
       NTFY_URL: http://ntfy:80
-      GOTENBERG_URL: http://gotenberg:3000
     ports:
       - "${BIND_ADDR:-0.0.0.0}:4321:4321"
     depends_on:
@@ -164,18 +163,6 @@ services:
     ports:
       - "${BIND_ADDR:-0.0.0.0}:3010:3001"
     networks: [web, internal]
-
-  gotenberg:
-    <<: *hardening
-    image: gotenberg/gotenberg:${GOTENBERG_TAG:-8.20.0}
-    # gotenberg needs SYS_ADMIN for Chromium's sandbox; drop everything else.
-    cap_drop: [ALL]
-    cap_add: [SYS_ADMIN]
-    command:
-      - "gotenberg"
-      - "--api-timeout=30s"
-    # internal only — web POSTs HTML and gets back a PDF
-    networks: [internal]
 
 networks:
   web:
