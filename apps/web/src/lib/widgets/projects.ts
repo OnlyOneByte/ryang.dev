@@ -25,6 +25,8 @@ export interface Project {
   repoUrl: string;
   homepage?: string;   // live/demo URL if the repo sets one
   stars: number;
+  detailUrl?: string;   // optional in-card link to a write-up (e.g. ryang.dev → /colophon)
+  detailLabel?: string; // link text for detailUrl
 }
 
 /**
@@ -32,7 +34,7 @@ export interface Project {
  * as GitHub returns it). `order` pins them to the front; un-curated repos sort
  * after, by stars. Anything omitted here uses the repo's own description/language.
  */
-const CURATED: Record<string, { summary?: string; tech?: string[]; order?: number }> = {
+const CURATED: Record<string, { summary?: string; tech?: string[]; order?: number; detailUrl?: string; detailLabel?: string }> = {
   VROOM: {
     summary:
       'Self-hosted vehicle cost tracker — fuel, maintenance, financing, and a TCO analytics engine. Offline-first with conflict-resolving sync; 1700+ backend tests.',
@@ -41,9 +43,11 @@ const CURATED: Record<string, { summary?: string; tech?: string[]; order?: numbe
   },
   'ryang.dev': {
     summary:
-      'This site — a self-hosted Astro portfolio with a 15-theme engine and a Konami-code unlock, backed by Pocketbase.',
+      'This site — a self-hosted Astro portfolio backed by Pocketbase, running on a 9-container homelab stack behind an external Caddy. 15-theme engine with a Konami-code unlock.',
     tech: ['Astro', 'Bun', 'Pocketbase'],
     order: 1,
+    detailUrl: '/colophon',
+    detailLabel: 'how it\'s built →',
   },
   Encore: {
     summary: 'Simple, fast, self-hosted karaoke app that just works.',
@@ -95,6 +99,8 @@ export async function getProjects(): Promise<Project[]> {
             repoUrl: repo.html_url,
             homepage: repo.homepage || undefined,
             stars: repo.stargazers_count ?? 0,
+            detailUrl: c.detailUrl,
+            detailLabel: c.detailLabel,
           };
         });
 
@@ -115,7 +121,7 @@ export async function getProjects(): Promise<Project[]> {
 // GitHub API is unreachable / rate-limited.
 const FALLBACK: Project[] = [
   { name: 'VROOM', slug: 'vroom', summary: CURATED.VROOM.summary!, tech: CURATED.VROOM.tech!, repoUrl: 'https://github.com/OnlyOneByte/VROOM', stars: 1 },
-  { name: 'ryang.dev', slug: 'ryang.dev', summary: CURATED['ryang.dev'].summary!, tech: CURATED['ryang.dev'].tech!, repoUrl: 'https://github.com/OnlyOneByte/ryang.dev', stars: 0 },
+  { name: 'ryang.dev', slug: 'ryang.dev', summary: CURATED['ryang.dev'].summary!, tech: CURATED['ryang.dev'].tech!, repoUrl: 'https://github.com/OnlyOneByte/ryang.dev', stars: 0, detailUrl: CURATED['ryang.dev'].detailUrl, detailLabel: CURATED['ryang.dev'].detailLabel },
   { name: 'Encore', slug: 'encore', summary: CURATED.Encore.summary!, tech: CURATED.Encore.tech!, repoUrl: 'https://github.com/OnlyOneByte/Encore', stars: 0 },
   { name: 'Conveyor', slug: 'conveyor', summary: CURATED.Conveyor.summary!, tech: CURATED.Conveyor.tech!, repoUrl: 'https://github.com/OnlyOneByte/Conveyor', stars: 0 },
   { name: 'LuceroKeyboard', slug: 'lucerokeyboard', summary: CURATED.LuceroKeyboard.summary!, tech: CURATED.LuceroKeyboard.tech!, repoUrl: 'https://github.com/OnlyOneByte/LuceroKeyboard', stars: 0 },

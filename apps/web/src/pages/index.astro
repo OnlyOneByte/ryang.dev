@@ -111,11 +111,14 @@ const [currently, github, projects, experience] = await Promise.all([
       <h2 class="mt-2 text-2xl font-extrabold" style="color:var(--text-strong)">Projects</h2>
       <div class="mt-6 grid gap-4 sm:grid-cols-2">
         {projects.map((p) => (
-          <a
-            href={p.repoUrl} rel="noopener" target="_blank"
-            class="block rounded-theme border p-4 transition hover:opacity-90"
+          <div
+            class="relative rounded-theme border p-4 transition hover:opacity-90"
             style="background:var(--panel);border-color:var(--border)"
           >
+            {/* Stretched link: whole card → repo. Nested anchors are invalid HTML,
+                so this is an absolute overlay; the detail link below sits above it. */}
+            <a href={p.repoUrl} rel="noopener" target="_blank"
+               class="absolute inset-0 rounded-theme" aria-label={`${p.name} on GitHub`}></a>
             <div class="flex items-center justify-between">
               <span class="font-bold" style="color:var(--text-strong)">{p.name}</span>
               {p.stars > 0 && (
@@ -131,10 +134,14 @@ const [currently, github, projects, experience] = await Promise.all([
                       style="border-color:var(--border);color:var(--accent)">{t}</span>
               ))}
             </div>
-            <div class="mt-3 text-xs" style="color:var(--accent)">
-              {p.homepage ? 'live ↗ · code ↗' : 'code ↗'}
+            <div class="mt-3 flex flex-wrap items-center gap-3 text-xs" style="color:var(--accent)">
+              <span>{p.homepage ? 'live ↗ · code ↗' : 'code ↗'}</span>
+              {p.detailUrl && (
+                <a href={p.detailUrl} class="relative z-10 underline"
+                   style="color:var(--accent)">{p.detailLabel ?? 'details →'}</a>
+              )}
             </div>
-          </a>
+          </div>
         ))}
       </div>
       <a href={`https://github.com/${github?.user ?? 'OnlyOneByte'}`} rel="noopener" target="_blank"
