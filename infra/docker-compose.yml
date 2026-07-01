@@ -113,6 +113,10 @@ services:
     env_file: .env
     environment:
       DATABASE_URL: postgresql://${CAL_DB_USER}:${CAL_DB_PASSWORD}@cal-db:5432/${CAL_DB_NAME}
+      # cal.com's Prisma uses directUrl = env("DATABASE_DIRECT_URL") for
+      # `migrate deploy` on boot. Without it, migrations are skipped and the app
+      # boots against an empty db → P2021. No pooler here, so direct == pooled.
+      DATABASE_DIRECT_URL: postgresql://${CAL_DB_USER}:${CAL_DB_PASSWORD}@cal-db:5432/${CAL_DB_NAME}
       NEXTAUTH_SECRET: ${CAL_NEXTAUTH_SECRET}
       CALENDSO_ENCRYPTION_KEY: ${CAL_ENCRYPTION_KEY}
       NEXT_PUBLIC_WEBAPP_URL: https://cal.ryang.dev
